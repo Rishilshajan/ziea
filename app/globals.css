@@ -1,26 +1,126 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: #7A9268;
+  --color-primary-dark: #2C3829;
+  --color-primary-light: #A8BC9A;
+  --color-background: #F5F0E8;
+  --color-surface: #EDE6D8;
+  --color-border: #D4DFD0;
+  --color-accent: #E8D5C4;
+  --color-secondary: #C4856A;
+  --color-muted: #7A7068;
+  --color-text: #2C3829;
+  --color-on-primary: #F5F0E8;
+  --color-on-secondary: #F5F0E8;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility px-margin-mobile {
+  padding-left: 20px;
+  padding-right: 20px;
 }
+
+@utility mt-section-gap {
+  margin-top: 40px;
+}
+
+@utility font-display-lg {
+  font-family: "EB Garamond", serif;
+  font-weight: 400;
+  font-size: 3.5rem;
+  line-height: 4rem;
+}
+
+@utility font-headline-lg-mobile {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+@utility font-body-lg {
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+@utility font-body-md {
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+@utility font-label-md {
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+@utility font-label-sm {
+  font-family: "Jost", sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.1em;
+}
+
+@utility cormorant {
+  font-family: "Cormorant Garamond", serif;
+}
+
+@utility jost {
+  font-family: "Jost", sans-serif;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+
+.float-slow {
+  animation: float 10s ease-in-out infinite;
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-30px, 15px); }
+}
+
+.float-reverse {
+  animation: floatReverse 12s ease-in-out infinite;
+}
+
+.transition-page {
+  transition: opacity 0.8s ease-in-out;
+}
+
