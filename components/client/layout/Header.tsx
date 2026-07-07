@@ -9,13 +9,13 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
-    { icon: "home", label: "Home", filled: true },
-    { icon: "style", label: "Collections" },
-    { icon: "favorite", label: "Wishlist" },
-    { icon: "info", label: "About Us" },
-    { icon: "mail", label: "Contact Us" },
-    { icon: "login", label: "Login" },
-    { icon: "person_add", label: "Sign Up" },
+    { icon: "home", label: "Home", filled: true, href: "/" },
+    { icon: "style", label: "Collections", href: "/collections" },
+    { icon: "favorite", label: "Wishlist", href: "#" },
+    { icon: "info", label: "About Us", href: "#" },
+    { icon: "mail", label: "Contact Us", href: "#" },
+    { icon: "login", label: "Login", href: "#" },
+    { icon: "person_add", label: "Sign Up", href: "#" },
   ];
 
   return (
@@ -25,8 +25,8 @@ export default function Header() {
         <div className="flex w-full h-full px-4 xl:px-8 items-center">
           <div className="flex-1 flex items-center justify-start">
             <nav className="flex items-center gap-4 lg:gap-6 text-xs lg:text-sm font-semibold tracking-wide text-text/80">
-              <Link href="#" className="hover:text-primary transition-colors">HOME</Link>
-              <Link href="#" className="hover:text-primary transition-colors">COLLECTIONS</Link>
+              <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
+              <Link href="/collections" className="hover:text-primary transition-colors">COLLECTIONS</Link>
               <Link href="#" className="hover:text-primary transition-colors">WISHLIST</Link>
               <Link href="#" className="hover:text-primary transition-colors">ABOUT US</Link>
               <Link href="#" className="hover:text-primary transition-colors">CONTACT US</Link>
@@ -97,7 +97,7 @@ export default function Header() {
               {menuItems.slice(0, 5).map((item, index) => (
                 <Link
                   key={index}
-                  href="#"
+                  href={item.href || "#"}
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-4 text-text hover:text-primary transition-colors"
                 >

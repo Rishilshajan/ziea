@@ -1,0 +1,24 @@
+"use client";
+import { useRouter } from "next/navigation";
+
+export default function MobileHeader() {
+  const router = useRouter();
+  return (
+    <header className="md:hidden sticky top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-[#fff8f5] shadow-sm">
+      <button 
+        aria-label="Go back" 
+        onClick={() => router.back()}
+        className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
+      >
+        <span className="material-symbols-outlined">arrow_back</span>
+      </button>
+      <h1 className="font-headline-md text-[24px] text-primary">Collections</h1>
+      <button 
+        aria-label="Shopping Cart" 
+        className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
+      >
+        <span className="material-symbols-outlined">shopping_bag</span>
+      </button>
+    </header>
+  );
+}

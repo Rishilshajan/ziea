@@ -65,7 +65,7 @@ export default function CollectionsGrid() {
     <section className="px-margin-mobile pt-2 pb-10 space-y-8 bg-background">
       <div className="flex justify-between items-end">
         <h3 className="cormorant text-3xl text-primary-dark italic">Latest Collections</h3>
-        <Link href="#" className="text-secondary font-label-sm border-b border-secondary pb-1">
+        <Link href="/collections" className="text-secondary font-label-sm border-b border-secondary pb-1">
           View All
         </Link>
       </div>
