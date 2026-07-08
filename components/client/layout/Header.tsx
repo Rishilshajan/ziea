@@ -27,7 +27,7 @@ export default function Header() {
             <nav className="flex items-center gap-4 lg:gap-6 text-xs lg:text-sm font-semibold tracking-wide text-text/80">
               <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
               <Link href="/collections" className="hover:text-primary transition-colors">COLLECTIONS</Link>
-              <Link href="#" className="hover:text-primary transition-colors">WISHLIST</Link>
+              <Link href="/wishlist" className="hover:text-primary transition-colors">WISHLIST</Link>
               <Link href="#" className="hover:text-primary transition-colors">ABOUT US</Link>
               <Link href="#" className="hover:text-primary transition-colors">CONTACT US</Link>
             </nav>
@@ -44,10 +44,10 @@ export default function Header() {
             </div>
 
             <div className="flex gap-4">
-              <Link href="#" className="text-text hover:text-primary transition-colors flex items-center">
+              <Link href="/wishlist" className="text-text hover:text-primary transition-colors flex items-center">
                 <span className="material-symbols-outlined">favorite</span>
               </Link>
-              <Link href="#" className="text-text hover:text-primary transition-colors flex items-center">
+              <Link href="/cart" className="text-text hover:text-primary transition-colors flex items-center">
                 <span className="material-symbols-outlined">shopping_bag</span>
               </Link>
             </div>
@@ -62,16 +62,25 @@ export default function Header() {
       </header>
 
       {/* Mobile Header */}
-      <header className="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile h-16 bg-background shadow-sm">
-        <Button variant="icon" onClick={() => setIsMenuOpen(true)}>
+      <header className="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-background shadow-sm">
+        <Button variant="icon" onClick={() => setIsMenuOpen(true)} className="z-10">
           <span className="material-symbols-outlined">menu</span>
         </Button>
-        <div className="flex items-center justify-center">
-          <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} className="h-24 w-auto object-contain scale-[1.8]" priority />
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
+          <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} className="h-24 w-auto object-contain scale-[1.8] pointer-events-auto" priority />
         </div>
-        <Button variant="icon">
-          <span className="material-symbols-outlined">shopping_bag</span>
-        </Button>
+        <div className="flex gap-1">
+          <Link href="/wishlist">
+            <Button variant="icon" className="p-1">
+              <span className="material-symbols-outlined text-[22px]">favorite</span>
+            </Button>
+          </Link>
+          <Link href="/cart">
+            <Button variant="icon" className="p-1">
+              <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
+            </Button>
+          </Link>
+        </div>
       </header>
 
       {/* Slide-out Menu Overlay */}

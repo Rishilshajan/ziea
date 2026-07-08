@@ -13,12 +13,22 @@ export default function MobileHeader() {
         <span className="material-symbols-outlined">arrow_back</span>
       </button>
       <h1 className="font-headline-md text-[24px] text-primary">Collections</h1>
-      <button 
-        aria-label="Shopping Cart" 
-        className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
-      >
-        <span className="material-symbols-outlined">shopping_bag</span>
-      </button>
+      <div className="flex gap-2">
+        <button 
+          aria-label="Wishlist" 
+          onClick={() => router.push('/wishlist')}
+          className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
+        >
+          <span className="material-symbols-outlined text-[22px]">favorite</span>
+        </button>
+        <button 
+          aria-label="Shopping Cart" 
+          onClick={() => router.push('/cart')}
+          className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
+        >
+          <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
+        </button>
+      </div>
     </header>
   );
 }
