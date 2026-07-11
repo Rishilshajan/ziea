@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @theme inline {
+  --font-jost: "Jost", sans-serif;
+  --font-cormorant: "Cormorant Garamond", serif;
+  
   --color-primary: #7A9268;
   --color-primary-dark: #2C3829;
   --color-primary-light: #A8BC9A;

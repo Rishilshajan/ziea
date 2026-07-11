@@ -14,8 +14,8 @@ export default function Header() {
     { icon: "favorite", label: "Wishlist", href: "#" },
     { icon: "info", label: "About Us", href: "/about-us" },
     { icon: "mail", label: "Contact Us", href: "/contact-us" },
-    { icon: "login", label: "Login", href: "#" },
-    { icon: "person_add", label: "Sign Up", href: "#" },
+    { icon: "login", label: "Login", href: "/login" },
+    { icon: "person_add", label: "Sign Up", href: "/signup" },
   ];
 
   return (
@@ -53,9 +53,9 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-2 text-xs lg:text-sm font-semibold tracking-wide text-text/80 border-l border-border/60 pl-4 lg:pl-6">
-              <Link href="#" className="hover:text-primary transition-colors">LOGIN</Link>
+              <Link href="/login" className="hover:text-primary transition-colors">LOGIN</Link>
               <span className="text-border/60">|</span>
-              <Link href="#" className="hover:text-primary transition-colors">SIGN UP</Link>
+              <Link href="/signup" className="hover:text-primary transition-colors">SIGN UP</Link>
             </div>
           </div>
         </div>
