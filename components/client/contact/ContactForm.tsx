@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { MdOutlineSend, MdOutlineSync, MdOutlineCheckCircle } from 'react-icons/md';
 
 export default function ContactForm() {
   const [formState, setFormState] = useState<'idle' | 'sending' | 'sent'>('idle');
@@ -95,17 +96,17 @@ export default function ContactForm() {
           {formState === 'idle' && (
             <>
               Send Message
-              <span className="material-symbols-outlined text-sm">send</span>
+              <MdOutlineSend className="text-sm" />
             </>
           )}
           {formState === 'sending' && (
             <>
-              <span className="material-symbols-outlined animate-spin text-sm">sync</span> Sending...
+              <MdOutlineSync className="animate-spin text-sm" /> Sending...
             </>
           )}
           {formState === 'sent' && (
             <>
-              <span className="material-symbols-outlined text-sm">check_circle</span> Sent
+              <MdOutlineCheckCircle className="text-sm" /> Sent
             </>
           )}
         </button>

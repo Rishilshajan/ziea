@@ -8,7 +8,7 @@ import PopulatedList from './PopulatedList';
 interface ListManagerProps {
   title: string;
   type: 'wishlist' | 'cart';
-  icon: string;
+  icon: React.ReactNode;
   emptyDescription: string;
   mockItems: any[];
 }

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { MdOutlineDelete, MdOutlineLocalShipping } from 'react-icons/md';
 
 interface ProductItem {
   id: string;
@@ -38,7 +39,7 @@ export default function PopulatedList({ items, type }: PopulatedListProps) {
               className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <button className="absolute top-3 right-3 w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all hover:bg-black/60 z-10 text-white">
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+              <MdOutlineDelete className="text-[18px]" />
             </button>
           </div>
           
@@ -53,7 +54,7 @@ export default function PopulatedList({ items, type }: PopulatedListProps) {
               </div>
             </div>
             <p className="text-[#72796c] text-[12px] mt-1.5 flex items-center gap-1">
-              <span className="material-symbols-outlined text-[14px]">local_shipping</span>
+              <MdOutlineLocalShipping className="text-[14px]" />
               Delivery by <span className="font-semibold text-[#44483f]">Jul 14, 2026</span>
             </p>
             <button 

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { MdOutlineChevronRight } from "react-icons/md";
 import { Button } from "../../ui/Button";
 
 export default function Hero() {
@@ -63,7 +65,7 @@ export default function Hero() {
         onClick={() => setCurrentImageIndex((prevIndex: number) => (prevIndex + 1) % heroImages.length)}
         className="absolute bottom-6 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/40 transition-colors border border-white/30"
       >
-        <span className="material-symbols-outlined text-white">chevron_right</span>
+        <MdOutlineChevronRight className="text-white" />
       </button>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { MdOutlineRemove, MdOutlineAdd, MdOutlineLocalShipping, MdOutlineEco, MdOutlineVerifiedUser, MdOutlineExpandMore } from 'react-icons/md';
 
 export default function ProductActions() {
   const sizes = ["XS", "S", "M", "L", "XL"];
@@ -38,14 +39,14 @@ export default function ProductActions() {
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
             className="w-10 h-10 flex items-center justify-center rounded-md bg-surface-variant text-primary hover:bg-[#d6c3b3] transition-colors"
           >
-            <span className="material-symbols-outlined text-lg">remove</span>
+            <MdOutlineRemove className="text-lg" />
           </button>
           <span className="font-jost text-base w-6 text-center">{quantity}</span>
           <button 
             onClick={() => setQuantity(quantity + 1)}
             className="w-10 h-10 flex items-center justify-center rounded-md bg-surface-variant text-primary hover:bg-[#d6c3b3] transition-colors"
           >
-            <span className="material-symbols-outlined text-lg">add</span>
+            <MdOutlineAdd className="text-lg" />
           </button>
         </div>
       </div>
@@ -62,7 +63,7 @@ export default function ProductActions() {
 
       {/* Delivery Estimate */}
       <div className="bg-[#f9ebe1] p-4 rounded-lg flex gap-4 items-start border border-[#d6c3b3]/30">
-        <span className="material-symbols-outlined text-[#4c623d] mt-0.5">local_shipping</span>
+        <MdOutlineLocalShipping className="text-[#4c623d] mt-0.5" />
         <div>
           <p className="text-sm font-semibold text-[#44483f]">Estimated delivery in 7 days</p>
           <p className="text-xs text-[#74796e] mt-1">Free shipping on all orders</p>
@@ -72,15 +73,15 @@ export default function ProductActions() {
       {/* Badges */}
       <div className="flex justify-between items-center py-4 border-b border-[#eee0d6]">
         <div className="flex flex-col items-center gap-1">
-          <span className="material-symbols-outlined text-[#4c623d]">local_shipping</span>
+          <MdOutlineLocalShipping className="text-[#4c623d]" />
           <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Free Delivery</span>
         </div>
         <div className="flex flex-col items-center gap-1">
-          <span className="material-symbols-outlined text-[#4c623d]">eco</span>
+          <MdOutlineEco className="text-[#4c623d]" />
           <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Eco-Friendly</span>
         </div>
         <div className="flex flex-col items-center gap-1">
-          <span className="material-symbols-outlined text-[#4c623d]">verified_user</span>
+          <MdOutlineVerifiedUser className="text-[#4c623d]" />
           <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Secure Pay</span>
         </div>
       </div>
@@ -90,7 +91,7 @@ export default function ProductActions() {
         <details className="group border-b border-[#eee0d6] pb-4">
           <summary className="flex justify-between items-center cursor-pointer list-none">
             <span className="font-label-md text-primary font-bold">Material & Care</span>
-            <span className="material-symbols-outlined transition-transform group-open:rotate-180 text-primary">expand_more</span>
+            <MdOutlineExpandMore className="transition-transform group-open:rotate-180 text-primary" />
           </summary>
           <div className="pt-3 text-sm text-[#74796e] font-jost leading-relaxed">
             Dry clean recommended. Hand wash cold with mild detergent. Lay flat to dry in shade to preserve the color and fibers.
@@ -99,7 +100,7 @@ export default function ProductActions() {
         <details className="group border-b border-[#eee0d6] pb-4">
           <summary className="flex justify-between items-center cursor-pointer list-none">
             <span className="font-label-md text-primary font-bold">Shipping & Returns</span>
-            <span className="material-symbols-outlined transition-transform group-open:rotate-180 text-primary">expand_more</span>
+            <MdOutlineExpandMore className="transition-transform group-open:rotate-180 text-primary" />
           </summary>
           <div className="pt-3 text-sm text-[#74796e] font-jost leading-relaxed">
             Free shipping on orders over ₹2000. Returns accepted within 7 days of delivery for unworn items in original packaging.

@@ -7,24 +7,47 @@ import Toast from '@/components/ui/Toast';
 import { z } from 'zod';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { createClient } from '@/utils/supabase/client';
 
 export default function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  const [toast, setToast] = useState({ message: '', show: false });
+  const [toast, setToast] = useState({ message: '', show: false, error: false });
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const supabase = createClient();
+
+  const showToast = (msg: string, isError = false) => {
+    setToast({ message: msg, show: true, error: isError });
+    setTimeout(() => setToast({ message: '', show: false, error: false }), 4000);
+  };
 
   const emailSchema = z.string().email("Please enter a valid email address");
-
-  const showToast = (msg: string) => {
-    setToast({ message: msg, show: true });
-    setTimeout(() => setToast({ message: '', show: false }), 3000);
-  };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     const result = emailSchema.safeParse(e.target.value);
     if (!result.success && e.target.value.length > 0) setEmailError(result.error.issues[0].message);
     else setEmailError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailError || !email) return;
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
+      });
+
+      if (error) throw error;
+      showToast("Password reset link sent to your email!");
+    } catch (error: any) {
+      showToast(error.message || "Failed to send reset link", true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -44,7 +67,7 @@ export default function ForgotPasswordForm() {
 
       <div className="relative">
         <section className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); showToast("Email sent to your address!"); }}>
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <Input
               label="Email"
               placeholder="hello@example.com"
@@ -68,7 +91,7 @@ export default function ForgotPasswordForm() {
         </section>
       </div>
 
-      <Toast show={toast.show} message={toast.message} />
+      <Toast show={toast.show} message={toast.message} error={toast.error} />
     </div>
   );
 }

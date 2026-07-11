@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
 import ListManager from '../../components/client/shop/ListManager';
+import { MdOutlineShoppingBag } from 'react-icons/md';
 
 export const metadata: Metadata = {
   title: 'ZIEA | Shopping Cart',
@@ -43,8 +44,8 @@ export default function CartPage() {
         <ListManager 
           title="Cart"
           type="cart"
-          icon="shopping_bag"
-          emptyDescription="Your cart is currently empty. Add items from our collections to proceed."
+          icon={<MdOutlineShoppingBag />}
+          emptyDescription="Your bag is looking a little empty. Discover our collections to add items."
           mockItems={mockCartItems}
         />
       </main>

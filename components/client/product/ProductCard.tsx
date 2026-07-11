@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { MdFavorite, MdOutlineFavoriteBorder } from 'react-icons/md';
 
 interface ProductCardProps {
   title: string;
@@ -24,15 +25,11 @@ export default function ProductCard({ title, price, imageUrl, altText }: Product
           onClick={() => setIsFavorite(!isFavorite)}
           className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all"
         >
-          <span
-            className="material-symbols-outlined text-sm"
-            style={{
-              fontVariationSettings: isFavorite ? "'FILL' 1" : "'FILL' 0",
-              color: isFavorite ? "var(--color-secondary)" : "var(--color-muted)",
-            }}
-          >
-            favorite
-          </span>
+          {isFavorite ? (
+            <MdFavorite className="text-sm" style={{ color: "var(--color-secondary)" }} />
+          ) : (
+            <MdOutlineFavoriteBorder className="text-sm" style={{ color: "var(--color-muted)" }} />
+          )}
         </button>
       </div>
       <div className="space-y-1">

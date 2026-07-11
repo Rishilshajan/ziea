@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
 import ListManager from '../../components/client/shop/ListManager';
+import { MdOutlineFavoriteBorder } from 'react-icons/md';
 
 export const metadata: Metadata = {
   title: 'ZIEA | My Wishlist',
@@ -57,7 +58,7 @@ export default function WishlistPage() {
         <ListManager 
           title="Wishlist"
           type="wishlist"
-          icon="favorite"
+          icon={<MdOutlineFavoriteBorder />}
           emptyDescription="Start exploring our collection to find your next favorite pieces."
           mockItems={mockWishlistItems}
         />

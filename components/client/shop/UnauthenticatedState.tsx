@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { MdOutlineLock } from 'react-icons/md';
 
 interface UnauthenticatedStateProps {
   title: string;
@@ -9,9 +10,7 @@ export default function UnauthenticatedState({ title }: UnauthenticatedStateProp
   return (
     <div className="flex flex-col items-center justify-center pt-2 pb-8 md:py-12 text-center">
       <div className="w-32 h-32 mb-6 flex items-center justify-center rounded-full bg-surface-container-low border-2 border-dashed border-primary/20">
-        <span className="material-symbols-outlined text-primary text-6xl" style={{ fontVariationSettings: "'FILL' 0" }}>
-          lock
-        </span>
+        <MdOutlineLock className="text-primary text-6xl" />
       </div>
       <h3 className="font-headline-md text-3xl text-on-surface mb-2">{title}</h3>
       <p className="font-body-md text-on-surface-variant mb-8 max-w-sm">

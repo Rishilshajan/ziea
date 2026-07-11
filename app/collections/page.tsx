@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { MdOutlineFilterList } from "react-icons/md";
 
 import CategoryTabs from '../../components/client/collections/CategoryTabs';
 import ProductGrid from '../../components/server/collections/ProductGrid';
@@ -45,7 +46,7 @@ export default function CollectionsPage() {
       
       {/* Mobile Filter FAB */}
       <button aria-label="Filter Products" className="fixed bottom-6 right-6 w-14 h-14 bg-[#865139] text-white rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-50 md:hidden">
-        <span className="material-symbols-outlined">filter_list</span>
+        <MdOutlineFilterList className="text-[24px]" />
       </button>
 
       <Footer />

@@ -1,5 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
+import { MdOutlineArrowBack, MdOutlineFavoriteBorder, MdOutlineShoppingBag } from 'react-icons/md';
 
 export default function MobileHeader() {
   const router = useRouter();
@@ -10,7 +12,7 @@ export default function MobileHeader() {
         onClick={() => router.back()}
         className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
       >
-        <span className="material-symbols-outlined">arrow_back</span>
+        <MdOutlineArrowBack />
       </button>
       <h1 className="font-headline-md text-[24px] text-primary">Collections</h1>
       <div className="flex gap-2">
@@ -19,14 +21,14 @@ export default function MobileHeader() {
           onClick={() => router.push('/wishlist')}
           className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
         >
-          <span className="material-symbols-outlined text-[22px]">favorite</span>
+          <MdOutlineFavoriteBorder className="text-[22px]" />
         </button>
         <button 
           aria-label="Shopping Cart" 
           onClick={() => router.push('/cart')}
           className="text-primary hover:opacity-80 scale-95 transition-transform duration-200"
         >
-          <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
+          <MdOutlineShoppingBag className="text-[22px]" />
         </button>
       </div>
     </header>

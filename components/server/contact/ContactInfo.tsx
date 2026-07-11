@@ -1,4 +1,5 @@
 import React from 'react';
+import { MdOutlineLocationOn, MdOutlineContactSupport, MdOutlineMail, MdOutlineCall } from "react-icons/md";
 
 export default function ContactInfo() {
   return (
@@ -7,7 +8,7 @@ export default function ContactInfo() {
       <div className="bg-[#F5F0E8] p-8 rounded-2xl flex-1 flex flex-col justify-between shadow-[0px_2px_16px_rgba(44,56,41,0.06)] border border-primary/5 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
         <div>
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
-            <span className="material-symbols-outlined">location_on</span>
+            <MdOutlineLocationOn />
           </div>
           <h3 className="cormorant text-2xl text-primary mb-3">Visit Our Studio</h3>
           <p className="font-jost text-on-surface-variant leading-relaxed text-sm">
@@ -28,16 +29,16 @@ export default function ContactInfo() {
       {/* Reach Out */}
       <div className="bg-[#f0e3d5] p-8 rounded-2xl shadow-[0px_2px_16px_rgba(44,56,41,0.06)] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
         <div className="w-12 h-12 rounded-full bg-[#865139]/10 flex items-center justify-center mb-4 text-[#865139]">
-          <span className="material-symbols-outlined">contact_support</span>
+          <MdOutlineContactSupport />
         </div>
         <h3 className="cormorant text-2xl text-primary mb-3">Reach Out</h3>
         <div className="space-y-4">
           <a className="flex items-center gap-4 text-[#211a15] hover:text-primary transition-colors group" href="mailto:hello@ziea.com">
-            <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary">mail</span>
+            <MdOutlineMail className="text-on-surface-variant group-hover:text-primary" />
             <span className="font-jost">hello@ziea.com</span>
           </a>
           <a className="flex items-center gap-4 text-[#211a15] hover:text-primary transition-colors group" href="tel:+91484221144">
-            <span className="material-symbols-outlined text-on-surface-variant group-hover:text-primary">call</span>
+            <MdOutlineCall className="text-on-surface-variant group-hover:text-primary" />
             <span className="font-jost">+91 484 221 144</span>
           </a>
         </div>

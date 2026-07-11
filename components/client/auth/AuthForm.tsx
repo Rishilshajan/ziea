@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -8,6 +9,7 @@ import { z } from 'zod';
 import Toast from '@/components/ui/Toast';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { createClient } from '@/utils/supabase/client';
 
 interface AuthFormProps {
   initialMode: 'login' | 'signup';
@@ -16,21 +18,26 @@ interface AuthFormProps {
 export default function AuthForm({ initialMode }: AuthFormProps) {
   const router = useRouter();
   const mode = initialMode;
+  const supabase = createClient();
 
   // Password visibility state
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // New States
-  const [toast, setToast] = useState({ message: '', show: false });
+  const [toast, setToast] = useState({ message: '', show: false, error: false });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const showToast = (msg: string) => {
-    setToast({ message: msg, show: true });
-    setTimeout(() => setToast({ message: '', show: false }), 3000);
+  const showToast = (msg: string, isError = false) => {
+    setToast({ message: msg, show: true, error: isError });
+    setTimeout(() => setToast({ message: '', show: false, error: false }), 4000);
   };
 
   // Validation state
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
@@ -46,10 +53,8 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Only allow numbers
     const sanitizedValue = e.target.value.replace(/\D/g, '');
     setPhone(sanitizedValue);
-
     if (sanitizedValue.length > 0) {
       const result = phoneSchema.safeParse(sanitizedValue);
       if (!result.success) setPhoneError(result.error.issues[0].message);
@@ -59,9 +64,115 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
     }
   };
 
-  // Navigate cleanly to the new route, letting Next.js handle the page swap
   const handleToggle = (newMode: 'login' | 'signup') => {
     router.push(newMode === 'login' ? '/login' : '/signup', { scroll: false });
+  };
+
+  const handleGoogleAuth = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      showToast(error.message || "Failed to authenticate with Google", true);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailError) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Check role and redirect
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profile?.role === 'Admin') {
+          router.push('/admin');
+        } else {
+          router.push('/');
+        }
+      }
+    } catch (error: any) {
+      // If user is not found or wrong password, it hits here
+      showToast("You are not registered or invalid credentials. Please sign up first.", true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (emailError || phoneError) return;
+    if (password !== confirmPassword) {
+      showToast("Passwords do not match.", true);
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      // Split name for metadata
+      const nameParts = fullName.trim().split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/collections`,
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone,
+          }
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+         showToast("An account with this email already exists.", true);
+         return;
+      }
+
+      showToast("Account created successfully! Please check your email.");
+      
+      // Cleanup fields
+      setFullName('');
+      setEmail('');
+      setPhone('');
+      setPassword('');
+      setConfirmPassword('');
+      setEmailError('');
+      setPhoneError('');
+
+      // Optional: Auto redirect to login
+      setTimeout(() => {
+         router.push('/login');
+      }, 2000);
+      
+    } catch (error: any) {
+      showToast(error.message || "Failed to create account.", true);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -83,7 +194,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
 
       {/* Social Buttons */}
       <div className="mb-6">
-        <Button variant="auth-social" type="button">
+        <Button variant="auth-social" type="button" onClick={handleGoogleAuth} disabled={isLoading}>
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
@@ -108,7 +219,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
       <div className="relative">
         {mode === 'login' ? (
           <section key="login" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); showToast("Signing in..."); }}>
+            <form className="space-y-6" onSubmit={handleLogin}>
               <Input
                 label="Email"
                 placeholder="hello@example.com"
@@ -127,6 +238,8 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                   placeholder="••••••••"
                   required
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   rightElement={
                     <button
                       type="button"
@@ -134,16 +247,14 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                       className="text-on-surface-variant/50 hover:text-primary transition-colors flex items-center"
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
-                      <span className="material-symbols-outlined text-xl">
-                        {showPassword ? "visibility_off" : "visibility"}
-                      </span>
+                      {showPassword ? <MdOutlineVisibilityOff className="text-xl" /> : <MdOutlineVisibility className="text-xl" />}
                     </button>
                   }
                 />
               </div>
               <div>
-                <Button variant="auth-primary" type="submit">
-                  Sign In
+                <Button variant="auth-primary" type="submit" disabled={isLoading}>
+                  {isLoading ? "Signing In..." : "Sign In"}
                 </Button>
               </div>
               <div className="text-center">
@@ -156,12 +267,14 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
           </section>
         ) : (
           <section key="signup" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); showToast("Account created successfully!"); }}>
+            <form className="space-y-6" onSubmit={handleSignup}>
               <Input
                 label="Full Name"
                 placeholder="Sarah Jenkins"
                 required
                 type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
               <Input
                 label="Phone Number"
@@ -187,15 +300,15 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                 placeholder="Create a password"
                 required
                 type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 rightElement={
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="text-on-surface-variant/50 hover:text-primary transition-colors flex items-center"
                   >
-                    <span className="material-symbols-outlined text-xl">
-                      {showPassword ? "visibility_off" : "visibility"}
-                    </span>
+                      {showPassword ? <MdOutlineVisibilityOff className="text-xl" /> : <MdOutlineVisibility className="text-xl" />}
                   </button>
                 }
               />
@@ -204,21 +317,21 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                 placeholder="Repeat your password"
                 required
                 type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 rightElement={
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="text-on-surface-variant/50 hover:text-primary transition-colors flex items-center"
                   >
-                    <span className="material-symbols-outlined text-xl">
-                      {showConfirmPassword ? "visibility_off" : "visibility"}
-                    </span>
+                      {showConfirmPassword ? <MdOutlineVisibilityOff className="text-xl" /> : <MdOutlineVisibility className="text-xl" />}
                   </button>
                 }
               />
               <div>
-                <Button variant="auth-primary" type="submit">
-                  Create Account
+                <Button variant="auth-primary" type="submit" disabled={isLoading}>
+                  {isLoading ? "Creating..." : "Create Account"}
                 </Button>
               </div>
               <div className="text-center">
@@ -233,7 +346,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
       </div>
 
       {/* Toast Notification */}
-      <Toast show={toast.show} message={toast.message} />
+      <Toast show={toast.show} message={toast.message} error={toast.error} />
     </div>
   );
 }

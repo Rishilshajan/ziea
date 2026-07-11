@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 
 import Link from 'next/link';
+import { MdFavorite, MdOutlineFavoriteBorder } from 'react-icons/md';
 
 type ProductCardProps = {
   title: string;
@@ -59,7 +60,11 @@ export default function ProductCard({
           }}
           className={`absolute top-3 right-3 w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all active:scale-90 ${isWished ? 'text-white' : 'text-white/80 hover:text-white'}`}
         >
-          <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: isWished ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
+          {isWished ? (
+            <MdFavorite className="text-[18px]" style={{ color: "var(--color-secondary)" }} />
+          ) : (
+            <MdOutlineFavoriteBorder className="text-[18px]" style={{ color: "var(--color-muted)" }} />
+          )}
         </button>
       </div>
       <div className="space-y-1.5 px-1 mt-2">

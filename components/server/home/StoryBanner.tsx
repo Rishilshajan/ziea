@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MdOutlineArrowForward } from "react-icons/md";
 
 export default function StoryBanner() {
   return (
@@ -17,7 +18,7 @@ export default function StoryBanner() {
           className="inline-flex items-center gap-2 text-secondary font-semibold hover:gap-3 transition-all"
         >
           Read More
-          <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          <MdOutlineArrowForward className="text-sm" />
         </Link>
       </div>
     </section>
