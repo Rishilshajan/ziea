@@ -1,5 +1,5 @@
 import React from 'react';
-import RevealOnScroll from '../../client/ui/RevealOnScroll';
+import RevealOnScroll from '../../ui/RevealOnScroll';
 import Link from 'next/link';
 
 export default function EditorialCTA() {
@@ -17,7 +17,7 @@ export default function EditorialCTA() {
               Shop the Collection
             </button>
           </Link>
-          
+
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
             <div className="flex justify-center items-center"><span className="cormorant italic text-xl">Vogue</span></div>
             <div className="flex justify-center items-center"><span className="cormorant italic text-xl">Travel + Leisure</span></div>

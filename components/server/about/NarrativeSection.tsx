@@ -1,5 +1,5 @@
 import React from 'react';
-import RevealOnScroll from '../../client/ui/RevealOnScroll';
+import RevealOnScroll from '../../ui/RevealOnScroll';
 
 export default function NarrativeSection() {
   return (

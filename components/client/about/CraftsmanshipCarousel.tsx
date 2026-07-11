@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import RevealOnScroll from '../ui/RevealOnScroll';
+import RevealOnScroll from '../../ui/RevealOnScroll';
 
 export default function CraftsmanshipCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -21,16 +21,16 @@ export default function CraftsmanshipCarousel() {
           <h3 className="cormorant text-[#211a15] text-3xl md:text-5xl">Unrivaled Craftsmanship</h3>
         </RevealOnScroll>
       </div>
-      
+
       <RevealOnScroll>
         <div className="relative w-full h-[550px] md:h-[500px]">
           {/* Card 1 */}
           <div className={`absolute top-0 left-0 w-full transition-opacity duration-1000 ${currentIndex === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
             <div className="bg-white rounded-2xl overflow-hidden shadow-[0px_2px_16px_rgba(44,56,41,0.06)] group h-auto min-h-[450px] w-full flex flex-col">
               <div className="h-64 overflow-hidden shrink-0">
-                <img 
-                  alt="Traditional Looms" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                <img
+                  alt="Traditional Looms"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuAko-FQldqkXCWKP6RuDFWx1-fSKrnfs0-byR7m3hhQ4UV2l6Pf-thjznzyxzWz_cCazQATSRt0PSgPMfS5WmdOUVXLg-PxWTS2moY3TBWRK66Sw8TTCtaW7Mn9TMNfJY2LoPlENILbLAuLYY-tg_SK1LfWLElma2NLzKsgAjR2xpVCasMMlFNH7HqLPtnk5utwnfCiueYZ20o5ICJQrOtuQshuP-c9ns8QY1PUGg8ZBDBaEx22y3AK3rWB7ZLnSWduz2oLgA_vJQ4"
                 />
               </div>
@@ -45,9 +45,9 @@ export default function CraftsmanshipCarousel() {
           <div className={`absolute top-0 left-0 w-full transition-opacity duration-1000 ${currentIndex === 1 ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
             <div className="bg-white rounded-2xl overflow-hidden shadow-[0px_2px_16px_rgba(44,56,41,0.06)] group h-auto min-h-[450px] w-full flex flex-col">
               <div className="h-64 overflow-hidden shrink-0">
-                <img 
-                  alt="Natural Fibers" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                <img
+                  alt="Natural Fibers"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgR88qG9r8GV6YSLHaeh8ae3JqGl6S6UgUD5u5aTS1fJRPM-1tmqBD_UqZR3YtAZNV5sp4220u0Cn2CFsp4DpeEsD6i7sgdKb0zKIlo4krFfgMy1jyb7btzFQoHpZtDrYSs3VidROntZybKHOL5TgoCm-TpJZfo56Ir-pcJB8XHVfgkki97Mgx4nf2nABQyPcg4f2y3Vxd86ir_caWXN9xO2w4dKDQdpKcNbwnKXxznnuUP-3uSFDuTRbsd55rsFxy0xxYXtozJI8"
                 />
               </div>

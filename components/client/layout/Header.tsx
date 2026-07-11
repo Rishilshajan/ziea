@@ -13,7 +13,7 @@ export default function Header() {
     { icon: "style", label: "Collections", href: "/collections" },
     { icon: "favorite", label: "Wishlist", href: "#" },
     { icon: "info", label: "About Us", href: "/about-us" },
-    { icon: "mail", label: "Contact Us", href: "#" },
+    { icon: "mail", label: "Contact Us", href: "/contact-us" },
     { icon: "login", label: "Login", href: "#" },
     { icon: "person_add", label: "Sign Up", href: "#" },
   ];
@@ -29,7 +29,7 @@ export default function Header() {
               <Link href="/collections" className="hover:text-primary transition-colors">COLLECTIONS</Link>
               <Link href="/wishlist" className="hover:text-primary transition-colors">WISHLIST</Link>
               <Link href="/about-us" className="hover:text-primary transition-colors">ABOUT US</Link>
-              <Link href="/contact" className="hover:text-primary transition-colors">CONTACT US</Link>
+              <Link href="/contact-us" className="hover:text-primary transition-colors">CONTACT US</Link>
             </nav>
           </div>
 

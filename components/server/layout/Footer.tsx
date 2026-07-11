@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Footer() {
   return (
     <footer className="bg-[#2C3829] text-surface pt-12 pb-20">
-      <div className="max-w-[1400px] mx-auto px-4 lg:px-8 xl:px-12 space-y-12 md:space-y-16">
+      <div className="w-full px-4 xl:px-8 space-y-12 md:space-y-16">
         <div className="flex flex-col lg:flex-row justify-between gap-12 lg:gap-8">
           <div className="space-y-8 lg:w-1/3">
             <Image src="/Ziea_Logo.png" alt="ZIEA" width={400} height={200} className="h-24 w-auto object-contain object-left brightness-0 invert origin-left scale-[2] -ml-4" priority />
