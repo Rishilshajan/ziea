@@ -1,18 +1,24 @@
 import React from 'react';
 import { MdOutlineInventory2, MdOutlineVisibility, MdOutlineGroup, MdOutlineCategory, MdOutlineChevronRight } from "react-icons/md";
 import { Card } from "@/components/ui/Card";
+import { MetricCard } from "@/components/ui/MetricCard";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/utils/supabase/server";
 
 export default async function AdminPage() {
   const supabase = await createClient();
 
-  // Fetch users count
-  const { count: usersCount } = await supabase
+  // Parallelize the user count and auth fetch
+  const usersCountPromise = supabase
     .from('users')
     .select('*', { count: 'exact', head: true });
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const authPromise = supabase.auth.getUser();
+
+  const [countResponse, authResponse] = await Promise.all([usersCountPromise, authPromise]);
+  const { count: usersCount } = countResponse;
+  const user = authResponse.data?.user;
+
   let firstName = "Admin";
   if (user) {
     const { data: profileData } = await supabase
@@ -52,63 +58,32 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      {/* Metrics Grid (2x2) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6 lg:mb-10">
-        {/* Products in Stock */}
-        <Card className="p-6 flex flex-col justify-between aspect-[16/10] md:aspect-auto hover:-translate-y-1 transition-transform cursor-default">
-          <div className="flex justify-between items-start">
-            <div className="bg-[#2C3829]/10 p-3 rounded-lg">
-              <MdOutlineInventory2 className="text-[#2C3829] text-2xl" />
-            </div>
-            <span className="text-[#2C3829]/60 font-label-sm">+12% vs last month</span>
-          </div>
-          <div className="mt-8">
-            <span className="text-[#2C3829] font-jost font-semibold block text-4xl mb-1">1,248</span>
-            <span className="text-[#2C3829]/80 font-label-md uppercase tracking-widest text-xs">Products in Stock</span>
-          </div>
-        </Card>
-
-        {/* Users Viewed */}
-        <Card className="p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform cursor-default">
-          <div className="flex justify-between items-start">
-            <div className="bg-[#2C3829]/10 p-3 rounded-lg">
-              <MdOutlineVisibility className="text-[#2C3829] text-2xl" />
-            </div>
-            <span className="text-[#2C3829]/60 font-label-sm">+4.2k today</span>
-          </div>
-          <div className="mt-8">
-            <span className="text-[#2C3829] font-jost font-semibold block text-4xl mb-1">14,892</span>
-            <span className="text-[#2C3829]/80 font-label-md uppercase tracking-widest text-xs">Users Viewed</span>
-          </div>
-        </Card>
-
-        {/* Customers */}
-        <Card className="p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform cursor-default">
-          <div className="flex justify-between items-start">
-            <div className="bg-[#2C3829]/10 p-3 rounded-lg">
-              <MdOutlineGroup className="text-[#2C3829] text-2xl" />
-            </div>
-            <span className="text-[#2C3829]/60 font-label-sm">Active base</span>
-          </div>
-          <div className="mt-8">
-            <span className="text-[#2C3829] font-jost font-semibold block text-4xl mb-1">{displayCustomersCount.toLocaleString()}</span>
-            <span className="text-[#2C3829]/80 font-label-md uppercase tracking-widest text-xs">Customers</span>
-          </div>
-        </Card>
-
-        {/* Categories */}
-        <Card className="p-6 flex flex-col justify-between hover:-translate-y-1 transition-transform cursor-default">
-          <div className="flex justify-between items-start">
-            <div className="bg-[#2C3829]/10 p-3 rounded-lg">
-              <MdOutlineCategory className="text-[#2C3829] text-2xl" />
-            </div>
-            <span className="text-[#2C3829]/60 font-label-sm">8 New added</span>
-          </div>
-          <div className="mt-8">
-            <span className="text-[#2C3829] font-jost font-semibold block text-4xl mb-1">24</span>
-            <span className="text-[#2C3829]/80 font-label-md uppercase tracking-widest text-xs">Categories</span>
-          </div>
-        </Card>
+      {/* Metrics Grid (4 columns) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 lg:mb-10">
+        <MetricCard 
+          title="Products in Stock" 
+          value="1,248" 
+          subtitle="+12% vs last month" 
+          icon={MdOutlineInventory2} 
+        />
+        <MetricCard 
+          title="Users Viewed" 
+          value="14,892" 
+          subtitle="+4.2k today" 
+          icon={MdOutlineVisibility} 
+        />
+        <MetricCard 
+          title="Customers" 
+          value={displayCustomersCount.toLocaleString()} 
+          subtitle="Active base" 
+          icon={MdOutlineGroup} 
+        />
+        <MetricCard 
+          title="Categories" 
+          value="24" 
+          subtitle="8 New added" 
+          icon={MdOutlineCategory} 
+        />
       </div>
 
       {/* Recent Activity Section */}

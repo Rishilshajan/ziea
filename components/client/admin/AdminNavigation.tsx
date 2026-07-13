@@ -172,7 +172,7 @@ export default function AdminNavigation() {
 
       {/* Mobile Header */}
       <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#F5F0E8] shadow-sm lg:hidden border-b border-[#2C3829]/10">
-        <Button variant="icon" onClick={() => setIsMenuOpen(true)} className="z-10 text-[#2C3829] -ml-2">
+        <Button variant="icon" onClick={() => setIsMenuOpen(true)} className="z-10 text-[#2C3829]">
           <MdMenu className="text-2xl" />
         </Button>
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
