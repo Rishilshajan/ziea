@@ -11,11 +11,20 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     
     // Exchange the code for a session securely on the server
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     
-    if (!error) {
+    if (!error && data?.session?.user) {
+      // Check user role
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', data.session.user.id)
+        .maybeSingle();
+
+      const finalRedirect = (userData?.role === 'Admin') ? '/admin' : next;
+
       // Successfully authenticated, redirect to the intended page cleanly without the code in the URL
-      return NextResponse.redirect(`${origin}${next}`);
+      return NextResponse.redirect(`${origin}${finalRedirect}`);
     }
   }
 
