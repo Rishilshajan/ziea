@@ -16,7 +16,7 @@ interface ExportUsersButtonProps {
 export function ExportUsersButton({ users, adminName }: ExportUsersButtonProps) {
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
-  
+
   const getBase64ImageFromURL = (url: string): Promise<string> => {
     return new Promise((resolve, reject) => {
       var img = new Image();
@@ -41,7 +41,7 @@ export function ExportUsersButton({ users, adminName }: ExportUsersButtonProps) 
     setIsExportingPDF(true);
     try {
       const doc = new jsPDF();
-      
+
       const dateStr = new Date().toLocaleDateString();
       const timeStr = new Date().toLocaleTimeString();
 
@@ -148,22 +148,20 @@ export function ExportUsersButton({ users, adminName }: ExportUsersButtonProps) 
 
   return (
     <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto">
-      <Button 
-        variant="auth-social" 
-        onClick={handleExportPDF} 
+      <Button
+        variant="auth-social"
+        onClick={handleExportPDF}
         disabled={isExportingPDF}
         className="w-full md:!w-auto !py-3 !text-sm px-5 gap-2"
       >
-        <MdOutlinePictureAsPdf className="text-lg" />
         {isExportingPDF ? 'Exporting...' : 'Export PDF'}
       </Button>
-      <Button 
-        variant="auth-primary" 
-        onClick={handleExportExcel} 
+      <Button
+        variant="auth-primary"
+        onClick={handleExportExcel}
         disabled={isExportingExcel}
         className="w-full md:!w-auto !py-3 !text-sm px-5 gap-2"
       >
-        <MdOutlineTableChart className="text-lg" />
         {isExportingExcel ? 'Exporting...' : 'Export Excel'}
       </Button>
     </div>

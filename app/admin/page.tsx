@@ -13,9 +13,13 @@ export default async function AdminPage() {
     .from('users')
     .select('*', { count: 'exact', head: true });
 
+  const categoriesCountPromise = supabase
+    .from('categories')
+    .select('*', { count: 'exact', head: true });
+
   const authPromise = supabase.auth.getUser();
 
-  const [countResponse, authResponse] = await Promise.all([usersCountPromise, authPromise]);
+  const [countResponse, authResponse, categoriesCountResponse] = await Promise.all([usersCountPromise, authPromise, categoriesCountPromise]);
   const { count: usersCount } = countResponse;
   const user = authResponse.data?.user;
 
@@ -32,6 +36,8 @@ export default async function AdminPage() {
   }
 
   const displayCustomersCount = usersCount || 0;
+  const { count: categoriesCount } = categoriesCountResponse;
+  const displayCategoriesCount = categoriesCount || 0;
 
   const dummyActivities = [
     { id: 1, action: 'New product', target: '"Keralite Silk Kimono" (Z-0001)', suffix: 'was added to inventory.', time: '2 mins ago', color: 'bg-[#7A9268]' },
@@ -80,8 +86,8 @@ export default async function AdminPage() {
         />
         <MetricCard 
           title="Categories" 
-          value="24" 
-          subtitle="8 New added" 
+          value={displayCategoriesCount.toLocaleString()} 
+          subtitle="Active segments" 
           icon={MdOutlineCategory} 
         />
       </div>

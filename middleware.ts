@@ -42,18 +42,7 @@ export async function middleware(request: NextRequest) {
       // Not logged in -> redirect to login
       return NextResponse.redirect(new URL('/login?next=/admin', request.url));
     }
-
-    // Check role in database
-    const { data: userData } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (!userData || userData.role !== 'Admin') {
-      // Logged in but not an admin -> redirect to home
-      return NextResponse.redirect(new URL('/', request.url));
-    }
+    // Note: Role check is deferred to layout.tsx to reduce middleware latency.
   }
 
   return response;
