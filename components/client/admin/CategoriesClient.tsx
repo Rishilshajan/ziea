@@ -220,43 +220,90 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
           </p>
         </div>
       ) : (
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((cat) => (
-            <Card key={cat.id} className="bg-white border border-[#d6c3b3]/30 shadow-sm !rounded-[16px] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-[320px]">
-              {/* Image Section (Top Half) */}
-              <div className="relative w-full h-[240px] bg-surface-variant overflow-hidden shrink-0">
-                <img
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}` }}
-                  alt={cat.name}
-                  src={cat.image_url}
-                />
-              </div>
-
-              {/* Content Section (Bottom Half) */}
-              <div className="flex justify-between items-center p-5 flex-1">
-                <div>
-                  <h2 className="font-jost text-xl text-[#2C3829] font-semibold mb-1">{cat.name}</h2>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="auth-primary"
-                    onClick={(e: React.MouseEvent) => { e.preventDefault(); openEditModal(cat); }}
-                    className="!p-0 !w-9 !h-9 flex items-center justify-center !min-w-[2.25rem] !rounded-full"
-                  >
-                    <MdEdit className="text-lg" />
-                  </Button>
-                  <Button
-                    variant="auth-primary"
-                    onClick={(e: React.MouseEvent) => { e.preventDefault(); openDeleteModal(cat); }}
-                    className="!p-0 !w-9 !h-9 flex items-center justify-center !min-w-[2.25rem] !rounded-full"
-                  >
-                    <MdDelete className="text-lg" />
-                  </Button>
-                </div>
+        <section>
+          {/* Mobile View: Horizontal Cards */}
+          <div className="md:hidden">
+            <Card className="!rounded-xl !p-0 border border-[#d6c3b3]/30 overflow-hidden">
+              <div className="divide-y divide-[#d6c3b3]/30">
+                {categories.map((cat) => (
+                  <div key={cat.id} className="p-6 flex items-center justify-between gap-4">
+                    <div className="flex gap-4 items-center">
+                      <div className="w-20 h-24 shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
+                        <img 
+                          src={cat.image_url} 
+                          alt={cat.name} 
+                          className="w-full h-full object-cover" 
+                          style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}` }} 
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h2 className="font-medium text-[#2C3829] font-body-md line-clamp-2 leading-tight">
+                          {cat.name}
+                        </h2>
+                      </div>
+                    </div>
+                    {/* Actions Mobile */}
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e: React.MouseEvent) => { e.preventDefault(); openEditModal(cat); }}
+                        className="w-9 h-9 rounded-full bg-[#2C3829] flex items-center justify-center hover:opacity-90 transition-opacity text-white"
+                      >
+                        <MdEdit className="text-lg" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e: React.MouseEvent) => { e.preventDefault(); openDeleteModal(cat); }}
+                        className="w-9 h-9 rounded-full bg-[#2C3829] flex items-center justify-center hover:opacity-90 transition-opacity text-white"
+                      >
+                        <MdDelete className="text-lg" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </Card>
-          ))}
+          </div>
+
+          {/* Desktop View: Grid */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {categories.map((cat) => (
+              <Card key={cat.id} className="bg-white border border-[#d6c3b3]/30 shadow-sm !rounded-[16px] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-[320px]">
+                {/* Image Section (Top Half) */}
+                <div className="relative w-full h-[240px] bg-surface-variant overflow-hidden shrink-0">
+                  <img
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}` }}
+                    alt={cat.name}
+                    src={cat.image_url}
+                  />
+                </div>
+
+                {/* Content Section (Bottom Half) */}
+                <div className="flex justify-between items-center p-5 flex-1">
+                  <div>
+                    <h2 className="font-jost text-xl text-[#2C3829] font-semibold mb-1">{cat.name}</h2>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="auth-primary"
+                      onClick={(e: React.MouseEvent) => { e.preventDefault(); openEditModal(cat); }}
+                      className="!p-0 !w-9 !h-9 flex items-center justify-center !min-w-[2.25rem] !rounded-full"
+                    >
+                      <MdEdit className="text-lg" />
+                    </Button>
+                    <Button
+                      variant="auth-primary"
+                      onClick={(e: React.MouseEvent) => { e.preventDefault(); openDeleteModal(cat); }}
+                      className="!p-0 !w-9 !h-9 flex items-center justify-center !min-w-[2.25rem] !rounded-full"
+                    >
+                      <MdDelete className="text-lg" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
         </section>
       )}
 

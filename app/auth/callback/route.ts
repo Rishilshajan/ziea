@@ -21,7 +21,27 @@ export async function GET(request: Request) {
         .eq('id', data.session.user.id)
         .maybeSingle();
 
-      const finalRedirect = (userData?.role === 'Admin') ? '/admin' : next;
+      let finalRedirect = next;
+
+      if (userData) {
+        finalRedirect = (userData.role === 'Admin') ? '/admin' : next;
+      } else {
+        // User document doesn't exist (new Google auth user), so create it
+        const fullName = data.session.user.user_metadata?.full_name || data.session.user.user_metadata?.name || '';
+        const nameParts = fullName.trim().split(' ');
+        const firstName = nameParts[0] || 'User';
+        const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+        
+        await supabase.from('users').insert({
+          id: data.session.user.id,
+          first_name: firstName,
+          last_name: lastName,
+          email: data.session.user.email,
+          role: 'Customer',
+        });
+        
+        finalRedirect = next;
+      }
 
       // Successfully authenticated, redirect to the intended page cleanly without the code in the URL
       return NextResponse.redirect(`${origin}${finalRedirect}`);

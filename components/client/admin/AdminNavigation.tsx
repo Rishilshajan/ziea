@@ -119,7 +119,7 @@ export default function AdminNavigation() {
           <p className="font-jost text-[#F5F0E8] font-medium tracking-wider">Admin Portal</p>
         </div>
         
-        <nav className="flex-1 space-y-6 px-2 lg:px-6">
+        <nav className="flex-1 space-y-2 px-2 lg:px-6">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/admin" && pathname.startsWith(link.href));
             return (
@@ -224,7 +224,7 @@ export default function AdminNavigation() {
               </Button>
             </div>
 
-            <nav className="flex-1 space-y-6 px-2">
+            <nav className="flex-1 space-y-2 px-2">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/admin" && pathname.startsWith(link.href));
                 return (

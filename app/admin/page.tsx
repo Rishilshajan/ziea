@@ -8,32 +8,25 @@ import { createClient } from "@/utils/supabase/server";
 export default async function AdminPage() {
   const supabase = await createClient();
 
-  // Parallelize the user count and auth fetch
-  const usersCountPromise = supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true });
+  // getSession is fast and local (JWT decode). layout.tsx already did the secure getUser() check.
+  const { data: { session } } = await supabase.auth.getSession();
+  const userId = session?.user?.id;
 
-  const categoriesCountPromise = supabase
-    .from('categories')
-    .select('*', { count: 'exact', head: true });
+  // Parallelize ALL queries into a single batch
+  const usersCountPromise = supabase.from('users').select('*', { count: 'exact', head: true });
+  const categoriesCountPromise = supabase.from('categories').select('*', { count: 'exact', head: true });
+  const profilePromise = userId 
+    ? supabase.from('users').select('first_name').eq('id', userId).maybeSingle()
+    : Promise.resolve({ data: null });
 
-  const authPromise = supabase.auth.getUser();
+  const [countResponse, categoriesCountResponse, profileResponse] = await Promise.all([
+    usersCountPromise, 
+    categoriesCountPromise, 
+    profilePromise
+  ]);
 
-  const [countResponse, authResponse, categoriesCountResponse] = await Promise.all([usersCountPromise, authPromise, categoriesCountPromise]);
   const { count: usersCount } = countResponse;
-  const user = authResponse.data?.user;
-
-  let firstName = "Admin";
-  if (user) {
-    const { data: profileData } = await supabase
-      .from('users')
-      .select('first_name')
-      .eq('id', user.id)
-      .maybeSingle();
-    if (profileData?.first_name) {
-      firstName = profileData.first_name;
-    }
-  }
+  const firstName = profileResponse.data?.first_name || "Admin";
 
   const displayCustomersCount = usersCount || 0;
   const { count: categoriesCount } = categoriesCountResponse;

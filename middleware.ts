@@ -32,13 +32,15 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired - required for Server Components
-  const { data: { user } } = await supabase.auth.getUser();
+  // Use getSession instead of getUser in middleware to prevent network timeouts.
+  // getSession decodes the JWT locally, making it infinitely faster and avoiding 
+  // the 'fetch failed' Edge Runtime crash you are experiencing.
+  const { data: { session } } = await supabase.auth.getSession();
 
   const isProtectedAdminRoute = request.nextUrl.pathname.startsWith('/admin');
 
   if (isProtectedAdminRoute) {
-    if (!user) {
+    if (!session) {
       // Not logged in -> redirect to login
       return NextResponse.redirect(new URL('/login?next=/admin', request.url));
     }
