@@ -32,7 +32,7 @@ export default async function EditProductPage(props: { params: Promise<{ id: str
   }
 
   return (
-    <main className="min-h-screen pt-24 lg:pt-10 pb-20 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen pt-[88px] lg:pt-6 pb-20 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
         <h1 className="font-jost text-2xl lg:text-3xl text-[#2C3829] mb-2 font-bold">Edit Product</h1>
         <p className="font-body-md text-[#2C3829]/70 max-w-2xl">

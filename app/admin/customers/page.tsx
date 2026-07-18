@@ -22,8 +22,10 @@ export default async function CustomersPage() {
 
   const totalUsers = users ? users.length : 0;
 
-  // Active users - mock logic based on users length for now
-  const activeUsers = users ? Math.floor(users.length * 0.7) : 0;
+  // Active users - users who logged in within the last 15 days
+  const fifteenDaysAgo = new Date();
+  fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+  const activeUsers = users ? users.filter(u => u.last_login_at && new Date(u.last_login_at) > fifteenDaysAgo).length : 0;
 
   // New (30d) - users created in last 30 days
   const thirtyDaysAgo = new Date();
@@ -46,7 +48,7 @@ export default async function CustomersPage() {
   }
 
   return (
-    <main className="pt-24 lg:pt-10 px-6 lg:px-10 max-w-7xl mx-auto pb-6 lg:pb-10 min-h-screen">
+    <main className="pt-[88px] lg:pt-6 px-6 lg:px-10 max-w-7xl mx-auto pb-6 lg:pb-10 min-h-screen">
       <CustomersTableWithSearch initialUsers={users || []} adminName={adminName}>
         {/* Stats Overview (Bento Style) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 lg:mb-10">
@@ -69,10 +71,10 @@ export default async function CustomersPage() {
             icon={MdOutlineStarBorder}
           />
           <MetricCard
-            title="Retention"
-            value={retentionRate}
-            subtitle="Avg retention"
-            icon={MdOutlineTrendingUp}
+            title="Wishlist Activity"
+            value="42%"
+            subtitle="Added items to wishlist"
+            icon={MdOutlineStarBorder}
           />
         </div>
       </CustomersTableWithSearch>

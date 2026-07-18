@@ -145,6 +145,14 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
 
         if (updateError) throw updateError;
         setCategories(categories.map(c => c.id === activeCategory.id ? data : c));
+
+        // Log activity
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from('activity_logs').insert({
+          user_id: user?.id,
+          type: 'Category Updated',
+          description: `Admin updated category "${name}"`
+        });
       } else {
         // Add
         const { data, error: insertError } = await supabase
@@ -155,6 +163,14 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
 
         if (insertError) throw insertError;
         setCategories([...categories, data]);
+
+        // Log activity
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from('activity_logs').insert({
+          user_id: user?.id,
+          type: 'Category Added',
+          description: `Admin added category "${name}"`
+        });
       }
       setIsModalOpen(false);
       showToast(activeCategory ? 'Category updated successfully!' : 'Category added successfully!');
@@ -178,6 +194,15 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
 
       if (deleteError) throw deleteError;
       setCategories(categories.filter(c => c.id !== activeCategory.id));
+      
+      // Log activity
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from('activity_logs').insert({
+        user_id: user?.id,
+        type: 'Category Deleted',
+        description: `Admin deleted category "${activeCategory.name}"`
+      });
+
       setIsDeleteModalOpen(false);
       showToast('Category deleted successfully!');
       router.refresh();

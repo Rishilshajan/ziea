@@ -82,6 +82,13 @@ export function ProductsTableWithFilters({ initialProducts }: ProductsTableWithF
         
       if (error) throw error;
       
+      const { data: { user } } = await supabase.auth.getUser();
+      await supabase.from('activity_logs').insert({
+        user_id: user?.id,
+        type: 'Product Deleted',
+        description: `Admin deleted product "${productToDelete.name}"`
+      });
+
       setProducts(products.filter(p => p.id !== productToDelete.id));
       showToast(`Product "${productToDelete.name}" deleted successfully.`);
     } catch (err: any) {

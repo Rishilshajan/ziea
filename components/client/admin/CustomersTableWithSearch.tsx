@@ -5,6 +5,7 @@ import { MdSearch, MdMoreHoriz, MdChevronLeft, MdChevronRight, MdOutlineGroup, M
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import { Select } from '@/components/ui/Select';
 import { ExportUsersButton } from '@/components/client/admin/ExportUsersButton';
 
 interface CustomersTableWithSearchProps {
@@ -15,48 +16,93 @@ interface CustomersTableWithSearchProps {
 
 export function CustomersTableWithSearch({ initialUsers, adminName, children }: CustomersTableWithSearchProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const filteredUsers = initialUsers.filter(user => {
+    // 1. Search filter
     const searchLower = searchTerm.toLowerCase();
     const fullName = `${user.first_name || ''} ${user.last_name || ''}`.toLowerCase();
     const email = (user.email || '').toLowerCase();
-    
-    return fullName.includes(searchLower) || email.includes(searchLower);
+    const matchesSearch = fullName.includes(searchLower) || email.includes(searchLower);
+
+    // 2. Dropdown filter
+    let matchesDropdown = true;
+    if (filter === 'active') {
+      const fifteenDaysAgo = new Date();
+      fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+      matchesDropdown = user.last_login_at && new Date(user.last_login_at) > fifteenDaysAgo;
+    } else if (filter === 'new') {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      matchesDropdown = user.created_at && new Date(user.created_at) > thirtyDaysAgo;
+    } else if (filter === 'wishlist') {
+      // Mock logic: since wishlist isn't in the DB yet, we just show Customers
+      matchesDropdown = user.role === 'Customer';
+    }
+
+    return matchesSearch && matchesDropdown;
   });
 
-  // Reset to page 1 when search changes
+  // Reset to page 1 when search or filter changes
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm]);
+  }, [searchTerm, filter]);
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
 
+  const filterOptions = [
+    { value: 'active', label: 'Active Users (15d)' },
+    { value: 'new', label: 'New Users (30d)' },
+    { value: 'wishlist', label: 'Wishlist Activity' },
+  ];
+
   return (
     <>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 lg:mb-10 w-full">
-        <h1 className="font-jost font-semibold text-2xl lg:text-3xl text-[#2C3829]">Customers</h1>
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
-          {/* Search Bar */}
-          <div className="w-full md:w-80 group">
-            <Input 
-              leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
-              placeholder="Search customers..." 
-              type="text" 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          {/* Export Buttons */}
+        <div>
+          <h1 className="font-jost font-semibold text-2xl lg:text-3xl text-[#2C3829] mb-2">Customers</h1>
+          <p className="font-body-md lg:font-body-lg text-[#2C3829]/70">
+            View and manage your registered customers and their activity.
+          </p>
+        </div>
+        
+        {/* Export Buttons */}
+        <div className="flex items-center">
           <ExportUsersButton users={filteredUsers} adminName={adminName} />
         </div>
       </div>
 
+      {/* Stats Cards */}
       {children}
+
+      {/* Full-width Search and Filter Bar */}
+      <div className="mt-6 mb-6 flex flex-col md:flex-row gap-4 w-full">
+        {/* Search Bar */}
+        <div className="w-full md:flex-1">
+          <Input 
+            leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
+            placeholder="Search customers by name or email..." 
+            type="text" 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        {/* Filter Dropdown */}
+        <div className="w-full md:w-64 z-10">
+          <Select 
+            label=""
+            placeholder="All Customers"
+            value={filter}
+            onChange={setFilter}
+            options={filterOptions}
+          />
+        </div>
+      </div>
 
       {/* Customer List Section */}
       <section className="mt-6 lg:mt-10">

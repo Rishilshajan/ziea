@@ -36,7 +36,9 @@ export function Select({ label, value, onChange, options, placeholder = "Select 
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <label className="font-jost text-sm font-medium text-[#2C3829] mb-1 block">{label}</label>
+      {label && (
+        <label className="font-jost text-sm font-medium text-[#2C3829] mb-1 block">{label}</label>
+      )}
       <div 
         className="w-full px-4 py-3 bg-white border border-[#d6c3b3] rounded-xl font-jost font-normal text-base text-[#2C3829] transition-all outline-none focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/5 hover:border-primary/50 duration-200 cursor-pointer flex justify-between items-center"
         onClick={() => setIsOpen(!isOpen)}

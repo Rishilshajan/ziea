@@ -10,6 +10,7 @@ CREATE TABLE public.users (
     phone TEXT,
     password TEXT NOT NULL, -- Note: Store hashed passwords only if managing auth outside Supabase
     role TEXT DEFAULT 'Customer' CHECK (role IN ('Customer', 'Admin')),
+    last_login_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
@@ -41,17 +42,34 @@ USING (
 -- 5. Create a function to automatically copy users from Supabase Auth to our public.users table
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_first_name TEXT;
+  v_last_name TEXT;
+  v_full_name TEXT;
 BEGIN
+  v_first_name := COALESCE(NEW.raw_user_meta_data->>'first_name', '');
+  v_last_name := COALESCE(NEW.raw_user_meta_data->>'last_name', '');
+  
+  -- If first_name is missing (e.g. Google OAuth), try parsing full_name
+  IF v_first_name = '' THEN
+    v_full_name := COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', '');
+    IF v_full_name != '' THEN
+      v_first_name := split_part(v_full_name, ' ', 1);
+      v_last_name := trim(substring(v_full_name from length(v_first_name) + 2));
+    END IF;
+  END IF;
+
   INSERT INTO public.users (id, first_name, last_name, email, phone, password, role)
   VALUES (
     NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
+    v_first_name,
+    v_last_name,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'phone', ''),
     '', -- Supabase Auth handles the real hashed password internally
     'Customer' -- Default role
   );
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

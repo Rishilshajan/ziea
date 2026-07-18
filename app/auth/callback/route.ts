@@ -17,13 +17,23 @@ export async function GET(request: Request) {
       // Check user role
       const { data: userData } = await supabase
         .from('users')
-        .select('role')
+        .select('first_name, last_name, role')
         .eq('id', data.session.user.id)
         .maybeSingle();
 
       let finalRedirect = next;
 
       if (userData) {
+        // Update last login
+        await supabase.from('users').update({ last_login_at: new Date().toISOString() }).eq('id', data.session.user.id);
+        
+        // Log activity
+        await supabase.from('activity_logs').insert({
+          user_id: data.session.user.id,
+          type: 'Customer Login',
+          description: `Customer ${userData.first_name || ''} ${userData.last_name || ''}`.trim() + ' logged in'
+        });
+        
         finalRedirect = (userData.role === 'Admin') ? '/admin' : next;
       } else {
         // User document doesn't exist (new Google auth user), so create it

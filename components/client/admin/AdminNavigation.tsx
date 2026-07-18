@@ -7,13 +7,14 @@ import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { Button } from '@/components/ui/Button';
-import { 
-  MdDashboard, 
-  MdInventory2, 
-  MdGroup, 
-  MdMenu, 
-  MdLogout, 
+import {
+  MdDashboard,
+  MdInventory2,
+  MdGroup,
+  MdMenu,
+  MdLogout,
   MdCategory,
+  MdHistory,
   MdClose
 } from 'react-icons/md';
 
@@ -33,7 +34,7 @@ export default function AdminNavigation() {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
-  
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -99,38 +100,38 @@ export default function AdminNavigation() {
     { href: "/admin/products", icon: <MdInventory2 className="text-xl" />, label: "Products" },
     { href: "/admin/categories", icon: <MdCategory className="text-xl" />, label: "Categories" },
     { href: "/admin/customers", icon: <MdGroup className="text-xl" />, label: "Customers" },
+    { href: "/admin/activity", icon: <MdHistory className="text-xl" />, label: "Activity" },
   ];
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-[60] flex-col py-6 lg:py-10 bg-[#2C3829] h-full w-72 shadow-xl hidden lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-[60] flex-col pt-6 pb-6 lg:pt-6 lg:pb-10 bg-[#2C3829] h-full w-72 shadow-xl hidden lg:flex">
         <div className="px-6 lg:px-10 mb-6 flex flex-col items-center">
           <div className="w-full flex justify-center mb-4">
-            <Image 
-              src="/Ziea_Splash.png" 
-              alt="ZIEA Logo" 
-              width={80} 
-              height={80} 
-              className="w-20 h-auto object-contain" 
-              priority 
+            <Image
+              src="/Ziea_Splash.png"
+              alt="ZIEA Logo"
+              width={80}
+              height={80}
+              className="w-20 h-auto object-contain"
+              priority
             />
           </div>
           <p className="font-jost text-[#F5F0E8] font-medium tracking-wider">Admin Portal</p>
         </div>
-        
+
         <nav className="flex-1 space-y-2 px-2 lg:px-6">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/admin" && pathname.startsWith(link.href));
             return (
-              <Link 
+              <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 font-jost tracking-wide ${
-                  isActive 
-                    ? "bg-[#647b53] text-[#f9ffed] font-bold shadow-sm" 
+                className={`rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 font-jost tracking-wide ${isActive
+                    ? "bg-[#647b53] text-[#f9ffed] font-bold shadow-sm"
                     : "text-[#d6c3b3] hover:bg-[#d6c3b3]/10 hover:text-white"
-                }`}
+                  }`}
               >
                 {link.icon}
                 <span>{link.label}</span>
@@ -141,7 +142,7 @@ export default function AdminNavigation() {
 
         <div className="mt-auto px-2 lg:px-6 pt-6 border-t border-[#d6c3b3]/20">
           <div className="mb-6 px-4 flex items-center gap-4">
-             {user && profile ? (
+            {user && profile ? (
               <>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-jost font-medium text-sm shadow-sm ${getAvatarColor()}`}>
                   {getInitials()}
@@ -159,8 +160,8 @@ export default function AdminNavigation() {
               <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse"></div>
             )}
           </div>
-          
-          <button 
+
+          <button
             onClick={() => setIsLogoutModalOpen(true)}
             className="text-[#d6c3b3] hover:bg-white/5 hover:text-white rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 w-full text-left font-jost tracking-wide"
           >
@@ -176,20 +177,20 @@ export default function AdminNavigation() {
           <MdMenu className="text-2xl" />
         </Button>
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-          <Image 
-            src="/Ziea_Logo.png" 
-            alt="ZIEA Logo" 
-            width={300} 
-            height={150} 
+          <Image
+            src="/Ziea_Logo.png"
+            alt="ZIEA Logo"
+            width={300}
+            height={150}
             className="h-16 w-auto object-contain scale-[1.8] pointer-events-auto"
-            priority 
+            priority
           />
         </div>
         <div className="flex items-center gap-3 z-10">
           {user && profile ? (
-             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-jost font-medium text-xs shadow-sm ${getAvatarColor()}`}>
-               {getInitials()}
-             </div>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-jost font-medium text-xs shadow-sm ${getAvatarColor()}`}>
+              {getInitials()}
+            </div>
           ) : (
             <div className="w-8 h-8 rounded-full bg-[#2C3829]/20 animate-pulse"></div>
           )}
@@ -206,12 +207,12 @@ export default function AdminNavigation() {
           <div className="relative w-72 bg-[#2C3829] h-full shadow-2xl flex flex-col pt-6 transform transition-transform animate-in slide-in-from-left duration-300">
             <div className="px-6 flex justify-center mb-6 relative">
               <div className="flex flex-col items-center gap-4">
-                <Image 
-                  src="/Ziea_Splash.png" 
-                  alt="ZIEA Logo" 
-                  width={64} 
-                  height={64} 
-                  className="w-16 h-auto object-contain" 
+                <Image
+                  src="/Ziea_Splash.png"
+                  alt="ZIEA Logo"
+                  width={64}
+                  height={64}
+                  className="w-16 h-auto object-contain"
                 />
                 <p className="font-jost text-[#F5F0E8] font-medium tracking-wider">Admin Portal</p>
               </div>
@@ -228,15 +229,14 @@ export default function AdminNavigation() {
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/admin" && pathname.startsWith(link.href));
                 return (
-                  <Link 
+                  <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 font-jost tracking-wide ${
-                      isActive 
-                        ? "bg-[#647b53] text-[#f9ffed] font-bold" 
+                    className={`rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 font-jost tracking-wide ${isActive
+                        ? "bg-[#647b53] text-[#f9ffed] font-bold"
                         : "text-[#d6c3b3] hover:bg-white/5 hover:text-white"
-                    }`}
+                      }`}
                   >
                     {link.icon}
                     <span>{link.label}</span>
@@ -247,7 +247,7 @@ export default function AdminNavigation() {
 
             <div className="mt-auto px-2 pb-6 pt-6 border-t border-[#d6c3b3]/20">
               <div className="mb-6 px-4 flex items-center gap-4">
-                 {user && profile ? (
+                {user && profile ? (
                   <>
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-jost font-medium text-sm shadow-sm ${getAvatarColor()}`}>
                       {getInitials()}
@@ -266,7 +266,7 @@ export default function AdminNavigation() {
                 )}
               </div>
 
-              <button 
+              <button
                 onClick={() => setIsLogoutModalOpen(true)}
                 className="text-[#d6c3b3] hover:bg-white/5 hover:text-white rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 w-full text-left font-jost tracking-wide"
               >

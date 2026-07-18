@@ -258,12 +258,26 @@ export default function AddProductForm({ categories = [], initialData }: { categ
         badges: productBadge ? [productBadge] : []
       };
 
+      const { data: { user } } = await supabase.auth.getUser();
+
       if (initialData?.id) {
         const { error } = await supabase.from('products').update(payload).eq('id', initialData.id);
         if (error) throw error;
+
+        await supabase.from('activity_logs').insert({
+          user_id: user?.id,
+          type: 'Product Updated',
+          description: `Admin updated product "${name}"`
+        });
       } else {
         const { error } = await supabase.from('products').insert([payload]);
         if (error) throw error;
+
+        await supabase.from('activity_logs').insert({
+          user_id: user?.id,
+          type: 'Product Added',
+          description: `Admin added product "${name}"`
+        });
       }
 
       showToast(`Product ${isDraft ? 'saved as draft' : 'published'} successfully!`, false);

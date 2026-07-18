@@ -97,11 +97,22 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
 
       // Check role and redirect
       if (data.user) {
+        // Update last login
+        await supabase.from('users').update({ last_login_at: new Date().toISOString() }).eq('id', data.user.id);
+
         const { data: profile } = await supabase
           .from('users')
-          .select('role')
+          .select('first_name, last_name, role')
           .eq('id', data.user.id)
           .single();
+
+        if (profile) {
+          await supabase.from('activity_logs').insert({
+            user_id: data.user.id,
+            type: 'Customer Login',
+            description: `Customer ${profile.first_name || ''} ${profile.last_name || ''}`.trim() + ' logged in'
+          });
+        }
 
         if (profile?.role === 'Admin') {
           router.push('/admin');
