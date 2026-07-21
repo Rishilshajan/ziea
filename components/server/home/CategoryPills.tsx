@@ -1,52 +1,97 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ScrollArea } from "../../ui/ScrollArea";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
+import { ScrollArea } from "../../ui/ScrollArea";
+
+interface Category {
+  id: string;
+  name: string;
+  image_url: string;
+}
 
 export default function CategoryPills() {
   const supabase = createClient();
-  const [categories, setCategories] = useState<any[]>([
-    { image_url: "https://images.unsplash.com/photo-1551232864-3f0890e580d9?w=500&q=80", name: "Nightwear" },
-    { image_url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80", name: "Loungewear" },
-    { image_url: "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=500&q=80", name: "Accessories" },
-    { image_url: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=500&q=80", name: "Home" },
-  ]);
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data } = await supabase
-        .from('categories')
-        .select('*')
-        .order('created_at', { ascending: true });
-      
-      if (data && data.length > 0) {
-        setCategories(data);
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id, name, image_url")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching categories:", error);
+      } else {
+        setCategories(data ?? []);
       }
+
+      setLoading(false);
     };
+
     fetchCategories();
   }, [supabase]);
 
   return (
-    <section className="pt-4 pb-8 md:pt-8 md:pb-16 px-margin-mobile">
-      <h3 className="cormorant text-3xl text-primary-dark italic mb-8">Our Categories</h3>
-      <ScrollArea className="gap-6 pb-2">
-        {categories.map((cat, i) => (
-          <div key={cat.id || i} className="flex flex-col items-center gap-3 min-w-[80px]">
-            <div className="w-20 h-20 rounded-full overflow-hidden border border-border bg-muted/20 shrink-0 relative">
-              <Image 
-                src={cat.image_url} 
-                alt={cat.name} 
-                fill 
-                className="object-cover"
-                sizes="80px"
-              />
+    <section className="py-6">
+      {/* Heading */}
+      <div className="px-margin-mobile">
+        <h3 className="cormorant text-3xl italic text-primary-dark mb-8">
+          Our Categories
+        </h3>
+      </div>
+
+      {/* Loading */}
+      {loading ? (
+        <ScrollArea className="gap-6 pl-5 pr-5 pb-2">
+          {[...Array(5)].map((_, index) => (
+            <div
+              key={index}
+              className="w-28 shrink-0 flex flex-col items-center gap-3 animate-pulse"
+            >
+              <div className="h-28 w-28 rounded-full bg-muted/60" />
+              <div className="h-4 w-20 rounded bg-muted/60" />
             </div>
-            <span className="font-label-sm text-text whitespace-nowrap">{cat.name}</span>
+          ))}
+        </ScrollArea>
+      ) : categories.length > 0 ? (
+        /* Categories */
+        <ScrollArea className="gap-6 pl-5 pr-5 pb-2">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="w-28 shrink-0 flex flex-col items-center gap-3"
+            >
+              <div className="relative h-28 w-28 overflow-hidden rounded-full border border-border bg-muted/20">
+                <Image
+                  src={category.image_url}
+                  alt={category.name}
+                  fill
+                  className="object-cover"
+                  sizes="112px"
+                />
+              </div>
+
+              <span className="font-label-sm text-text whitespace-nowrap text-center">
+                {category.name}
+              </span>
+            </div>
+          ))}
+        </ScrollArea>
+      ) : (
+        /* Empty State */
+        <div className="px-margin-mobile py-8 text-center">
+          <div className="rounded-xl border border-border bg-muted/10 px-6 py-8">
+            <p className="text-base font-medium text-primary-dark">
+              No categories available
+            </p>
           </div>
-        ))}
-      </ScrollArea>
+        </div>
+      )}
     </section>
   );
 }

@@ -3,7 +3,7 @@
 @theme inline {
   --font-jost: "Jost", sans-serif;
   --font-cormorant: "Cormorant Garamond", serif;
-  
+
   --color-primary: #7A9268;
   --color-primary-dark: #2C3829;
   --color-primary-light: #A8BC9A;
@@ -92,13 +92,21 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fade-in {
@@ -106,8 +114,15 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(20px, -20px); }
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(20px, -20px);
+  }
 }
 
 .float-slow {
@@ -115,8 +130,15 @@
 }
 
 @keyframes floatReverse {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(-30px, 15px); }
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(-30px, 15px);
+  }
 }
 
 .float-reverse {
@@ -127,3 +149,21 @@
   transition: opacity 0.8s ease-in-out;
 }
 
+.rich-text-content ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.rich-text-content b,
+.rich-text-content strong {
+  font-weight: 600;
+}
+
+.rich-text-content i,
+.rich-text-content em {
+  font-style: italic;
+}
+
+.rich-text-content u {
+  text-decoration: underline;
+}

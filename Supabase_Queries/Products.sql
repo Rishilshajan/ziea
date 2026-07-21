@@ -57,12 +57,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Note: Ensure Row Level Security (RLS) is configured appropriately in the Supabase Dashboard
--- based on your public access requirements (e.g. public can select published products).
+-- 6. Enable Row Level Security (RLS) and grant public read access to published products
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
+-- Policy for Public / Anon visitors to view published products
+DROP POLICY IF EXISTS "Allow public read access to published products" ON products;
+CREATE POLICY "Allow public read access to published products" ON products
+  FOR SELECT
+  TO anon, authenticated
+  USING (is_published = true AND status = 'published');
 
--- 1. Add the badges array column
-ALTER TABLE products ADD COLUMN badges text[] DEFAULT '{}';
+-- Policy for Admin users to have full access (all operations)
+DROP POLICY IF EXISTS "Allow admin full access to products" ON products;
+CREATE POLICY "Allow admin full access to products" ON products
+  FOR ALL
+  TO authenticated
+  USING (true)
+  WITH CHECK (true);
 
--- 2. Add the status column (with draft, published, and hidden as the allowed states)
-ALTER TABLE products ADD COLUMN status text DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'hidden'));

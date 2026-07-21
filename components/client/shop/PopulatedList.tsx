@@ -31,7 +31,7 @@ export default function PopulatedList({ items, type }: PopulatedListProps) {
     <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 ${type === 'wishlist' ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
       {items.map((item) => (
         <div key={item.id} className="flex flex-col group cursor-pointer relative">
-          <div className="relative overflow-hidden rounded-xl bg-surface-container shadow-[0px_2px_16px_rgba(44,56,41,0.08)] aspect-[3/4] mb-4">
+          <div className="relative overflow-hidden rounded-xl bg-surface-container shadow-[0px_2px_16px_rgba(44,56,41,0.08)] aspect-[4/5] mb-4">
             <Image 
               src={item.image} 
               alt={item.title} 

@@ -5,9 +5,14 @@ interface ScrollAreaProps {
   className?: string;
 }
 
-export function ScrollArea({ children, className = "" }: ScrollAreaProps) {
+export function ScrollArea({
+  children,
+  className = "",
+}: ScrollAreaProps) {
   return (
-    <div className={`flex overflow-x-auto hide-scrollbar ${className}`}>
+    <div
+      className={`flex flex-nowrap overflow-x-auto overflow-y-hidden hide-scrollbar ${className}`}
+    >
       {children}
     </div>
   );

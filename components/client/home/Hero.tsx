@@ -1,19 +1,57 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { MdOutlineChevronRight } from "react-icons/md";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 import { Button } from "../../ui/Button";
+
+interface SlideData {
+  image: string;
+  subHeadline: string;
+}
 
 export default function Hero() {
   const bgRef = useRef<HTMLDivElement>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const router = useRouter();
+  const supabase = createClient();
 
-  const heroImages = [
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuAniSGiKPmmlLxVwMjBMEyjkPRSreeNOfkLxIDAsiWu4inboYwYHR5NdwZ5-3mZF92_pjr_CiBTt-OlWgjOLMfhJ3b1MAzpzWz6QKspRlagrFpweDcm3jV3s11W0FXM-OFHkrHGv189dAHLRH2XHsK2ikJMfPIkavF-QVOKxUrec2nhyT6Rz1DNTdLmY7Dddq9DaEBpYMDSvldMmRD9tUozkma4vqM8M2_WJ_tsGvNRTzEYwdhTBJCYtdcw5sh3wrq9OjVhJziMoKA",
-    "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80",
-    "https://images.unsplash.com/photo-1434389678232-0545a90962b1?w=1200&q=80",
-    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80"
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+      setIsAuthLoading(false);
+    };
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
+  const slides: SlideData[] = [
+    {
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAniSGiKPmmlLxVwMjBMEyjkPRSreeNOfkLxIDAsiWu4inboYwYHR5NdwZ5-3mZF92_pjr_CiBTt-OlWgjOLMfhJ3b1MAzpzWz6QKspRlagrFpweDcm3jV3s11W0FXM-OFHkrHGv189dAHLRH2XHsK2ikJMfPIkavF-QVOKxUrec2nhyT6Rz1DNTdLmY7Dddq9DaEBpYMDSvldMmRD9tUozkma4vqM8M2_WJ_tsGvNRTzEYwdhTBJCYtdcw5sh3wrq9OjVhJziMoKA",
+      subHeadline: "Clothes designed for women who like their style simple, natural, and effortless.",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80",
+      subHeadline: "Clothes that don't try too hard - they just fit, move, and feel right.",
+    },
+    {
+      image: "https://images.unsplash.com/photo-1434389678232-0545a90962b1?w=1200&q=80",
+      subHeadline: "Styles for women who show up as they are - clear, confident, and composed.",
+    },
+  ];
+
+  const headlines = [
+    "Ziea - Style that feels just right.",
+    "Ziea - Style that feels natural.",
+    "Ziea - The Evolution of SHE!",
   ];
 
   useEffect(() => {
@@ -29,44 +67,111 @@ export default function Hero() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex: number) => (prevIndex + 1) % heroImages.length);
+      setCurrentImageIndex((prevIndex: number) => (prevIndex + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [heroImages.length]);
+  }, [slides.length]);
+
+  const handleShopNow = () => {
+    if (isLoggedIn) {
+      router.push("/cart");
+    } else {
+      router.push("/login");
+    }
+  };
+
+  const handleViewCollection = () => {
+    const collectionsSection = document.getElementById("collections");
+    if (collectionsSection) {
+      collectionsSection.scrollIntoView({ behavior: "smooth" });
+    } else {
+      router.push("/collections");
+    }
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
+  const currentSlide = slides[currentImageIndex];
+  const currentHeadline = headlines[currentImageIndex % headlines.length];
 
   return (
-    <section className="relative w-full h-[400px] md:h-[600px] flex flex-col justify-center items-center px-margin-mobile text-center overflow-hidden bg-primary">
-      <div className="absolute inset-0 opacity-40 mix-blend-overlay transition-opacity duration-1000">
+    <section
+      id="hero"
+      className="relative w-full h-[450px] md:h-[500px] lg:h-[550px] flex flex-col justify-center items-center text-center overflow-hidden"
+    >
+      {/* Background Image with Parallax */}
+      <div className="absolute inset-0 transition-opacity duration-1000">
         <div
           ref={bgRef}
-          className="bg-cover bg-center w-full h-full transition-all duration-1000 ease-in-out"
-          title="A cinematic, high-fashion lifestyle shot."
+          className="bg-cover bg-center w-full h-[120%] transition-all duration-1000 ease-in-out"
           style={{
-            backgroundImage: `url('${heroImages[currentImageIndex]}')`,
+            backgroundImage: `url('${currentSlide.image}')`,
           }}
         />
+        <div className="absolute inset-0 bg-[#2C3829]/50" />
       </div>
-      <div className="relative z-10 space-y-6 max-w-2xl">
-        <h2 className="cormorant text-5xl md:text-7xl font-light text-on-primary italic">
-          New Collection — Kerala Edition
-        </h2>
-        <p className="font-body-md text-on-primary/90 leading-relaxed max-w-md mx-auto">
-          Discover the intersection of natural heritage and everyday luxury with our latest handcrafted linen series.
+
+      {/* Content */}
+      <div className="relative z-10 space-y-4 max-w-2xl px-6 md:px-10">
+        {/* Headline - Cormorant Garamond */}
+        <h1
+          className="text-3xl md:text-5xl lg:text-6xl font-light text-[#F5F0E8] leading-tight transition-all duration-700"
+          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        >
+          <>
+            <span className="italic">Ziea</span>
+            <span className="not-italic"> - </span>
+            <span className="italic">
+              {currentHeadline.replace(/^Ziea - /, "")}
+            </span>
+          </>
+        </h1>
+
+        {/* Sub-headline - Jost */}
+        <p
+          className="text-sm md:text-base text-[#F5F0E8]/85 leading-relaxed max-w-lg mx-auto transition-all duration-700"
+          style={{ fontFamily: "'Jost', sans-serif" }}
+        >
+          {currentSlide.subHeadline}
         </p>
-        <div className="flex justify-center">
-          <Button variant="primary">
-            Explore Now
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+          <Button
+            variant="auth-primary"
+            onClick={handleShopNow}
+            disabled={isAuthLoading}
+            className="sm:w-[260px]"
+          >
+            {isAuthLoading ? "Loading..." : "Shop Now"}
+          </Button>
+
+          <Button
+            variant="auth-social"
+            onClick={handleViewCollection}
+            className="sm:w-[260px] !bg-transparent !border-[#F5F0E8] !text-[#F5F0E8] hover:!bg-white/10"
+          >
+            View Collection
           </Button>
         </div>
       </div>
-      
-      {/* Next Image Button */}
-      <button 
-        onClick={() => setCurrentImageIndex((prevIndex: number) => (prevIndex + 1) % heroImages.length)}
-        className="absolute bottom-6 z-20 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/40 transition-colors border border-white/30"
-      >
-        <MdOutlineChevronRight className="text-white" />
-      </button>
+
+      {/* Slide Navigation Dots */}
+      <div className="absolute bottom-6 z-20 flex gap-2">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentImageIndex
+              ? 'bg-[#F5F0E8] w-6'
+              : 'bg-[#F5F0E8]/40 hover:bg-[#F5F0E8]/60'
+              }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </section>
   );
 }

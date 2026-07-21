@@ -38,7 +38,7 @@ export default function ProductCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative overflow-hidden rounded-xl bg-[#f9ebe1] product-card-shadow aspect-[3/4] mb-4">
+      <div className="relative overflow-hidden rounded-xl bg-[#f9ebe1] product-card-shadow aspect-[4/5] mb-4">
         <div 
           className={`absolute inset-0 bg-cover bg-center transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`} 
           style={{ backgroundImage: `url('${image}')` }}

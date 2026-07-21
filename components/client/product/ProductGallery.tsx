@@ -18,9 +18,8 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
           <button
             key={idx}
             onClick={() => setActiveImage(idx)}
-            className={`relative aspect-[3/4] w-full rounded-md overflow-hidden border-2 transition-all ${
-              activeImage === idx ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
-            }`}
+            className={`relative aspect-[4/5] w-full rounded-md overflow-hidden border-2 transition-all ${activeImage === idx ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
+              }`}
           >
             <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
           </button>
@@ -44,9 +43,8 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
           <button
             key={idx}
             onClick={() => setActiveImage(idx)}
-            className={`relative aspect-[3/4] w-16 sm:w-20 shrink-0 rounded-md overflow-hidden border-2 transition-all ${
-              activeImage === idx ? "border-primary" : "border-transparent opacity-70"
-            }`}
+            className={`relative aspect-[4/5] w-16 sm:w-20 shrink-0 rounded-md overflow-hidden border-2 transition-all ${activeImage === idx ? "border-primary" : "border-transparent opacity-70"
+              }`}
           >
             <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
           </button>

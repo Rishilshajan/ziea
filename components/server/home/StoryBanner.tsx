@@ -10,9 +10,17 @@ export default function StoryBanner() {
           style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/linen.png')" }}
         />
         <h3 className="cormorant text-4xl text-primary-dark font-light italic">Our Story</h3>
-        <p className="font-body-md text-text max-w-md mx-auto leading-relaxed">
-          Rooted in the serene landscapes of Kerala, ZIEA celebrates the heritage of hand-woven comfort. Every piece is a love letter to the soft breeze of the backwaters and the tactile luxury of natural fibers.
-        </p>
+        <div className="space-y-4 max-w-md mx-auto">
+          <p className="font-body-md text-text leading-relaxed">
+            We believe every woman deserves to feel seen, comfortable, and beautiful in her own skin. Our clothes are made to celebrate you, quietly supporting your day with love and care.
+          </p>
+          <div className="pt-2 space-y-2">
+            <h4 className="cormorant text-2xl text-primary-dark font-light italic">Who We Are</h4>
+            <p className="font-body-md text-text leading-relaxed">
+              Ziea is a women’s wear brand specializing in maternity, feeding, and comfortable everyday wear.
+            </p>
+          </div>
+        </div>
         <Link
           href="#"
           className="inline-flex items-center gap-2 text-secondary font-semibold hover:gap-3 transition-all"

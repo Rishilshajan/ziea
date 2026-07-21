@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { MdCameraAlt, MdClose, MdAdd, MdRemove, MdStar, MdStarBorder, MdArrowBack, MdArrowForward, MdKeyboardArrowDown } from 'react-icons/md';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { Textarea } from '@/components/ui/Textarea';
+import RichTextarea from '@/components/ui/RichTextarea';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import Toast from '@/components/ui/Toast';
@@ -22,12 +22,13 @@ interface ProductImage {
   isHighlight: boolean;
   cropX: number;
   cropY: number;
+  zoom?: number;
 }
 
 export default function AddProductForm({ categories = [], initialData }: { categories?: Category[], initialData?: any }) {
   const router = useRouter();
   const supabase = createClient();
-  
+
   const [toast, setToast] = useState({ show: false, message: '', error: false });
   const showToast = (message: string, error = true) => {
     setToast({ show: true, message, error });
@@ -59,7 +60,7 @@ export default function AddProductForm({ categories = [], initialData }: { categ
     { size: 'XL', quantity: 0 },
     { size: 'XXL', quantity: 0 },
   ];
-  
+
   const [sizes, setSizes] = useState(() => {
     if (initialData?.sizes && Array.isArray(initialData.sizes)) {
       return defaultSizes.map(ds => {
@@ -77,7 +78,8 @@ export default function AddProductForm({ categories = [], initialData }: { categ
         url: img.url,
         isHighlight: img.is_highlight || false,
         cropX: img.crop_x ?? 50,
-        cropY: img.crop_y ?? 50
+        cropY: img.crop_y ?? 50,
+        zoom: img.zoom ?? 100
       }));
     }
     return [];
@@ -94,12 +96,12 @@ export default function AddProductForm({ categories = [], initialData }: { categ
       url: URL.createObjectURL(file),
       isHighlight: false,
       cropX: 50,
-      cropY: 50
+      cropY: 50,
+      zoom: 100
     }));
 
     setImages(prev => {
       const next = [...prev, ...newImages];
-      // Automatically set the first image as active if this is the first upload
       if (prev.length === 0 && next.length > 0) {
         setActiveImageId(next[0].id);
       }
@@ -136,7 +138,7 @@ export default function AddProductForm({ categories = [], initialData }: { categ
     });
   };
 
-  const updateCrop = (id: string, axis: 'cropX' | 'cropY', value: number) => {
+  const updateCrop = (id: string, axis: 'cropX' | 'cropY' | 'zoom', value: number) => {
     setImages(prev => prev.map(img =>
       img.id === id ? { ...img, [axis]: value } : img
     ));
@@ -175,7 +177,6 @@ export default function AddProductForm({ categories = [], initialData }: { categ
   });
 
   const submitForm = async (isDraft: boolean = false) => {
-    // If we have images, we absolutely need a category to know where to upload them
     if (images.length > 0 && !categoryId) {
       showToast('A Category must be selected to upload your images.', true);
       return;
@@ -236,7 +237,8 @@ export default function AddProductForm({ categories = [], initialData }: { categ
           url: finalUrl,
           is_highlight: img.isHighlight,
           crop_x: img.cropX,
-          crop_y: img.cropY
+          crop_y: img.cropY,
+          zoom: img.zoom || 100
         });
       }
 
@@ -251,7 +253,7 @@ export default function AddProductForm({ categories = [], initialData }: { categ
         care_instructions: careInstructions,
         shipping_info: shippingInfo,
         contents,
-        is_published: !isDraft, // Keeping this for backward compatibility
+        is_published: !isDraft,
         status: isDraft ? 'draft' : 'published',
         sizes,
         images: uploadedImages,
@@ -352,10 +354,14 @@ export default function AddProductForm({ categories = [], initialData }: { categ
                 />
               </div>
             </div>
-            <Textarea
+
+            {/* Rich Text Description */}
+            <RichTextarea
               label="Description"
-              value={description} onChange={e => setDescription(e.target.value)}
+              value={description}
+              onChange={setDescription}
               placeholder="Describe the product..."
+              minHeight="140px"
             />
           </div>
         </section>
@@ -395,20 +401,28 @@ export default function AddProductForm({ categories = [], initialData }: { categ
                 placeholder="e.g. 100% Organic Linen"
               />
             </div>
-            <Textarea
+
+            {/* Rich Text Fields */}
+            <RichTextarea
               label="Care Instructions"
-              value={careInstructions} onChange={e => setCareInstructions(e.target.value)}
+              value={careInstructions}
+              onChange={setCareInstructions}
               placeholder="e.g. Machine wash cold, gentle cycle..."
+              minHeight="120px"
             />
-            <Textarea
+            <RichTextarea
               label="Shipping & Returns"
-              value={shippingInfo} onChange={e => setShippingInfo(e.target.value)}
+              value={shippingInfo}
+              onChange={setShippingInfo}
               placeholder="e.g. Free shipping on all orders. Returns within 2 days..."
+              minHeight="120px"
             />
-            <Textarea
+            <RichTextarea
               label="Contents"
-              value={contents} onChange={e => setContents(e.target.value)}
+              value={contents}
+              onChange={setContents}
               placeholder="e.g. This is a 3-piece set with pants and dupatta..."
+              minHeight="120px"
             />
           </div>
         </section>
@@ -421,6 +435,16 @@ export default function AddProductForm({ categories = [], initialData }: { categ
           <div className="flex justify-between items-end border-b border-[#d6c3b3]/30 pb-3">
             <div>
               <h3 className="font-jost text-lg font-semibold text-[#2C3829]">Product Gallery</h3>
+
+              {/* Resolution Hints */}
+              <div className="flex gap-2 mt-2 flex-wrap">
+                <span className="inline-flex items-center gap-1 text-[10px] font-jost font-semibold text-[#2C3829]/50 uppercase tracking-widest bg-[#f8f5f1] border border-[#d6c3b3]/40 px-2 py-0.5 rounded-full">
+                  🖥 1080 × 1350 px
+                </span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-jost font-semibold text-[#2C3829]/50 uppercase tracking-widest bg-[#f8f5f1] border border-[#d6c3b3]/40 px-2 py-0.5 rounded-full">
+                  📱 4:5 Aspect Ratio
+                </span>
+              </div>
               <p className="text-xs text-[#2C3829]/70 mt-1">Upload min. 3 high-res images</p>
             </div>
             <Button
@@ -461,8 +485,8 @@ export default function AddProductForm({ categories = [], initialData }: { categ
               {/* Dynamic Grid */}
               <div className="grid grid-cols-2 gap-3">
                 {images.map((img, idx) => (
-                  <div 
-                    key={img.id} 
+                  <div
+                    key={img.id}
                     className={`relative group aspect-[4/5] rounded-xl overflow-hidden shadow-sm border-2 ${img.id === activeImageId ? 'border-primary' : 'border-[#d6c3b3]/30'} bg-[#FAF7F2] cursor-pointer`}
                     onClick={() => setActiveImageId(img.id)}
                   >
@@ -472,10 +496,12 @@ export default function AddProductForm({ categories = [], initialData }: { categ
                       draggable={false}
                       className="absolute object-cover pointer-events-none select-none max-w-none transition-all duration-200"
                       style={{
-                        width: '150%',
-                        height: '150%',
-                        left: `-${img.cropX / 2}%`,
-                        top: `-${img.cropY / 2}%`
+                        width: `${((img.zoom || 100) / 100) * 100}%`,
+                        height: `${((img.zoom || 100) / 100) * 100}%`,
+                        left: `${img.cropX}%`,
+                        top: `${img.cropY}%`,
+                        transform: 'translate(-50%, -50%)',
+                        transformOrigin: 'center center'
                       }}
                     />
 
@@ -531,6 +557,18 @@ export default function AddProductForm({ categories = [], initialData }: { categ
                     const activeImg = images.find(img => img.id === activeImageId)!;
                     return (
                       <div className="w-full space-y-4">
+                        <div>
+                          <div className="flex justify-between text-[10px] font-jost text-[#2C3829]/70 mb-1 uppercase tracking-widest">
+                            <span>Zoom / Scale (Selected Image)</span>
+                            <span>{Math.round(activeImg.zoom || 100)}%</span>
+                          </div>
+                          <input
+                            type="range" min="50" max="250"
+                            value={activeImg.zoom ?? 100}
+                            onChange={(e) => updateCrop(activeImg.id, 'zoom', Number(e.target.value))}
+                            className="w-full accent-[#2C3829] h-1"
+                          />
+                        </div>
                         <div>
                           <div className="flex justify-between text-[10px] font-jost text-[#2C3829]/70 mb-1 uppercase tracking-widest">
                             <span>Horizontal Pan (Selected Image)</span>

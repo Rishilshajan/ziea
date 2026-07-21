@@ -253,7 +253,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                 {categories.map((cat) => (
                   <div key={cat.id} className="p-6 flex items-center justify-between gap-4">
                     <div className="flex gap-4 items-center">
-                      <div className="w-20 h-24 shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
+                      <div className="w-24 h-28 shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
                         <img 
                           src={cat.image_url} 
                           alt={cat.name} 
@@ -307,6 +307,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                 {/* Content Section (Bottom Half) */}
                 <div className="flex justify-between items-center p-5 flex-1">
                   <div>
+                    <p className="text-[10px] font-jost text-[#2C3829]/40 uppercase tracking-widest mb-0.5">400 × 400 px</p>
                     <h2 className="font-jost text-xl text-[#2C3829] font-semibold mb-1">{cat.name}</h2>
                   </div>
                   <div className="flex gap-2">
@@ -375,7 +376,8 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-jost font-semibold text-[#2C3829] mb-3">Category Image</label>
+                  <label className="block text-sm font-jost font-semibold text-[#2C3829] mb-1">Category Image</label>
+                  <p className="text-xs font-jost text-[#2C3829]/50 mb-3">Recommended size: <span className="font-semibold text-[#2C3829]/70">400 × 400 px</span> — square images work best for the circular display.</p>
 
                   {/* Large File Upload Area */}
                   <label className={`cursor-pointer w-full border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center gap-3 transition-colors ${isSubmitting ? 'border-[#d6c3b3]/50 bg-transparent' : 'border-[#d6c3b3] hover:bg-white bg-white/50'}`}>

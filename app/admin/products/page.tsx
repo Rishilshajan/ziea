@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {
   const supabase = await createClient();
-  
+
   // Fetch products with their associated category names
   const { data: products, error } = await supabase
     .from('products')
@@ -24,7 +24,7 @@ export default async function ProductsPage() {
   }
 
   const hasProducts = products && products.length > 0;
-  
+
   // --- Calculate Metrics ---
   const totalProducts = products ? products.length : 0;
   const publishedProducts = products ? products.filter(p => p.status === 'published').length : 0;
@@ -66,7 +66,6 @@ export default async function ProductsPage() {
         <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center w-full lg:w-auto">
           <Link href="/admin/products/add" className="w-full sm:w-auto block">
             <button className="w-full bg-[#2C3829] text-white px-6 py-3.5 rounded-full font-jost font-medium text-sm hover:opacity-90 active:scale-[0.97] transition-all flex items-center justify-center gap-2">
-              <MdAdd className="text-xl" />
               Add Product
             </button>
           </Link>
