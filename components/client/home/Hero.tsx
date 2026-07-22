@@ -120,13 +120,11 @@ export default function Hero() {
           className="text-3xl md:text-5xl lg:text-6xl font-light text-[#F5F0E8] leading-tight transition-all duration-700"
           style={{ fontFamily: "'Cormorant Garamond', serif" }}
         >
-          <>
-            <span className="italic">Ziea</span>
-            <span className="not-italic"> - </span>
-            <span className="italic">
-              {currentHeadline.replace(/^Ziea - /, "")}
-            </span>
-          </>
+          <span className="italic">Ziea</span>
+          <span className="not-italic inline-block px-1.5" style={{ fontStyle: 'normal', fontFamily: "'Jost', sans-serif" }}>-</span>
+          <span className="italic">
+            {currentHeadline.replace(/^Ziea - /, "")}
+          </span>
         </h1>
 
         {/* Sub-headline - Jost */}
@@ -138,12 +136,12 @@ export default function Hero() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+        <div className="flex flex-row justify-center gap-3 pt-2 w-full">
           <Button
             variant="auth-primary"
             onClick={handleShopNow}
             disabled={isAuthLoading}
-            className="sm:w-[260px]"
+            className="flex-1 sm:flex-none sm:w-[240px] text-[13px] sm:text-sm px-2 sm:px-4"
           >
             {isAuthLoading ? "Loading..." : "Shop Now"}
           </Button>
@@ -151,7 +149,7 @@ export default function Hero() {
           <Button
             variant="auth-social"
             onClick={handleViewCollection}
-            className="sm:w-[260px] !bg-transparent !border-[#F5F0E8] !text-[#F5F0E8] hover:!bg-white/10"
+            className="flex-1 sm:flex-none sm:w-[240px] text-[13px] sm:text-sm px-2 sm:px-4 !bg-transparent !border-[#F5F0E8] !text-[#F5F0E8] hover:!bg-white/10"
           >
             View Collection
           </Button>

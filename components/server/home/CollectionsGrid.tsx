@@ -26,7 +26,7 @@ export default async function CollectionsGrid() {
   }
 
   return (
-    <section className="px-margin-mobile pt-2 pb-10 space-y-8 bg-background">
+    <section className="px-margin-mobile space-y-8 bg-background">
       {/* Heading */}
       <div className="flex justify-between items-end">
         <h3 className="cormorant text-3xl italic text-primary-dark">

@@ -37,7 +37,7 @@ export default function CategoryPills() {
   }, [supabase]);
 
   return (
-    <section className="py-6">
+    <section>
       {/* Heading */}
       <div className="px-margin-mobile">
         <h3 className="cormorant text-3xl italic text-primary-dark mb-8">

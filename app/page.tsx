@@ -12,7 +12,7 @@ export default function Home() {
     <>
       <SplashController />
       <Header />
-      <main className="mt-16 md:mt-20 overflow-x-hidden">
+      <main className="mt-16 md:mt-20 overflow-x-hidden flex flex-col gap-10 pb-10">
         <Hero />
         <CategoryPills />
         <CollectionsGrid />
