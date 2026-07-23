@@ -1,116 +1,256 @@
 "use client";
 
-import React, { useState } from 'react';
-import { MdOutlineSend, MdOutlineSync, MdOutlineCheckCircle } from 'react-icons/md';
+import React, { useState } from "react";
+import {
+  MdOutlineSync,
+  MdOutlineCheckCircle,
+} from "react-icons/md";
+import { FiSend } from "react-icons/fi";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import Toast from "@/components/ui/Toast";
+import { createClient } from "@/utils/supabase/client";
+
+type InquiryType = "support" | "business" | "collaboration";
+
+const INQUIRY_LABELS: Record<InquiryType, string> = {
+  support: "Customer Support",
+  business: "Business Enquiries",
+  collaboration: "Collaborations",
+};
+
+const INQUIRY_ACTIVITY_LABELS: Record<InquiryType, string> = {
+  support: "customer support",
+  business: "business",
+  collaboration: "collaboration",
+};
+
+const MESSAGE_PLACEHOLDERS: Record<InquiryType, string> = {
+  support: "How can we help you today?",
+  business: "Tell us about your business enquiry...",
+  collaboration: "Tell us about your collaboration idea...",
+};
 
 export default function ContactForm() {
-  const [formState, setFormState] = useState<'idle' | 'sending' | 'sent'>('idle');
-  const [inquiryType, setInquiryType] = useState<'personal' | 'corporate'>('personal');
+  const supabase = createClient();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormState('sending');
-    
-    // Simulate network request
+  const [formState, setFormState] = useState<
+    "idle" | "sending" | "sent"
+  >("idle");
+
+  const [inquiryType, setInquiryType] =
+    useState<InquiryType>("support");
+
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    error: false,
+  });
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+
+  const showToast = (message: string, error = false) => {
+    setToast({
+      show: true,
+      message,
+      error,
+    });
+
     setTimeout(() => {
-      setFormState('sent');
-      
-      // Reset form after 3 seconds
+      setToast({
+        show: false,
+        message: "",
+        error: false,
+      });
+    }, 4000);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setFormState("sending");
+
+    try {
+      const { error } = await supabase
+        .from("contact_messages")
+        .insert([
+          {
+            name,
+            email,
+            phone,
+            inquiry_type: inquiryType,
+            message,
+          },
+        ]);
+
+      if (error) throw error;
+
+      await supabase.from("activity_logs").insert({
+        type: "Customer Enquiry",
+        description: `Customer ${name.trim()} made a ${INQUIRY_ACTIVITY_LABELS[inquiryType]} enquiry`,
+        metadata: {
+          email,
+          phone,
+          inquiry_type: inquiryType,
+        },
+      });
+
+      setFormState("sent");
+
+      showToast(
+        "Your enquiry has been received. We'll get back to you shortly."
+      );
+
       setTimeout(() => {
-        setFormState('idle');
-        (e.target as HTMLFormElement).reset();
+        setFormState("idle");
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
       }, 3000);
-    }, 1500);
+    } catch (err: any) {
+      setFormState("idle");
+
+      showToast(
+        err?.message ??
+        "Something went wrong. Please try again.",
+        true
+      );
+    }
   };
 
   return (
-    <section className="md:col-span-7 bg-white p-8 rounded-2xl shadow-[0px_2px_16px_rgba(44,56,41,0.06)] border border-primary/10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <h3 className="cormorant text-3xl text-primary">Send a Message</h3>
-        <div className="flex gap-2">
-          <button 
-            type="button" 
-            onClick={() => setInquiryType('personal')}
-            className={`px-5 py-2 rounded-full font-label-md text-xs uppercase tracking-widest transition-all ${inquiryType === 'personal' ? 'bg-primary text-white' : 'bg-[#F5F0E8] text-on-surface-variant hover:bg-[#e8e2d8]'}`}
-          >
-            Personal
-          </button>
-          <button 
-            type="button" 
-            onClick={() => setInquiryType('corporate')}
-            className={`px-5 py-2 rounded-full font-label-md text-xs uppercase tracking-widest transition-all ${inquiryType === 'corporate' ? 'bg-primary text-white' : 'bg-[#F5F0E8] text-on-surface-variant hover:bg-[#e8e2d8]'}`}
-          >
-            Corporate
-          </button>
-        </div>
-      </div>
+    <>
+      <section className="w-full rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-5 sm:p-6 md:p-8">
 
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="font-label-md text-sm text-on-surface-variant uppercase tracking-widest" htmlFor="name">Full Name</label>
-            <input 
-              className="w-full h-12 px-4 rounded-xl border border-primary/20 bg-[#F5F0E8] focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none font-jost" 
-              id="name" 
-              placeholder="Aisha Nair" 
-              required 
-              type="text"
-            />
+        {/* Header */}
+        <div className="mb-8">
+
+          <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+            <FiSend size={24} />
           </div>
-          <div className="space-y-2">
-            <label className="font-label-md text-sm text-on-surface-variant uppercase tracking-widest" htmlFor="email">Email Address</label>
-            <input 
-              className="w-full h-12 px-4 rounded-xl border border-primary/20 bg-[#F5F0E8] focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none font-jost" 
-              id="email" 
-              placeholder="aisha@example.com" 
-              required 
-              type="email"
-            />
+
+          <h2 className="cormorant text-3xl md:text-[34px] italic text-primary-dark mb-6">
+            Send a Message
+          </h2>
+
+          <div className="flex flex-wrap gap-3">
+            {(Object.keys(INQUIRY_LABELS) as InquiryType[]).map((type) => (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setInquiryType(type)}
+                className={`rounded-full px-7 py-3 font-jost text-sm font-medium uppercase tracking-[0.14em] transition-all duration-300 ${inquiryType === type
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-background text-muted hover:bg-primary/10"
+                  }`}
+              >
+                {INQUIRY_LABELS[type]}
+              </button>
+            ))}
           </div>
-          <div className="space-y-2 md:col-span-2">
-            <label className="font-label-md text-sm text-on-surface-variant uppercase tracking-widest" htmlFor="phone">Phone Number</label>
-            <input 
-              className="w-full h-12 px-4 rounded-xl border border-primary/20 bg-[#F5F0E8] focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none font-jost" 
-              id="phone" 
-              placeholder="+91 98765 43210" 
-              required 
-              type="tel"
-            />
-          </div>
+
         </div>
-        <div className="space-y-2">
-          <label className="font-label-md text-sm text-on-surface-variant uppercase tracking-widest" htmlFor="message">Message</label>
-          <textarea 
-            className="w-full p-4 rounded-xl border border-primary/20 bg-[#F5F0E8] focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none resize-none font-jost" 
-            id="message" 
-            placeholder={inquiryType === 'corporate' ? "Tell us about your corporate inquiry..." : "How can we help you today?"} 
-            required 
-            rows={5}
-          ></textarea>
-        </div>
-        <button 
-          className={`w-full md:w-auto px-10 py-3 rounded-full text-white font-label-md text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${formState === 'sent' ? 'bg-[#647b53]' : 'bg-primary hover:bg-[#3d4f31]'} ${formState === 'sending' ? 'opacity-80 cursor-wait' : ''}`} 
-          type="submit"
-          disabled={formState !== 'idle'}
+
+
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-10"
         >
-          {formState === 'idle' && (
-            <>
-              Send Message
-              <MdOutlineSend className="text-sm" />
-            </>
-          )}
-          {formState === 'sending' && (
-            <>
-              <MdOutlineSync className="animate-spin text-sm" /> Sending...
-            </>
-          )}
-          {formState === 'sent' && (
-            <>
-              <MdOutlineCheckCircle className="text-sm" /> Sent
-            </>
-          )}
-        </button>
-      </form>
-    </section>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <Input
+              label="Full Name"
+              placeholder="Aisha Nair"
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+
+            <Input
+              label="Email Address"
+              placeholder="aisha@example.com"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+          </div>
+
+          <Input
+            label="Phone Number"
+            placeholder="+91 98765 43210"
+            type="tel"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+
+          <div>
+
+            <label className="mb-2 ml-1 block font-jost text-sm font-medium text-on-surface-variant">
+              Message
+            </label>
+
+            <textarea
+              rows={5}
+              required
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder={MESSAGE_PLACEHOLDERS[inquiryType]}
+              className="w-full rounded-xl border border-outline-variant bg-white px-4 py-3 font-jost text-base outline-none transition-all hover:border-primary/50 focus:border-primary focus:ring-4 focus:ring-primary/5 resize-none"
+            />
+
+          </div>
+
+          {/* Button */}
+          <div>
+            <Button
+              variant="auth-primary"
+              type="submit"
+              disabled={formState !== "idle"}
+              className="w-full sm:w-auto min-w-[220px] px-10 py-4 gap-2"
+            >
+
+              {formState === "idle" && (
+                <>
+                  Send Message
+                </>
+              )}
+
+              {formState === "sending" && (
+                <>
+                  <MdOutlineSync className="animate-spin" />
+                  Sending...
+                </>
+              )}
+
+              {formState === "sent" && (
+                <>
+                  <MdOutlineCheckCircle />
+                  Message Sent
+                </>
+              )}
+
+            </Button>
+          </div>
+
+        </form>
+
+      </section>
+
+      <Toast
+        show={toast.show}
+        message={toast.message}
+        error={toast.error}
+      />
+    </>
   );
 }

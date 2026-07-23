@@ -1,48 +1,133 @@
-import React from 'react';
-import { MdOutlineLocationOn, MdOutlineContactSupport, MdOutlineMail, MdOutlineCall } from "react-icons/md";
+import React from "react";
+import Link from "next/link";
+import {
+  MdOutlineLocationOn,
+  MdOutlineContactSupport,
+  MdOutlineMail,
+  MdOutlineCall,
+  MdOutlineSchedule,
+  MdOutlineArrowOutward,
+} from "react-icons/md";
 
 export default function ContactInfo() {
   return (
-    <div className="md:col-span-5 flex flex-col gap-6">
-      {/* Visit Our Studio */}
-      <div className="bg-[#F5F0E8] p-8 rounded-2xl flex-1 flex flex-col justify-between shadow-[0px_2px_16px_rgba(44,56,41,0.06)] border border-primary/5 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-        <div>
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
-            <MdOutlineLocationOn />
-          </div>
-          <h3 className="cormorant text-2xl text-primary mb-3">Visit Our Studio</h3>
-          <p className="font-jost text-on-surface-variant leading-relaxed text-sm">
-            No. 4/326, Princess Street,<br/>
-            Near St. Francis Church,<br/>
-            Fort Kochi, Kerala 682001
-          </p>
+    /* Added h-full here */
+    <div className="md:col-span-5 flex flex-col gap-6 h-full">
+
+      {/* Visit Studio — Added flex-1 */}
+      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-5 sm:p-6 md:p-8 flex-1">
+
+        <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+          <MdOutlineLocationOn size={26} />
         </div>
-        <div className="mt-8 rounded-xl overflow-hidden h-40">
-          <img 
-            className="w-full h-full object-cover" 
-            alt="Minimalist design studio in Fort Kochi" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVb1GQbYhQgMHk48AU-CTaQmEmAEJ8TEI6wmvD4mJCNYBWMJ5tCr-PNJjTea--THl--mNjwp9Kv6bkka75ori2sxhvXdu3yyPMcmA-gzpJMwuyxSr71fwwOOj-toA_Mph87L67PQItCTSUBlStgvpS6TK79gkF99yJnpMltGxvpJ1nq0dUbun6UNUDbFnD64tdBIGodcD7VE5YjnF6L_HFB82-wUSECdoU4WavjR1uvGs-EIVDyyd1DwRNQxptE1AQCoA-Brm3eO8"
-          />
+
+        <h3 className="cormorant text-3xl md:text-[34px] italic text-primary-dark mb-5 md:mb-6">
+          Visit Our Studio
+        </h3>
+
+        <div className="space-y-1 text-base md:text-[17px] leading-7 md:leading-8 text-muted">
+          <p className="font-semibold text-text">Ziea Clothing</p>
+          <p>Startups Valley TBI</p>
+          <p>Amal Jyothi College of Engineering</p>
+          <p>Koovappally, Kanjirappally</p>
+          <p>Kerala 686518</p>
         </div>
+
+        <Link
+          href="https://maps.google.com"
+          target="_blank"
+          className="inline-flex items-center gap-2 mt-8 text-secondary font-medium hover:gap-3 transition-all"
+        >
+          View on Google Maps
+          <MdOutlineArrowOutward />
+        </Link>
+
       </div>
 
-      {/* Reach Out */}
-      <div className="bg-[#f0e3d5] p-8 rounded-2xl shadow-[0px_2px_16px_rgba(44,56,41,0.06)] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-        <div className="w-12 h-12 rounded-full bg-[#865139]/10 flex items-center justify-center mb-4 text-[#865139]">
-          <MdOutlineContactSupport />
+      {/* Reach Out — Added flex-1 */}
+      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-5 sm:p-6 md:p-8 flex-1">
+
+        <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+          <MdOutlineContactSupport size={24} />
         </div>
-        <h3 className="cormorant text-2xl text-primary mb-3">Reach Out</h3>
-        <div className="space-y-4">
-          <a className="flex items-center gap-4 text-[#211a15] hover:text-primary transition-colors group" href="mailto:hello@ziea.com">
-            <MdOutlineMail className="text-on-surface-variant group-hover:text-primary" />
-            <span className="font-jost">hello@ziea.com</span>
+
+        <h3 className="cormorant text-3xl md:text-[34px] italic text-primary-dark mb-5 md:mb-6">
+          Reach Out
+        </h3>
+
+        <div className="space-y-6">
+
+          <a
+            href="mailto:contact@ziea.in"
+            className="flex items-start gap-4 group"
+          >
+            <MdOutlineMail className="text-xl text-primary mt-0.5 shrink-0" />
+
+            <div>
+              <p className="font-jost text-base font-medium uppercase tracking-widest text-muted mb-1">
+                Email
+              </p>
+
+              <p className="font-jost text-base md:text-lg text-text group-hover:text-primary transition-colors">
+                contact@ziea.in
+              </p>
+            </div>
           </a>
-          <a className="flex items-center gap-4 text-[#211a15] hover:text-primary transition-colors group" href="tel:+91484221144">
-            <MdOutlineCall className="text-on-surface-variant group-hover:text-primary" />
-            <span className="font-jost">+91 484 221 144</span>
+
+          <a
+            href="tel:+918301027765"
+            className="flex items-start gap-4 group"
+          >
+            <MdOutlineCall className="text-xl text-primary mt-0.5 shrink-0" />
+
+            <div>
+              <p className="font-jost text-base font-medium uppercase tracking-widest text-muted mb-1">
+                Phone
+              </p>
+
+              <p className="font-jost text-base md:text-lg text-text group-hover:text-primary transition-colors">
+                +91 8301 027 765
+              </p>
+            </div>
           </a>
+
+          <div className="flex items-start gap-4">
+
+            <MdOutlineSchedule className="text-xl text-primary mt-0.5 shrink-0" />
+
+            <div>
+              <p className="font-jost text-base font-medium uppercase tracking-widest text-muted mb-1">
+                Support Hours
+              </p>
+
+              <p className="font-jost text-base md:text-lg text-text">
+                Monday – Saturday
+              </p>
+
+              <p className="font-jost text-base text-muted mt-0.5">
+                9:00 AM – 6:00 PM IST
+              </p>
+            </div>
+
+          </div>
+
         </div>
+
+        <div className="mt-8 rounded-2xl bg-background/70 border border-border p-5">
+
+          <p className="font-jost text-base font-medium uppercase tracking-widest text-muted mb-2">
+            Response Time
+          </p>
+
+          <p className="font-jost text-base text-text leading-7">
+            We usually respond to all enquiries within
+            <span className="font-semibold"> 24 business hours.</span>
+          </p>
+
+        </div>
+
       </div>
+
     </div>
   );
 }

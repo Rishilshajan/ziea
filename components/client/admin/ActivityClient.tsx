@@ -85,14 +85,14 @@ export function ActivityClient() {
   const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
 
   const getActivityColor = (type: string) => {
-    if (type?.includes('Login') || type?.includes('Registration')) return 'bg-blue-500';
+    if (type?.includes('Login') || type?.includes('Registration') || type?.includes('Enquiry')) return 'bg-blue-500';
     if (type?.includes('Product')) return 'bg-green-500';
     if (type?.includes('Category')) return 'bg-purple-500';
     return 'bg-[#7A9268]'; // default
   };
 
   const getTypeBadgeClass = (type: string) => {
-    if (type?.includes('Login') || type?.includes('Registration')) return 'bg-blue-50 text-blue-700 border-blue-200';
+    if (type?.includes('Login') || type?.includes('Registration') || type?.includes('Enquiry')) return 'bg-blue-50 text-blue-700 border-blue-200';
     if (type?.includes('Product')) return 'bg-green-50 text-green-700 border-green-200';
     if (type?.includes('Category')) return 'bg-purple-50 text-purple-700 border-purple-200';
     return 'bg-gray-50 text-gray-700 border-gray-200';

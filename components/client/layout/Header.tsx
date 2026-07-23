@@ -7,15 +7,15 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "../../ui/Button";
 import { createClient } from "@/utils/supabase/client";
 import ConfirmationModal from "../../ui/ConfirmationModal";
-import { 
-  MdOutlineSearch, 
-  MdOutlineFavoriteBorder, 
-  MdOutlineShoppingBag, 
-  MdOutlinePerson, 
-  MdOutlineLogout, 
-  MdOutlineMenu, 
-  MdOutlineClose, 
-  MdOutlineLogin, 
+import {
+  MdOutlineSearch,
+  MdOutlineFavoriteBorder,
+  MdOutlineShoppingBag,
+  MdOutlinePerson,
+  MdOutlineLogout,
+  MdOutlineMenu,
+  MdOutlineClose,
+  MdOutlineLogin,
   MdOutlinePersonAdd,
   MdHome,
   MdOutlineStyle,
@@ -105,7 +105,7 @@ export default function Header() {
           .select('role')
           .eq('id', user.id)
           .maybeSingle();
-          
+
         if (data && data.role !== profile.role) {
           await supabase.auth.signOut();
           router.push('/login');
@@ -316,7 +316,7 @@ export default function Header() {
                     <MdOutlineLogout className="text-2xl" />
                     <span className="font-label-lg">Logout</span>
                   </button>
-                  
+
                   <div className="flex items-center gap-3 bg-white/60 p-3 rounded-2xl">
                     <div className="w-12 h-12 rounded-full bg-muted/20 animate-pulse shrink-0"></div>
                     <div className="flex flex-col overflow-hidden w-full gap-2">
