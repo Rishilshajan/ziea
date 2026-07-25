@@ -32,12 +32,26 @@
   padding-right: 20px;
 }
 
+/* Canonical page gutter (external padding): 16px mobile → 32px desktop.
+   Single source of truth for horizontal page padding across the site. */
+.px-page {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+@media (min-width: 768px) {
+  .px-page {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
 @utility mt-section-gap {
   margin-top: 40px;
 }
 
 @utility font-display-lg {
-  font-family: "EB Garamond", serif;
+  font-family: "Cormorant Garamond", serif;
   font-weight: 400;
   font-size: 3.5rem;
   line-height: 4rem;
@@ -51,25 +65,33 @@
 }
 
 @utility font-body-lg {
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: "Jost", sans-serif;
   font-weight: 400;
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
 
 @utility font-body-md {
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: "Jost", sans-serif;
   font-weight: 300;
   font-size: 1rem;
   line-height: 1.5rem;
 }
 
 @utility font-label-md {
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: "Jost", sans-serif;
   font-weight: 500;
   font-size: 0.875rem;
   line-height: 1.25rem;
   letter-spacing: 0.05em;
+}
+
+@utility font-label-lg {
+  font-family: "Jost", sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  letter-spacing: 0.03em;
 }
 
 @utility font-label-sm {

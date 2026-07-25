@@ -56,4 +56,5 @@ export interface ProductCardProps {
     discountedPrice: number;
     imageUrl: string;
     altText?: string;
+    badge?: string;
 }

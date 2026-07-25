@@ -5,16 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "../../ui/Button";
+import { Input } from "../../ui/Input";
 import { createClient } from "@/utils/supabase/client";
 import ConfirmationModal from "../../ui/ConfirmationModal";
 import {
-  MdOutlineSearch,
+  MdSearch,
   MdOutlineFavoriteBorder,
   MdOutlineShoppingBag,
   MdOutlinePerson,
   MdOutlineLogout,
   MdOutlineMenu,
-  MdOutlineClose,
   MdOutlineLogin,
   MdOutlinePersonAdd,
   MdHome,
@@ -146,7 +146,7 @@ export default function Header() {
     <>
       {/* Desktop Header */}
       <header className="hidden md:flex w-full fixed top-0 left-0 z-50 bg-background shadow-sm h-20">
-        <div className="flex w-full h-full px-4 xl:px-8 items-center">
+        <div className="flex w-full h-full px-page items-center">
           <div className="flex-1 flex items-center justify-start">
             <nav className="flex items-center gap-4 lg:gap-6 text-xs lg:text-sm font-semibold tracking-wide text-text/80">
               <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
@@ -162,9 +162,13 @@ export default function Header() {
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-4 lg:gap-6">
-            <div className="relative hidden xl:block">
-              <MdOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-muted text-xl" />
-              <input type="text" placeholder="Search designs..." className="pl-10 pr-4 py-2 bg-muted/10 border border-border/50 rounded-full text-sm outline-none focus:border-primary/50 w-64 lg:w-80 transition-colors" />
+            <div className="hidden xl:block w-64 lg:w-80">
+              <Input
+                type="text"
+                placeholder="Search designs..."
+                leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
+                aria-label="Search designs"
+              />
             </div>
 
             <div className="flex gap-4">
@@ -176,7 +180,7 @@ export default function Header() {
               </Link>
             </div>
 
-            <div className="flex items-center gap-2 text-xs lg:text-sm font-semibold tracking-wide text-text/80 border-l border-border/60 pl-4 lg:pl-6">
+            <div className="flex items-center gap-2 text-xs lg:text-sm font-semibold tracking-wide text-text/80 border-l border-border/60 pl-4 lg:pl-6 whitespace-nowrap">
               {!user ? (
                 <>
                   <Link href="/login" className="hover:text-primary transition-colors">LOGIN</Link>
@@ -222,7 +226,7 @@ export default function Header() {
       </header>
 
       {/* Mobile Header */}
-      <header className="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-4 h-16 bg-background shadow-sm">
+      <header className="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-page h-16 bg-background shadow-sm">
         <Button variant="icon" onClick={() => setIsMenuOpen(true)} className="z-10">
           <MdOutlineMenu className="text-2xl" />
         </Button>
@@ -261,19 +265,12 @@ export default function Header() {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsMenuOpen(false)}
           /> 
-          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-7 pt-2 transform transition-transform animate-in slide-in-from-left duration-300">
-            <div className="flex items-center justify-between h-20 mb-8">
-              <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} className="h-16 w-auto object-contain object-left scale-[1.5] origin-left -ml-2" priority />
-              <Button
-                variant="icon"
-                onClick={() => setIsMenuOpen(false)}
-                className="-mr-2"
-              >
-                <MdOutlineClose className="text-2xl" />
-              </Button>
+          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-7 pt-6 transform transition-transform animate-in slide-in-from-left duration-300">
+            <div className="flex items-center justify-center mb-6 border-b border-border/60">
+              <Image src="/ZIEA_Splash2.png" alt="ZIEA" width={500} height={500} className="h-16 w-auto object-contain" priority />
             </div>
 
-            <nav className="flex flex-col gap-">
+            <nav className="flex flex-col gap-6">
               {menuItems.map((item, index) => (
                 <Link
                   key={index}

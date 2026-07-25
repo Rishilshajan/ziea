@@ -13,7 +13,7 @@ export default async function Footer() {
 
   return (
     <footer className="bg-[#2C3829] text-white">
-      <div className="px-margin-mobile xl:px-8 pt-10 pb-8 lg:pt-16 lg:pb-12">
+      <div className="px-page pt-10 pb-8 lg:pt-16 lg:pb-12">
 
         {/* Top */}
         <div className="flex flex-col lg:flex-row justify-between">
@@ -22,7 +22,7 @@ export default async function Footer() {
           <div className="lg:w-[34%] flex flex-col items-start">
 
             {/* Logo */}
-            <div className="w-full -mt-8 -mb-4 lg:-mt-24 lg:-mb-4">
+            <div className="w-full -mt-8 -mb-10 lg:-mt-24 lg:-mb-20">
               <Image
                 src="/Ziea_Logo.png"
                 alt="ZIEA"

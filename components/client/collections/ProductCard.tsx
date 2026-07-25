@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 
 import Link from 'next/link';
 import { MdFavorite, MdOutlineFavoriteBorder } from 'react-icons/md';
+import { getBadgeColor } from '@/utils/badge';
 
 type ProductCardProps = {
   title: string;
@@ -46,7 +47,10 @@ export default function ProductCard({
         ></div>
         
         {badge && (
-          <div className={`absolute top-3 left-3 text-white px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase ${badgeClass}`}>
+          <div
+            className="jost absolute top-3 left-3 text-white px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase"
+            style={{ backgroundColor: getBadgeColor(badge) }}
+          >
             {badge}
           </div>
         )}
@@ -61,7 +65,7 @@ export default function ProductCard({
           className={`absolute top-3 right-3 w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all active:scale-90 ${isWished ? 'text-white' : 'text-white/80 hover:text-white'}`}
         >
           {isWished ? (
-            <MdFavorite className="text-[18px]" style={{ color: "var(--color-secondary)" }} />
+            <MdFavorite className="text-[18px]" style={{ color: "#E63946" }} />
           ) : (
             <MdOutlineFavoriteBorder className="text-[18px]" style={{ color: "var(--color-muted)" }} />
           )}

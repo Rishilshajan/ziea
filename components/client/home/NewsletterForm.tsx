@@ -37,6 +37,16 @@ export default function NewsletterForm() {
                 error={!state.success}
             />
 
+            <div className="mb-5">
+                <h3 className="cormorant text-[22px] italic text-[#F5F0E8]">
+                    Join Our Newsletter
+                </h3>
+                <p className="mt-2 text-[15px] leading-relaxed text-white/70">
+                    Subscribe with your email to be the first to know about new
+                    arrivals, offers, and stories from ZIEA.
+                </p>
+            </div>
+
             <form action={formAction} className="w-full space-y-4">
                 <input
                     type="email"

@@ -3,8 +3,8 @@ import { MdOutlineArrowForward } from "react-icons/md";
 
 export default function StoryBanner() {
   return (
-    <section className="px-margin-mobile">
-      <div className="bg-primary/20 rounded-3xl p-10 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
+    <section className="px-page">
+      <div className="bg-primary/20 rounded-3xl p-4 flex flex-col items-center text-center space-y-6 relative overflow-hidden">
         <div
           className="absolute inset-0 opacity-5 pointer-events-none"
           style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/linen.png')" }}

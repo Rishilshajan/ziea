@@ -27,6 +27,13 @@ export async function subscribeNewsletter(
             return { success: false, message: "Failed to subscribe. Please try again." };
         }
 
+        // Log to the admin activity feed (does not block the subscription).
+        await supabase.from("activity_logs").insert({
+            type: "Newsletter Subscription",
+            description: `${email} subscribed to ZIEA`,
+            metadata: { email },
+        });
+
         return { success: true, message: "Successfully subscribed!" };
     } catch (err) {
         console.error("Unexpected error during newsletter subscription:", err);

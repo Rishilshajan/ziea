@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { MdFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
+import { MdFavorite, MdOutlineFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
 import type { ProductCardProps } from "@/types/product";
+import { getBadgeColor } from "@/utils/badge";
+import { Button } from "../../ui/Button";
+
+// Standard vivid red for the "liked" wishlist state (common e-commerce heart red).
+const WISHLIST_RED = "#E63946";
 
 export default function ProductCard({
   productCode,
@@ -12,8 +17,18 @@ export default function ProductCard({
   discountedPrice,
   imageUrl,
   altText,
+  badge,
 }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+
+  // Visual-only for now — cart persistence (DB) comes later.
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
 
   return (
     <Link
@@ -28,24 +43,46 @@ export default function ProductCard({
           style={{ backgroundImage: `url("${imageUrl}")` }}
         />
 
+        {/* Admin-set badge */}
+        {badge && (
+          <>
+            {/* Mobile: diagonal corner ribbon across the top-left corner */}
+            <div className="md:hidden absolute top-0 left-0 h-20 w-20 overflow-hidden z-10 pointer-events-none">
+              <span
+                className="jost absolute top-[16px] -left-[26px] w-[120px] -rotate-45 py-1 text-center text-[9px] font-semibold uppercase tracking-wide text-white shadow-md"
+                style={{ backgroundColor: getBadgeColor(badge) }}
+              >
+                {badge}
+              </span>
+            </div>
+
+            {/* Desktop: flat pill (top-left) */}
+            <span
+              className="jost hidden md:block absolute top-3 left-3 text-white px-3 py-1 rounded-full text-[11px] font-semibold tracking-wider uppercase shadow-sm z-10"
+              style={{ backgroundColor: getBadgeColor(badge) }}
+            >
+              {badge}
+            </span>
+          </>
+        )}
+
         {/* Wishlist */}
         <button
           type="button"
+          aria-label={isFavorite ? "Remove from wishlist" : "Add to wishlist"}
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             setIsFavorite(!isFavorite);
           }}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all"
+          className="absolute top-3 right-3 w-10 h-10 rounded-full bg-background/80 backdrop-blur flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all"
         >
           {isFavorite ? (
-            <MdFavorite
-              className="text-sm"
-              style={{ color: "var(--color-secondary)" }}
-            />
+            <MdFavorite className="text-2xl" style={{ color: WISHLIST_RED }} />
           ) : (
             <MdOutlineFavoriteBorder
-              className="text-sm"
-              style={{ color: "var(--color-muted)" }}
+              className="text-2xl"
+              style={{ color: "var(--color-primary-dark)" }}
             />
           )}
         </button>
@@ -68,6 +105,16 @@ export default function ProductCard({
             </span>
           )}
         </div>
+
+        {/* Add to Cart (visual only for now) — same deep-forest style as the Hero "Shop Now" button */}
+        <Button
+          type="button"
+          variant="auth-primary"
+          onClick={handleAddToCart}
+          className={`gap-2 mt-3 !py-3 !text-base ${isAdded ? "!bg-primary" : ""}`}
+        >
+          {isAdded ? "Added!" : "Add to Cart"}
+        </Button>
       </div>
     </Link>
   );

@@ -2,7 +2,7 @@ import { Card } from "../../ui/Card";
 
 export default function JournalSection() {
   return (
-    <section className="py-20 px-margin-mobile space-y-8 bg-background">
+    <section className="py-20 px-page space-y-8 bg-background">
       <h3 className="cormorant text-3xl text-primary-dark italic">Journal</h3>
       <div className="space-y-8">
         <Card className="flex flex-col border border-border">
@@ -16,7 +16,7 @@ export default function JournalSection() {
               }}
             />
           </div>
-          <div className="p-6 space-y-3 bg-surface">
+          <div className="p-4 space-y-3 bg-surface">
             <span className="font-label-sm text-secondary uppercase tracking-widest">Rituals — Oct 2023</span>
             <h4 className="cormorant text-2xl text-text">The Art of Slow Living in Kerala</h4>
             <p className="jost text-muted line-clamp-2">
@@ -36,7 +36,7 @@ export default function JournalSection() {
               }}
             />
           </div>
-          <div className="p-6 space-y-3 bg-surface">
+          <div className="p-4 space-y-3 bg-surface">
             <span className="font-label-sm text-secondary uppercase tracking-widest">Heritage — Sept 2023</span>
             <h4 className="cormorant text-2xl text-text">Weaving Generations: The Loom Story</h4>
             <p className="jost text-muted line-clamp-2">

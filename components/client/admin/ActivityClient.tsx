@@ -88,6 +88,7 @@ export function ActivityClient() {
     if (type?.includes('Login') || type?.includes('Registration') || type?.includes('Enquiry')) return 'bg-blue-500';
     if (type?.includes('Product')) return 'bg-green-500';
     if (type?.includes('Category')) return 'bg-purple-500';
+    if (type?.includes('Newsletter') || type?.includes('Subscription')) return 'bg-[#C4856A]';
     return 'bg-[#7A9268]'; // default
   };
 
@@ -95,6 +96,7 @@ export function ActivityClient() {
     if (type?.includes('Login') || type?.includes('Registration') || type?.includes('Enquiry')) return 'bg-blue-50 text-blue-700 border-blue-200';
     if (type?.includes('Product')) return 'bg-green-50 text-green-700 border-green-200';
     if (type?.includes('Category')) return 'bg-purple-50 text-purple-700 border-purple-200';
+    if (type?.includes('Newsletter') || type?.includes('Subscription')) return 'bg-amber-50 text-amber-700 border-amber-200';
     return 'bg-gray-50 text-gray-700 border-gray-200';
   };
 
@@ -153,6 +155,7 @@ export function ActivityClient() {
               { value: 'Customer', label: 'Customer Actions' },
               { value: 'Category', label: 'Category Actions' },
               { value: 'Product', label: 'Product Actions' },
+              { value: 'Newsletter', label: 'Newsletter' },
             ]}
           />
         </div>

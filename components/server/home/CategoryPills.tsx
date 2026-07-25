@@ -39,7 +39,7 @@ export default function CategoryPills() {
   return (
     <section>
       {/* Heading */}
-      <div className="px-margin-mobile">
+      <div className="px-page">
         <h3 className="cormorant text-3xl italic text-primary-dark mb-8">
           Our Categories
         </h3>
@@ -47,7 +47,7 @@ export default function CategoryPills() {
 
       {/* Loading */}
       {loading ? (
-        <ScrollArea className="gap-6 pl-5 pr-5 pb-2">
+        <ScrollArea className="gap-6 md:gap-12 px-page pb-2">
           {[...Array(5)].map((_, index) => (
             <div
               key={index}
@@ -60,7 +60,7 @@ export default function CategoryPills() {
         </ScrollArea>
       ) : categories.length > 0 ? (
         /* Categories */
-        <ScrollArea className="gap-6 pl-5 pr-5 pb-2">
+        <ScrollArea className="gap-6 md:gap-12 px-page pb-2">
           {categories.map((category) => (
             <div
               key={category.id}
@@ -84,7 +84,7 @@ export default function CategoryPills() {
         </ScrollArea>
       ) : (
         /* Empty State */
-        <div className="px-margin-mobile py-8 text-center">
+        <div className="px-page py-8 text-center">
           <div className="rounded-xl border border-border bg-muted/10 px-6 py-8">
             <p className="text-base font-medium text-primary-dark">
               No categories available

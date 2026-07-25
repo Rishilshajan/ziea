@@ -14,7 +14,8 @@ export default async function CollectionsGrid() {
       name,
       original_price,
       discounted_price,
-      images
+      images,
+      badges
     `)
     .eq("is_published", true)
     .eq("status", "published")
@@ -26,7 +27,7 @@ export default async function CollectionsGrid() {
   }
 
   return (
-    <section className="px-margin-mobile space-y-8 bg-background">
+    <section className="px-page space-y-8 bg-background">
       {/* Heading */}
       <div className="flex justify-between items-end">
         <h3 className="cormorant text-3xl italic text-primary-dark">
@@ -67,6 +68,7 @@ export default async function CollectionsGrid() {
                 "/placeholder-product.jpg"
               }
               altText={product.name}
+              badge={product.badges?.[0]}
             />
           ))}
         </div>
