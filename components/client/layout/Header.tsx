@@ -260,9 +260,9 @@ export default function Header() {
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsMenuOpen(false)}
-          />
-          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-6 transform transition-transform animate-in slide-in-from-left duration-300">
-            <div className="flex items-center justify-between mb-8">
+          /> 
+          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-7 pt-2 transform transition-transform animate-in slide-in-from-left duration-300">
+            <div className="flex items-center justify-between h-20 mb-8">
               <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} className="h-16 w-auto object-contain object-left scale-[1.5] origin-left -ml-2" priority />
               <Button
                 variant="icon"
@@ -273,7 +273,7 @@ export default function Header() {
               </Button>
             </div>
 
-            <nav className="flex flex-col gap-6">
+            <nav className="flex flex-col gap-">
               {menuItems.map((item, index) => (
                 <Link
                   key={index}

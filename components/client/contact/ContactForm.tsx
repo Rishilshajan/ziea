@@ -227,14 +227,12 @@ export default function ContactForm() {
 
               {formState === "sending" && (
                 <>
-                  <MdOutlineSync className="animate-spin" />
                   Sending...
                 </>
               )}
 
               {formState === "sent" && (
                 <>
-                  <MdOutlineCheckCircle />
                   Message Sent
                 </>
               )}
