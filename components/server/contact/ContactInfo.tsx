@@ -11,11 +11,10 @@ import {
 
 export default function ContactInfo() {
   return (
-    /* Added h-full here */
-    <div className="md:col-span-5 flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6">
 
-      {/* Visit Studio — Added flex-1 */}
-      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-5 sm:p-6 md:p-8 flex-1">
+      {/* Visit Studio */}
+      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
 
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
           <MdOutlineLocationOn size={26} />
@@ -34,8 +33,9 @@ export default function ContactInfo() {
         </div>
 
         <Link
-          href="https://maps.google.com"
+          href="https://maps.app.goo.gl/JqVsYEdVZWprU3aa8"
           target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center gap-2 mt-8 text-secondary font-medium hover:gap-3 transition-all"
         >
           View on Google Maps
@@ -44,8 +44,8 @@ export default function ContactInfo() {
 
       </div>
 
-      {/* Reach Out — Added flex-1 */}
-      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-5 sm:p-6 md:p-8 flex-1">
+      {/* Reach Out */}
+      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
 
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
           <MdOutlineContactSupport size={24} />
@@ -113,7 +113,7 @@ export default function ContactInfo() {
 
         </div>
 
-        <div className="mt-8 rounded-2xl bg-background/70 border border-border p-5">
+        <div className="mt-8 rounded-2xl bg-background/70 border border-border p-4">
 
           <p className="font-jost text-base font-medium uppercase tracking-widest text-muted mb-2">
             Response Time

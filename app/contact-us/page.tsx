@@ -18,9 +18,9 @@ export default function ContactPage() {
     <>
       <Header />
 
-      <main className="bg-background min-h-screen mt-16 md:mt-20">
+      <main className="bg-background mt-16 md:mt-20">
 
-        <div className="w-full px-margin-mobile xl:px-8 pt-4 md:pt-6 pb-16 md:pb-24">
+        <div className="w-full px-page pt-4 md:pt-6 pb-10 md:pb-14">
 
           {/* Breadcrumb */}
           <nav className="flex items-center text-[13px] md:text-sm text-muted mb-6 md:mb-8">
@@ -39,7 +39,7 @@ export default function ContactPage() {
           </nav>
 
           {/* Heading */}
-          <div className="mx-auto mb-10 md:mb-14 max-w-3xl text-center">
+          <div className="mx-auto mb-8 md:mb-10 max-w-3xl text-center">
 
             <h1 className="cormorant text-5xl md:text-6xl italic text-primary-dark">
               Connect With Us
@@ -58,14 +58,14 @@ export default function ContactPage() {
           */}
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 xl:gap-10 items-start">
 
-            {/* LEFT COLUMN — Form + Image stacked naturally */}
-            <div className="xl:col-span-7 flex flex-col gap-8">
+            {/* LEFT COLUMN — Form (sticky on desktop while the info scrolls) */}
+            <div className="xl:col-span-7 flex flex-col gap-8 xl:sticky xl:top-24 xl:self-start">
 
               <ContactForm />
 
             </div>
 
-            {/* RIGHT COLUMN — Info Cards */}
+            {/* RIGHT COLUMN — Info Cards (scroll) */}
             <div className="xl:col-span-5">
               <ContactInfo />
             </div>

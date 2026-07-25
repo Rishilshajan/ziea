@@ -124,7 +124,7 @@ export default function ContactForm() {
 
   return (
     <>
-      <section className="w-full rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-5 sm:p-6 md:p-8">
+      <section className="w-full rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
 
         {/* Header */}
         <div className="mb-8">

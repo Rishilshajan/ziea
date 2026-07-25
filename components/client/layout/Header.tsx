@@ -158,7 +158,9 @@ export default function Header() {
           </div>
 
           <div className="flex-[0.5] flex justify-center items-center shrink-0">
-            <Image src="/Ziea_Logo.png" alt="ZIEA" width={400} height={250} className="h-20 lg:h-28 w-auto object-contain scale-[1.5]" priority />
+            <Link href="/" aria-label="ZIEA home">
+              <Image src="/Ziea_Logo.png" alt="ZIEA" width={400} height={250} className="h-20 lg:h-28 w-auto object-contain scale-[1.5]" priority />
+            </Link>
           </div>
 
           <div className="flex-1 flex items-center justify-end gap-4 lg:gap-6">
@@ -231,7 +233,9 @@ export default function Header() {
           <MdOutlineMenu className="text-2xl" />
         </Button>
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
-          <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} className="h-24 w-auto object-contain scale-[1.8] pointer-events-auto" priority />
+          <Link href="/" aria-label="ZIEA home" className="pointer-events-auto">
+            <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} className="h-24 w-auto object-contain scale-[1.8]" priority />
+          </Link>
         </div>
         <div className="flex gap-1 items-center z-10">
           <Link href="/wishlist">
