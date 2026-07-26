@@ -14,7 +14,7 @@ export default function LoginPage() {
       <div className="absolute w-[500px] h-[500px] rounded-full blur-[40px] -z-10 bg-[radial-gradient(circle,rgba(76,98,61,0.04)_0%,rgba(255,248,245,0)_70%)] top-0 right-0 -translate-y-1/4 translate-x-1/4"></div>
       <div className="absolute w-[500px] h-[500px] rounded-full blur-[40px] -z-10 bg-[radial-gradient(circle,rgba(76,98,61,0.04)_0%,rgba(255,248,245,0)_70%)] bottom-0 left-0 translate-y-1/4 -translate-x-1/4"></div>
 
-      <main className="flex-grow flex flex-col items-center p-6 py-12 w-full">
+      <main className="flex-grow flex flex-col items-center px-page py-12 w-full">
         <AuthForm initialMode="login" />
       </main>
 

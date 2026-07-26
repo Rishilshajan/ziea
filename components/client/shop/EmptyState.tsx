@@ -1,29 +1,24 @@
 import React from 'react';
 import Link from 'next/link';
-import { MdOutlineFavoriteBorder } from 'react-icons/md';
+import { Button } from '../../ui/Button';
 
 interface EmptyStateProps {
   title: string;
   description: string;
-  icon: React.ReactNode;
+  /** Kept for API compatibility; no longer rendered. */
+  icon?: React.ReactNode;
 }
 
-export default function EmptyState({ title, icon, description }: EmptyStateProps) {
+export default function EmptyState({ description }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center pt-2 pb-8 md:py-12 text-center">
-      <div className="w-32 h-32 mb-6 flex items-center justify-center rounded-full bg-surface-container-low border-2 border-dashed border-primary/20">
-        <div className="text-primary text-6xl flex items-center justify-center">
-          {icon}
-        </div>
-      </div>
-      <h3 className="font-headline-md text-3xl text-on-surface mb-2">Your {title.toLowerCase()} is empty</h3>
-      <p className="font-body-md text-on-surface-variant mb-8 max-w-sm">
+    <div className="flex flex-col items-center justify-center pt-4 md:pt-6 pb-12 md:pb-16 text-center">
+      <p className="font-jost text-base md:text-lg text-muted mb-8 max-w-sm">
         {description}
       </p>
-      <Link href="/collections">
-        <button className="bg-primary text-white px-10 py-3 rounded-full font-label-md hover:opacity-90 active:scale-[0.97] transition-all">
+      <Link href="/collections" className="w-full max-w-xs sm:max-w-none sm:w-auto">
+        <Button variant="auth-primary" className="!w-full sm:!w-auto px-10">
           Explore Shop
-        </button>
+        </Button>
       </Link>
     </div>
   );

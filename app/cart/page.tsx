@@ -10,44 +10,42 @@ export const metadata: Metadata = {
   description: 'Review your selected items before checkout.',
 };
 
-const mockCartItems = [
-  {
-    id: "cart-1",
-    title: "Ethereal Cotton Gown",
-    variant: "Sage Grove / Silk Blend / Size: M",
-    price: "₹2,499",
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBSY95RWH1Wo7H19PkacynKlYVolPOtOIyMq6LUl5JHAHt74v3OKePn2HzVtjEnd8ytxfA4LvkNaSBiAqWXt-jCF_0mux_z_ApCMjqdlc9uFeCBYyth0A_Hw7H8lb7GGvTsBh-vHns__TeuqJbk-9wkpPJ1BocwdWTIt3sDxRjZ7J5TIe4MItD46YM52GC8U0pqqUbvx4eUQEqXEwYIMVDKyebTqbvK82XvHxYbDfsBjGNSdnZE0R0SpdGXYjJ3l4ld3YH74X2_ZE4"
-  }
-];
-
 export default function CartPage() {
   return (
     <>
       <Header />
       
-      <main className="pt-20 md:pt-24 pb-16 px-4 xl:px-8 w-full min-h-[80vh]">
-        
-        {/* Breadcrumbs */}
-        <div className="mb-4 md:mb-6 mt-0">
-          <nav className="inline-flex text-[13px] md:text-sm text-[#44483f]">
-            <Link href="/" className="hover:text-[#4c623d] transition-colors">Home</Link>
-            <span className="mx-2">/</span>
-            <span className="text-[#211a15]">Shopping Cart</span>
+      <main className="bg-background mt-16 md:mt-20">
+
+        <div className="w-full px-page pt-4 md:pt-6 pb-10 md:pb-14">
+
+          {/* Breadcrumb */}
+          <nav className="flex items-center text-[13px] md:text-sm text-muted mb-6 md:mb-8">
+            <Link href="/" className="transition-colors hover:text-primary">Home</Link>
+            <span className="mx-2 text-muted/40">/</span>
+            <span className="text-text">Shopping Cart</span>
           </nav>
+
+          {/* Heading */}
+          <div className="mx-auto mb-8 md:mb-10 max-w-3xl text-center">
+            <h1 className="cormorant text-5xl md:text-6xl italic text-primary-dark">
+              Shopping Cart
+            </h1>
+            <p className="mt-5 font-jost text-base md:text-lg leading-8 text-muted">
+              Review your selected items before checkout.
+            </p>
+          </div>
+
+          <ListManager
+            title="Cart"
+            type="cart"
+            icon={<MdOutlineShoppingBag />}
+            emptyDescription="Your bag is looking a little empty. Discover our collections to add items."
+            items={[]}
+          />
+
         </div>
 
-        <section className="mb-4 md:mb-12 flex flex-col items-center text-center">
-          <h2 className="cormorant text-4xl md:text-5xl lg:text-5xl text-primary mb-3">Shopping Cart</h2>
-          <p className="font-jost text-[15px] md:text-lg text-on-surface-variant max-w-lg">Review your selected items before checkout.</p>
-        </section>
-
-        <ListManager 
-          title="Cart"
-          type="cart"
-          icon={<MdOutlineShoppingBag />}
-          emptyDescription="Your bag is looking a little empty. Discover our collections to add items."
-          mockItems={mockCartItems}
-        />
       </main>
       
       <Footer />

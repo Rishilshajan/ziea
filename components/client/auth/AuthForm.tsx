@@ -187,7 +187,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
   };
 
   return (
-    <div className="w-full max-w-[440px] bg-[#FDFAF6] rounded-3xl p-6 md:p-10 shadow-[0px_4px_32px_rgba(44,56,41,0.06)] relative z-10 my-auto mx-auto flex flex-col">
+    <div className="w-full max-w-[440px] bg-[#FDFAF6] rounded-3xl p-4 border border-border shadow-[0px_4px_32px_rgba(44,56,41,0.08)] relative z-10 my-auto mx-auto flex flex-col">
       {/* Brand Header */}
       <header className="flex flex-col items-center justify-center mb-6 shrink-0">
         <Link href="/" className="hover:opacity-80 transition-opacity">

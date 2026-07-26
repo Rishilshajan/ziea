@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { MdOutlineLock } from 'react-icons/md';
+import { Button } from '../../ui/Button';
 
 interface UnauthenticatedStateProps {
   title: string;
@@ -8,21 +8,24 @@ interface UnauthenticatedStateProps {
 
 export default function UnauthenticatedState({ title }: UnauthenticatedStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center pt-2 pb-8 md:py-12 text-center">
-      <div className="w-32 h-32 mb-6 flex items-center justify-center rounded-full bg-surface-container-low border-2 border-dashed border-primary/20">
-        <MdOutlineLock className="text-primary text-6xl" />
-      </div>
-      <h3 className="font-headline-md text-3xl text-on-surface mb-2">{title}</h3>
-      <p className="font-body-md text-on-surface-variant mb-8 max-w-sm">
-        User is not signed in. Please log in or sign up to view and manage your {title.toLowerCase()}.
+    <div className="flex flex-col items-center justify-center pt-4 md:pt-6 pb-12 md:pb-16 text-center">
+      <p className="font-jost text-base md:text-lg text-muted mb-8 max-w-sm">
+        You&apos;re not signed in. Please log in or sign up to view and manage your {title.toLowerCase()}.
       </p>
-      <div className="flex flex-col sm:flex-row gap-4">
-        <button className="bg-primary text-white px-10 py-3 rounded-full font-label-md hover:opacity-90 active:scale-[0.97] transition-all">
-          Login
-        </button>
-        <button className="bg-transparent text-primary border-2 border-primary px-10 py-3 rounded-full font-label-md hover:bg-primary/5 active:scale-[0.97] transition-all">
-          Sign Up
-        </button>
+      <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto max-w-xs sm:max-w-none">
+        <Link href="/login" className="w-full sm:w-auto">
+          <Button variant="auth-primary" className="!w-full sm:!w-auto px-10">
+            Login
+          </Button>
+        </Link>
+        <Link href="/signup" className="w-full sm:w-auto">
+          <Button
+            variant="auth-primary"
+            className="!w-full sm:!w-auto px-10 !bg-transparent !text-[#2C3829] border-2 border-[#2C3829] hover:!bg-[#2C3829]/5 hover:!opacity-100 !shadow-none"
+          >
+            Sign Up
+          </Button>
+        </Link>
       </div>
     </div>
   );

@@ -137,7 +137,7 @@ export default function Header() {
   const menuItems = [
     { icon: <MdHome className="text-2xl" />, label: "Home", href: "/" },
     { icon: <MdOutlineStyle className="text-2xl" />, label: "Collections", href: "/collections" },
-    { icon: <MdOutlineFavoriteBorder className="text-2xl" />, label: "Wishlist", href: "#" },
+    { icon: <MdOutlineFavoriteBorder className="text-2xl" />, label: "Wishlist", href: "/wishlist" },
     { icon: <MdOutlineInfo className="text-2xl" />, label: "About Us", href: "/about-us" },
     { icon: <MdOutlineMail className="text-2xl" />, label: "Contact Us", href: "/contact-us" },
   ];
