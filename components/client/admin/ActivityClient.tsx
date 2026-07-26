@@ -13,7 +13,17 @@ export function ActivityClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [timeFilter, setTimeFilter] = useState("Last 30 Days");
-  const [typeFilter, setTypeFilter] = useState("All Activity");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+
+  const TYPE_CHIPS: { value: string; label: string; match: (t: string) => boolean }[] = [
+    { value: 'Customer', label: 'Customer', match: (t) => t.includes('Login') || t.includes('Registration') },
+    { value: 'Enquiry', label: 'Enquiry', match: (t) => t.includes('Enquiry') },
+    { value: 'Category', label: 'Category', match: (t) => t.includes('Category') },
+    { value: 'Product', label: 'Product', match: (t) => t.includes('Product') },
+    { value: 'Newsletter', label: 'Newsletter', match: (t) => t.includes('Newsletter') || t.includes('Subscription') },
+  ];
+  const toggleType = (val: string) =>
+    setSelectedTypes(prev => (prev.includes(val) ? prev.filter(t => t !== val) : [...prev, val]));
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -65,38 +75,45 @@ export function ActivityClient() {
         matchesTime = new Date(activity.created_at) >= date;
       }
 
-      // 3. Type filter
+      // 3. Type filter (multi-select; none selected = show all)
       let matchesType = true;
-      if (typeFilter !== "All Activity") {
-        matchesType = (activity.type || '').includes(typeFilter);
+      if (selectedTypes.length > 0) {
+        const activeChips = TYPE_CHIPS.filter(c => selectedTypes.includes(c.value));
+        matchesType = activeChips.some(c => c.match(activity.type || ''));
       }
 
       return matchesSearch && matchesTime && matchesType;
     });
-  }, [activities, searchTerm, timeFilter, typeFilter]);
+  }, [activities, searchTerm, timeFilter, selectedTypes]);
 
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, timeFilter, typeFilter]);
+  }, [searchTerm, timeFilter, selectedTypes]);
 
   const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
 
   const getActivityColor = (type: string) => {
-    if (type?.includes('Login') || type?.includes('Registration') || type?.includes('Enquiry')) return 'bg-blue-500';
-    if (type?.includes('Product')) return 'bg-green-500';
-    if (type?.includes('Category')) return 'bg-purple-500';
-    if (type?.includes('Newsletter') || type?.includes('Subscription')) return 'bg-[#C4856A]';
-    return 'bg-[#7A9268]'; // default
+    const t = type || '';
+    if (t.includes('Added')) return 'bg-[#7A9268]';   // Sage Grove
+    if (t.includes('Updated')) return 'bg-[#C4856A]';  // Terracotta
+    if (t.includes('Deleted')) return 'bg-[#E63946]';  // Red
+    if (t.includes('Enquiry')) return 'bg-indigo-500';
+    if (t.includes('Login') || t.includes('Registration')) return 'bg-blue-500';
+    if (t.includes('Newsletter') || t.includes('Subscription')) return 'bg-amber-500';
+    return 'bg-[#7A7068]'; // Warm Mist
   };
 
   const getTypeBadgeClass = (type: string) => {
-    if (type?.includes('Login') || type?.includes('Registration') || type?.includes('Enquiry')) return 'bg-blue-50 text-blue-700 border-blue-200';
-    if (type?.includes('Product')) return 'bg-green-50 text-green-700 border-green-200';
-    if (type?.includes('Category')) return 'bg-purple-50 text-purple-700 border-purple-200';
-    if (type?.includes('Newsletter') || type?.includes('Subscription')) return 'bg-amber-50 text-amber-700 border-amber-200';
+    const t = type || '';
+    if (t.includes('Added')) return 'bg-[#7A9268]/10 text-[#4c623d] border-[#7A9268]/40';   // Sage Grove
+    if (t.includes('Updated')) return 'bg-[#C4856A]/15 text-[#8f5a41] border-[#C4856A]/40';  // Terracotta
+    if (t.includes('Deleted')) return 'bg-red-50 text-red-700 border-red-200';               // Red
+    if (t.includes('Enquiry')) return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+    if (t.includes('Login') || t.includes('Registration')) return 'bg-blue-50 text-blue-700 border-blue-200';
+    if (t.includes('Newsletter') || t.includes('Subscription')) return 'bg-amber-50 text-amber-700 border-amber-200';
     return 'bg-gray-50 text-gray-700 border-gray-200';
   };
 
@@ -113,51 +130,64 @@ export function ActivityClient() {
 
   return (
     <>
-      {/* Full-width Search and Filter Bar */}
-      <div className="mt-6 mb-6 flex flex-col md:flex-row gap-4 w-full">
-        {/* Search Bar */}
-        <div className="w-full md:flex-1">
-          <Input 
-            leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
-            placeholder="Search activity description..." 
-            type="text" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      {/* Search + Filter Bar */}
+      <div className="mt-6 mb-6 flex flex-col gap-4 w-full">
+        {/* Row 1: Search + Time */}
+        <div className="flex flex-col md:flex-row gap-4 w-full">
+          <div className="w-full md:flex-1">
+            <Input
+              leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
+              placeholder="Search activity description..."
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="w-full md:w-48 z-20">
+            <Select
+              label=""
+              placeholder="Filter by time"
+              value={timeFilter}
+              onChange={setTimeFilter}
+              options={[
+                { value: 'None', label: 'None' },
+                { value: 'Last 30 Days', label: 'Last 30 Days' },
+                { value: 'Last 3 Months', label: 'Last 3 Months' },
+                { value: 'Last 6 Months', label: 'Last 6 Months' },
+                { value: 'All Time', label: 'All Time' },
+              ]}
+            />
+          </div>
         </div>
 
-        {/* Time Filter */}
-        <div className="w-full md:w-48 z-20">
-          <Select 
-            label=""
-            placeholder="Filter by time"
-            value={timeFilter}
-            onChange={setTimeFilter}
-            options={[
-              { value: 'None', label: 'None' },
-              { value: 'Last 30 Days', label: 'Last 30 Days' },
-              { value: 'Last 3 Months', label: 'Last 3 Months' },
-              { value: 'Last 6 Months', label: 'Last 6 Months' },
-              { value: 'All Time', label: 'All Time' },
-            ]}
-          />
-        </div>
-
-        {/* Type Filter */}
-        <div className="w-full md:w-48 z-10">
-          <Select 
-            label=""
-            placeholder="Filter by type"
-            value={typeFilter}
-            onChange={setTypeFilter}
-            options={[
-              { value: 'All Activity', label: 'All Activity' },
-              { value: 'Customer', label: 'Customer Actions' },
-              { value: 'Category', label: 'Category Actions' },
-              { value: 'Product', label: 'Product Actions' },
-              { value: 'Newsletter', label: 'Newsletter' },
-            ]}
-          />
+        {/* Row 2: Type chips (multi-select; none = all) */}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 w-full">
+          {TYPE_CHIPS.map((chip) => {
+            const active = selectedTypes.includes(chip.value);
+            return (
+              <button
+                key={chip.value}
+                type="button"
+                onClick={() => toggleType(chip.value)}
+                className={`px-4 py-2.5 rounded-full text-sm font-jost font-medium transition-colors border ${active
+                  ? 'bg-[#2C3829] text-white border-[#2C3829]'
+                  : 'bg-white text-[#2C3829]/70 border-[#d6c3b3]/50 hover:bg-[#d6c3b3]/20'
+                  }`}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+          {selectedTypes.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setSelectedTypes([])}
+              className="px-4 py-2.5 rounded-full text-sm font-jost font-medium text-[#2C3829]/60 hover:text-[#2C3829] transition-colors"
+            >
+              Clear
+            </button>
+          )}
         </div>
       </div>
 

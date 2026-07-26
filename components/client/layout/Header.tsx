@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
@@ -38,7 +38,9 @@ const AVATAR_COLORS = [
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const supabase = createClient();
+  // Memoize the client so its identity is stable across renders — otherwise every
+  // effect that depends on `supabase` re-runs on each render (badge-count refetch storm).
+  const supabase = useMemo(() => createClient(), []);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,6 +48,8 @@ export default function Header() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
+  const [wishlistCount, setWishlistCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     // Click outside to close dropdown
@@ -115,6 +119,64 @@ export default function Header() {
     checkRoleOnNavigation();
   }, [pathname, user, profile, router, supabase]);
 
+  // Track "last seen" (real browsing activity) for the admin Active-users metric.
+  // Fire-and-forget on each authenticated navigation.
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from('users')
+        .update({ last_seen_at: new Date().toISOString() })
+        .eq('id', user.id)
+        .then(() => {});
+    }
+  }, [pathname, user?.id, supabase]);
+
+
+  // Wishlist + cart badge counts. Refetched on navigation and whenever a mutation
+  // elsewhere dispatches the `ziea:counts-changed` event, so badges stay live without
+  // waiting for a page navigation.
+  const userId = user?.id;
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchCounts = async () => {
+      if (!userId) {
+        if (mounted) {
+          setWishlistCount(0);
+          setCartCount(0);
+        }
+        return;
+      }
+
+      const [{ count: wCount }, { data: cartRows }] = await Promise.all([
+        supabase
+          .from('wishlist_items')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', userId),
+        supabase
+          .from('cart_items')
+          .select('quantity')
+          .eq('user_id', userId),
+      ]);
+
+      if (!mounted) return;
+      setWishlistCount(wCount ?? 0);
+      setCartCount(
+        (cartRows ?? []).reduce((sum, r) => sum + (r.quantity ?? 0), 0),
+      );
+    };
+
+    fetchCounts();
+
+    const onChanged = () => fetchCounts();
+    window.addEventListener('ziea:counts-changed', onChanged);
+
+    return () => {
+      mounted = false;
+      window.removeEventListener('ziea:counts-changed', onChanged);
+    };
+  }, [pathname, userId, supabase]);
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -174,11 +236,21 @@ export default function Header() {
             </div>
 
             <div className="flex gap-4">
-              <Link href="/wishlist" className="text-text hover:text-primary transition-colors flex items-center">
+              <Link href="/wishlist" className="relative text-text hover:text-primary transition-colors flex items-center">
                 <MdOutlineFavoriteBorder className="text-2xl" />
+                {user && wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 min-w-[21px] h-[21px] px-1 rounded-full bg-[#7A9268] text-white text-[12px] font-semibold flex items-center justify-center leading-none">
+                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                  </span>
+                )}
               </Link>
-              <Link href="/cart" className="text-text hover:text-primary transition-colors flex items-center">
+              <Link href="/cart" className="relative text-text hover:text-primary transition-colors flex items-center">
                 <MdOutlineShoppingBag className="text-2xl" />
+                {user && cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 min-w-[21px] h-[21px] px-1 rounded-full bg-[#7A9268] text-white text-[12px] font-semibold flex items-center justify-center leading-none">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
               </Link>
             </div>
 
@@ -238,15 +310,25 @@ export default function Header() {
           </Link>
         </div>
         <div className="flex gap-1 items-center z-10">
-          <Link href="/wishlist">
+          <Link href="/wishlist" className="relative">
             <Button variant="icon" className="p-1">
               <MdOutlineFavoriteBorder className="text-[22px]" />
             </Button>
+            {user && wishlistCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7A9268] text-white text-[10px] font-semibold flex items-center justify-center leading-none">
+                {wishlistCount > 99 ? '99+' : wishlistCount}
+              </span>
+            )}
           </Link>
-          <Link href="/cart">
+          <Link href="/cart" className="relative">
             <Button variant="icon" className="p-1">
               <MdOutlineShoppingBag className="text-[22px]" />
             </Button>
+            {user && cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7A9268] text-white text-[10px] font-semibold flex items-center justify-center leading-none">
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            )}
           </Link>
           {user && !profile ? (
             <div className="ml-1 flex items-center">

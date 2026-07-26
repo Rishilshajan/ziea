@@ -189,3 +189,12 @@
 .rich-text-content u {
   text-decoration: underline;
 }
+
+/* Neutralize background colors and hard-coded text colors baked into pasted HTML
+   (e.g. copied content that carries a black highlight) so stored rich-text always
+   renders on the site theme. Descendants only, so the container's own color class
+   still drives the text color and children inherit it. */
+.rich-text-content * {
+  background-color: transparent !important;
+  color: inherit !important;
+}

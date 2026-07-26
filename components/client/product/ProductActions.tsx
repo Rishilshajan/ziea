@@ -1,12 +1,53 @@
 "use client";
 
-import React, { useState } from 'react';
-import { MdOutlineRemove, MdOutlineAdd, MdOutlineLocalShipping, MdOutlineEco, MdOutlineVerifiedUser, MdOutlineExpandMore } from 'react-icons/md';
+import React, { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { MdOutlineLocalShipping, MdOutlineEco, MdOutlineVerifiedUser } from 'react-icons/md';
+import type { ProductSize } from '@/types/product';
+import { QuantityStepper } from '@/components/ui/QuantityStepper';
+import { Button } from '@/components/ui/Button';
+import { addToCart } from '@/app/actions/cart';
+import { notifyCountsChanged } from '@/utils/counts';
 
-export default function ProductActions() {
-  const sizes = ["XS", "S", "M", "L", "XL"];
-  const [selectedSize, setSelectedSize] = useState("M");
+interface ProductActionsProps {
+  productId: string;
+  sizes: ProductSize[];
+}
+
+export default function ProductActions({ productId, sizes }: ProductActionsProps) {
+  const router = useRouter();
+  const availableSizes = sizes ?? [];
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [isAdded, setIsAdded] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const selected = availableSizes.find((s) => s.size === selectedSize) ?? null;
+  const maxQty = selected ? Math.max(1, selected.quantity) : 1;
+
+  const handleSelectSize = (size: ProductSize) => {
+    if (size.quantity <= 0) return;
+    // Toggle: tapping the selected size again clears it.
+    setSelectedSize((prev) => (prev === size.size ? null : size.size));
+    setQuantity(1);
+  };
+
+  // Gate: a size must be selected before adding to cart.
+  const canAddToCart = selected !== null;
+
+  const handleAddToCart = () => {
+    if (!canAddToCart || !selectedSize) return;
+    startTransition(async () => {
+      const res = await addToCart(productId, selectedSize, quantity);
+      if (res && 'error' in res && res.error === 'unauthenticated') {
+        router.push('/login');
+        return;
+      }
+      notifyCountsChanged();
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000);
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -14,62 +55,62 @@ export default function ProductActions() {
       <div className="space-y-4">
         <label className="font-label-md text-on-surface-variant block text-sm font-medium">Select Size</label>
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-          {sizes.map((size) => (
-            <button
-              key={size}
-              onClick={() => setSelectedSize(size)}
-              className={`flex-none w-14 h-10 rounded-full font-jost text-sm transition-all duration-200 active:scale-95 border border-transparent ${
-                selectedSize === size
-                  ? "bg-[#4c623d] text-white"
-                  : "bg-surface-variant text-primary hover:bg-[#d6c3b3]"
-              }`}
-            >
-              {size}
-            </button>
-          ))}
+          {availableSizes.map((size) => {
+            const isOutOfStock = size.quantity <= 0;
+            const isSelected = selectedSize === size.size;
+            return (
+              <button
+                key={size.size}
+                type="button"
+                onClick={() => handleSelectSize(size)}
+                disabled={isOutOfStock}
+                aria-pressed={isSelected}
+                className={`flex-none min-w-[3.25rem] px-4 h-11 rounded-full font-jost text-sm font-medium transition-all duration-200 border ${
+                  isOutOfStock
+                    ? "border-[#d6c3b3]/50 text-[#2C3829]/40 opacity-50 cursor-not-allowed line-through"
+                    : isSelected
+                      ? "bg-[#2C3829] text-white border-[#2C3829] active:scale-95"
+                      : "bg-white text-[#2C3829] border-[#d6c3b3] hover:border-[#2C3829]/50 active:scale-95"
+                }`}
+              >
+                {size.size}
+              </button>
+            );
+          })}
         </div>
-        <p className="text-xs text-secondary italic">Only 1 left in stock</p>
+        {selected ? (
+          <p className="text-sm font-semibold text-[#2C3829]">
+            {selected.quantity} left in stock
+          </p>
+        ) : (
+          <p className="text-sm font-medium text-[#2C3829]/70">Select a size</p>
+        )}
       </div>
 
       {/* Quantity */}
       <div className="space-y-2">
         <label className="font-label-md text-on-surface-variant block text-sm font-medium">Quantity</label>
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-10 h-10 flex items-center justify-center rounded-md bg-surface-variant text-primary hover:bg-[#d6c3b3] transition-colors"
-          >
-            <MdOutlineRemove className="text-lg" />
-          </button>
-          <span className="font-jost text-base w-6 text-center">{quantity}</span>
-          <button 
-            onClick={() => setQuantity(quantity + 1)}
-            className="w-10 h-10 flex items-center justify-center rounded-md bg-surface-variant text-primary hover:bg-[#d6c3b3] transition-colors"
-          >
-            <MdOutlineAdd className="text-lg" />
-          </button>
-        </div>
+        <QuantityStepper
+          value={quantity}
+          onChange={setQuantity}
+          min={1}
+          max={maxQty}
+        />
       </div>
 
       {/* Buttons */}
       <div className="pt-2 space-y-4">
-        <button className="w-full bg-[#865139] text-white font-label-md h-12 rounded-full transition-all hover:bg-[#7a4730] active:scale-[0.97] soft-lift uppercase tracking-widest text-sm font-bold">
-          Add to Cart
-        </button>
-        <button className="w-full bg-transparent border-2 border-[#4c623d] text-[#4c623d] font-label-md h-12 rounded-full transition-all hover:bg-[#4c623d] hover:text-white active:scale-[0.97] uppercase tracking-widest text-sm font-bold">
-          Buy Now
-        </button>
+        <Button
+          type="button"
+          variant="auth-primary"
+          onClick={handleAddToCart}
+          disabled={!canAddToCart || isPending}
+          className={`${!canAddToCart ? "opacity-50 cursor-not-allowed" : ""} ${isAdded ? "!bg-primary" : ""}`}
+        >
+          {isAdded ? "Added!" : "Add to Cart"}
+        </Button>
       </div>
 
-      {/* Delivery Estimate */}
-      <div className="bg-[#f9ebe1] p-4 rounded-lg flex gap-4 items-start border border-[#d6c3b3]/30">
-        <MdOutlineLocalShipping className="text-[#4c623d] mt-0.5" />
-        <div>
-          <p className="text-sm font-semibold text-[#44483f]">Estimated delivery in 7 days</p>
-          <p className="text-xs text-[#74796e] mt-1">Free shipping on all orders</p>
-        </div>
-      </div>
-      
       {/* Badges */}
       <div className="flex justify-between items-center py-4 border-b border-[#eee0d6]">
         <div className="flex flex-col items-center gap-1">
@@ -84,28 +125,6 @@ export default function ProductActions() {
           <MdOutlineVerifiedUser className="text-[#4c623d]" />
           <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Secure Pay</span>
         </div>
-      </div>
-
-      {/* Accordions */}
-      <div className="space-y-4 pt-2">
-        <details className="group border-b border-[#eee0d6] pb-4">
-          <summary className="flex justify-between items-center cursor-pointer list-none">
-            <span className="font-label-md text-primary font-bold">Material & Care</span>
-            <MdOutlineExpandMore className="transition-transform group-open:rotate-180 text-primary" />
-          </summary>
-          <div className="pt-3 text-sm text-[#74796e] font-jost leading-relaxed">
-            Dry clean recommended. Hand wash cold with mild detergent. Lay flat to dry in shade to preserve the color and fibers.
-          </div>
-        </details>
-        <details className="group border-b border-[#eee0d6] pb-4">
-          <summary className="flex justify-between items-center cursor-pointer list-none">
-            <span className="font-label-md text-primary font-bold">Shipping & Returns</span>
-            <MdOutlineExpandMore className="transition-transform group-open:rotate-180 text-primary" />
-          </summary>
-          <div className="pt-3 text-sm text-[#74796e] font-jost leading-relaxed">
-            Free shipping on orders over ₹2000. Returns accepted within 7 days of delivery for unworn items in original packaging.
-          </div>
-        </details>
       </div>
     </div>
   );

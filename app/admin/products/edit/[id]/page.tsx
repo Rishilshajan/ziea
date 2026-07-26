@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import { MdArrowBack } from 'react-icons/md';
 import { createClient } from '@/utils/supabase/server';
 import AddProductForm from '@/components/client/admin/AddProductForm';
 import { notFound } from 'next/navigation';
@@ -33,11 +35,20 @@ export default async function EditProductPage(props: { params: Promise<{ id: str
 
   return (
     <main className="min-h-screen pt-[88px] lg:pt-6 pb-20 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="font-jost text-2xl lg:text-3xl text-[#2C3829] mb-2 font-bold">Edit Product</h1>
-        <p className="font-body-md text-[#2C3829]/70 max-w-2xl">
-          Update your product's gallery, pricing, and description.
-        </p>
+      <div className="mb-8 flex items-center gap-4">
+        <Link
+          href="/admin/products"
+          aria-label="Back to products"
+          className="w-10 h-10 shrink-0 flex items-center justify-center bg-white shadow-sm border border-[#d6c3b3]/30 hover:bg-[#FAF7F2] rounded-full transition-all active:scale-95"
+        >
+          <MdArrowBack className="text-xl text-[#2C3829]" />
+        </Link>
+        <div>
+          <h1 className="font-jost text-2xl lg:text-3xl text-[#2C3829] mb-1 font-bold">Edit Product</h1>
+          <p className="font-body-md text-[#2C3829]/70 max-w-2xl">
+            Update your product's gallery, pricing, and description.
+          </p>
+        </div>
       </div>
 
       <AddProductForm categories={categories || []} initialData={product} />

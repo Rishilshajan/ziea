@@ -22,10 +22,13 @@ export default async function CustomersPage() {
 
   const totalUsers = users ? users.length : 0;
 
-  // Active users - users who logged in within the last 15 days
+  // Active users - users seen (browsed the site) within the last 15 days
   const fifteenDaysAgo = new Date();
   fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
-  const activeUsers = users ? users.filter(u => u.last_login_at && new Date(u.last_login_at) > fifteenDaysAgo).length : 0;
+  const activeUsers = users ? users.filter(u => {
+    const seen = u.last_seen_at || u.last_login_at; // fall back to login until last_seen_at is populated
+    return seen && new Date(seen) > fifteenDaysAgo;
+  }).length : 0;
 
   // New (30d) - users created in last 30 days
   const thirtyDaysAgo = new Date();

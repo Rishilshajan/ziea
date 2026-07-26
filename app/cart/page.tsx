@@ -2,7 +2,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
-import ListManager from '../../components/client/shop/ListManager';
+import ListManager, { type ListItem } from '../../components/client/shop/ListManager';
+import { createClient } from '@/utils/supabase/server';
+import { formatINR } from '@/utils/price';
 import { MdOutlineShoppingBag } from 'react-icons/md';
 
 export const metadata: Metadata = {
@@ -10,7 +12,61 @@ export const metadata: Metadata = {
   description: 'Review your selected items before checkout.',
 };
 
-export default function CartPage() {
+// Supabase's generated types can widen a to-one join to an array, so accept both shapes.
+type JoinedProduct = {
+  id: string;
+  product_code: string;
+  name: string;
+  discounted_price: number | null;
+  original_price: number | null;
+  images: { url: string }[] | null;
+};
+
+interface CartRow {
+  id: string;
+  size: string | null;
+  quantity: number;
+  products: JoinedProduct | JoinedProduct[] | null;
+}
+
+export default async function CartPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let items: ListItem[] = [];
+
+  if (user) {
+    const { data } = await supabase
+      .from('cart_items')
+      .select(
+        'id, size, quantity, products(id, product_code, name, discounted_price, original_price, images)'
+      )
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    items = ((data ?? []) as CartRow[])
+      .map((row): ListItem | null => {
+        const product = Array.isArray(row.products) ? row.products[0] : row.products;
+        if (!product) return null;
+        const priceValue = product.discounted_price ?? product.original_price ?? 0;
+        return {
+          id: row.id,
+          productId: product.id,
+          productCode: product.product_code,
+          title: product.name,
+          variant: row.size ?? '',
+          size: row.size,
+          quantity: row.quantity,
+          priceValue,
+          price: formatINR(priceValue),
+          image: product.images?.[0]?.url ?? '/placeholder-product.jpg',
+        };
+      })
+      .filter((i): i is ListItem => i !== null);
+  }
+
   return (
     <>
       <Header />
@@ -41,7 +97,7 @@ export default function CartPage() {
             type="cart"
             icon={<MdOutlineShoppingBag />}
             emptyDescription="Your bag is looking a little empty. Discover our collections to add items."
-            items={[]}
+            items={items}
           />
 
         </div>

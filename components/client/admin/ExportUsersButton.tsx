@@ -45,28 +45,33 @@ export function ExportUsersButton({ users, adminName }: ExportUsersButtonProps) 
       const dateStr = new Date().toLocaleDateString();
       const timeStr = new Date().toLocaleTimeString();
 
+      const pageWidth = doc.internal.pageSize.getWidth();
+
       try {
         const logoData = await getBase64ImageFromURL(window.location.origin + '/Ziea_Logo.png');
-        doc.addImage(logoData, 'PNG', 14, 10, 60, 30); // x, y, width, height (increased size)
+        // Ziea_Logo.png is 808x1000 (portrait). Preserve that aspect so it isn't stretched.
+        const logoH = 45;
+        const logoW = logoH * (808 / 1000); // ~36mm, natural aspect
+        doc.addImage(logoData, 'PNG', (pageWidth - logoW) / 2, 5, logoW, logoH); // centered, larger, correct aspect
       } catch (e) {
         // Fallback if logo fails
         doc.setFontSize(22);
-        doc.text("ZIEA", 14, 25);
+        doc.text("ZIEA", pageWidth / 2, 24, { align: 'center' });
       }
 
       // Title Centered
       doc.setFontSize(18);
-      doc.text("Customers List", 105, 50, { align: 'center' });
+      doc.text("Customers List", pageWidth / 2, 58, { align: 'center' });
 
       // Horizontal Line
       doc.setDrawColor(214, 195, 179); // #d6c3b3
-      doc.line(14, 55, 196, 55);
+      doc.line(14, 63, 196, 63);
 
       // Metadata Left Aligned
       doc.setFontSize(10);
-      doc.text(`Date: ${dateStr}`, 14, 65);
-      doc.text(`Time: ${timeStr}`, 14, 71);
-      doc.text(`Exported By: ${adminName}`, 14, 77);
+      doc.text(`Date: ${dateStr}`, 14, 73);
+      doc.text(`Time: ${timeStr}`, 14, 79);
+      doc.text(`Exported By: ${adminName}`, 14, 85);
 
       const tableData = users.map(user => [
         `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Unknown',
@@ -76,7 +81,7 @@ export function ExportUsersButton({ users, adminName }: ExportUsersButtonProps) 
       ]);
 
       autoTable(doc, {
-        startY: 85,
+        startY: 93,
         head: [['Name', 'Email', 'Phone', 'Role']],
         body: tableData,
         theme: 'grid',

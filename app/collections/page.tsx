@@ -1,27 +1,89 @@
 import { Metadata } from 'next';
-import { MdOutlineFilterList } from "react-icons/md";
 
 import CategoryTabs from '../../components/client/collections/CategoryTabs';
+import FiltersPanel from '../../components/client/collections/FiltersPanel';
 import ProductGrid from '../../components/server/collections/ProductGrid';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
 import Link from 'next/link';
+import { getProductFacets, type ProductSort } from '@/utils/products';
+import { createClient } from '@/utils/supabase/server';
 
 export const metadata: Metadata = {
   title: 'ZIEA - Collections',
   description: 'Experience the gentle embrace of Kerala\'s heritage. Our collections are crafted from the finest natural fibers, designed for moments of tranquility.',
 };
 
-export default function CollectionsPage() {
+interface CollectionsPageProps {
+  searchParams: Promise<{
+    category?: string;
+    page?: string;
+    q?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    onSale?: string;
+    badges?: string;
+    inStock?: string;
+    sizes?: string;
+    materials?: string;
+    sort?: string;
+  }>;
+}
+
+const SORT_VALUES: ProductSort[] = ["newest", "price_asc", "price_desc", "popular"];
+
+/** Parse a CSV param into a trimmed, non-empty string array (undefined when empty). */
+function parseCsv(value?: string): string[] | undefined {
+  if (!value) return undefined;
+  const arr = value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return arr.length ? arr : undefined;
+}
+
+/** Parse a numeric param, ignoring NaN. */
+function parseNum(value?: string): number | undefined {
+  if (value == null || value.trim() === "") return undefined;
+  const n = Number(value);
+  return Number.isNaN(n) ? undefined : n;
+}
+
+export default async function CollectionsPage({ searchParams }: CollectionsPageProps) {
+  const params = await searchParams;
+  const { category, page, q } = params;
+  const pageNumber = page ? parseInt(page, 10) : undefined;
+
+  const minPrice = parseNum(params.minPrice);
+  const maxPrice = parseNum(params.maxPrice);
+  const onSale = params.onSale === "1";
+  const inStock = params.inStock === "1";
+  const badges = parseCsv(params.badges);
+  const sizes = parseCsv(params.sizes);
+  const materials = parseCsv(params.materials);
+  const sort = SORT_VALUES.includes(params.sort as ProductSort)
+    ? (params.sort as ProductSort)
+    : undefined;
+
+  const supabase = await createClient();
+  const [facets, { data: categoryRows }] = await Promise.all([
+    getProductFacets(),
+    supabase
+      .from('categories')
+      .select('id, name')
+      .order('created_at', { ascending: true }),
+  ]);
+  const categories = (categoryRows ?? []) as { id: string; name: string }[];
+
   return (
     <>
       <Header />
-      
-      <main className="pt-20 md:pt-28 pb-8 min-h-screen w-full px-4 xl:px-8">
-        <div className="fixed inset-0 pointer-events-none -z-10 opacity-30"></div>
-        
+
+      <main className="bg-background mt-16 md:mt-20 min-h-screen">
+        <div className="w-full px-page pt-4 md:pt-6 pb-10 md:pb-14">
+
         {/* Breadcrumbs */}
-        <div className="mb-4 mt-0">
+        <div className="mb-6 md:mb-8">
           <nav className="flex text-[13px] md:text-sm text-[#44483f]">
             <Link href="/" className="hover:text-[#4c623d] transition-colors">Home</Link>
             <span className="mx-2">/</span>
@@ -29,26 +91,30 @@ export default function CollectionsPage() {
           </nav>
         </div>
         
-        {/* Large Desktop Heading (Hidden on Mobile) */}
-        <h1 className="cormorant text-5xl text-primary mb-0 hidden md:block md:text-center">Collections</h1>
+        {/* Page heading (shown on mobile + desktop) */}
+        <h1 className="cormorant text-4xl md:text-6xl italic text-primary-dark mb-3 md:mb-4 text-center">Collections</h1>
 
         <CategoryTabs />
 
-        <div className="mb-6 md:mb-16 mt-2 md:mt-8 flex md:justify-center">
-          <p className="text-[#44483f] text-sm md:text-lg max-w-2xl font-light leading-relaxed md:text-center">
-            Experience the gentle embrace of Kerala's heritage. Our collections are crafted from the finest natural fibers, designed for moments of tranquility.
-          </p>
+        <FiltersPanel categories={categories} facets={facets} />
+
+        <ProductGrid
+          category={category}
+          page={Number.isNaN(pageNumber) ? undefined : pageNumber}
+          q={q}
+          minPrice={minPrice}
+          maxPrice={maxPrice}
+          onSale={onSale}
+          inStock={inStock}
+          badges={badges}
+          sizes={sizes}
+          materials={materials}
+          sort={sort}
+        />
+
         </div>
-
-        <ProductGrid />
-
       </main>
       
-      {/* Mobile Filter FAB */}
-      <button aria-label="Filter Products" className="fixed bottom-6 right-6 w-14 h-14 bg-[#865139] text-white rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-50 md:hidden">
-        <MdOutlineFilterList className="text-[24px]" />
-      </button>
-
       <Footer />
     </>
   );

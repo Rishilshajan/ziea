@@ -1,16 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { MdFavorite, MdOutlineFavoriteBorder, MdOutlineShoppingBag } from "react-icons/md";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { MdFavorite, MdOutlineFavoriteBorder, MdOutlineLocalShipping } from "react-icons/md";
 import type { ProductCardProps } from "@/types/product";
 import { getBadgeColor } from "@/utils/badge";
+import { deliveryByLabel } from "@/utils/price";
 import { Button } from "../../ui/Button";
+import { toggleWishlist } from "@/app/actions/wishlist";
+import { addToCart } from "@/app/actions/cart";
+import { notifyCountsChanged } from "@/utils/counts";
 
 // Standard vivid red for the "liked" wishlist state (common e-commerce heart red).
 const WISHLIST_RED = "#E63946";
 
 export default function ProductCard({
+  id,
   productCode,
   title,
   originalPrice,
@@ -18,16 +24,47 @@ export default function ProductCard({
   imageUrl,
   altText,
   badge,
+  cropX = 50,
+  cropY = 50,
+  zoom = 100,
+  initialWishlisted = false,
+  deliveryDays,
 }: ProductCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const deliveryLabel = deliveryByLabel(deliveryDays);
+  const router = useRouter();
+  const [isFavorite, setIsFavorite] = useState(initialWishlisted);
   const [isAdded, setIsAdded] = useState(false);
+  const [, startTransition] = useTransition();
 
-  // Visual-only for now — cart persistence (DB) comes later.
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = !isFavorite;
+    setIsFavorite(next); // optimistic
+    startTransition(async () => {
+      const res = await toggleWishlist(id);
+      if (res && "error" in res && res.error === "unauthenticated") {
+        setIsFavorite(!next); // revert
+        router.push("/login");
+        return;
+      }
+      notifyCountsChanged();
+    });
+  };
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+    startTransition(async () => {
+      const res = await addToCart(id, null, 1);
+      if (res && "error" in res && res.error === "unauthenticated") {
+        router.push("/login");
+        return;
+      }
+      notifyCountsChanged();
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 2000);
+    });
   };
 
   return (
@@ -37,11 +74,20 @@ export default function ProductCard({
     >
       {/* Product Image */}
       <div className="relative bg-surface rounded-xl overflow-hidden aspect-[4/5] shadow-[0px_2px_16px_rgba(44,56,41,0.08)]">
-        <div
-          className="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-700 ease-in-out"
-          title={altText ?? title}
-          style={{ backgroundImage: `url("${imageUrl}")` }}
-        />
+        <div className="absolute inset-0 group-hover:scale-105 transition-transform duration-700 ease-in-out">
+          <img
+            src={imageUrl}
+            alt={altText ?? title}
+            className="absolute object-cover max-w-none select-none pointer-events-none"
+            style={{
+              width: `${zoom}%`,
+              height: `${zoom}%`,
+              left: `${cropX}%`,
+              top: `${cropY}%`,
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        </div>
 
         {/* Admin-set badge */}
         {badge && (
@@ -70,11 +116,7 @@ export default function ProductCard({
         <button
           type="button"
           aria-label={isFavorite ? "Remove from wishlist" : "Add to wishlist"}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setIsFavorite(!isFavorite);
-          }}
+          onClick={handleToggleWishlist}
           className="absolute top-3 right-3 w-10 h-10 rounded-full bg-background/80 backdrop-blur flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all"
         >
           {isFavorite ? (
@@ -106,7 +148,14 @@ export default function ProductCard({
           )}
         </div>
 
-        {/* Add to Cart (visual only for now) — same deep-forest style as the Hero "Shop Now" button */}
+        {deliveryLabel && (
+          <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[#2C3829] mt-1.5">
+            <MdOutlineLocalShipping className="text-[16px] text-[#2C3829]" />
+            Deliverable by {deliveryLabel}
+          </p>
+        )}
+
+        {/* Add to Cart — same deep-forest style as the Hero "Shop Now" button */}
         <Button
           type="button"
           variant="auth-primary"

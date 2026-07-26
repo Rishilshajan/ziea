@@ -8,6 +8,7 @@ export interface ProductImage {
     url: string;
     crop_x?: number;
     crop_y?: number;
+    zoom?: number;
     is_highlight?: boolean;
 }
 
@@ -34,6 +35,8 @@ export interface Product {
     shipping_info: string | null;
     contents: string | null;
 
+    delivery_days: number | null;
+
     images: ProductImage[];
     sizes: ProductSize[];
 
@@ -57,4 +60,11 @@ export interface ProductCardProps {
     imageUrl: string;
     altText?: string;
     badge?: string;
+    cropX?: number;
+    cropY?: number;
+    zoom?: number;
+    /** Whether this product is already in the signed-in user's wishlist (initial heart state). */
+    initialWishlisted?: boolean;
+    /** Delivery lead time in days; the card computes "Deliverable by" as today + this. */
+    deliveryDays?: number | null;
 }

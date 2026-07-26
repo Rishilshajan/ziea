@@ -32,7 +32,8 @@ export function CustomersTableWithSearch({ initialUsers, adminName, children }: 
     if (filter === 'active') {
       const fifteenDaysAgo = new Date();
       fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
-      matchesDropdown = user.last_login_at && new Date(user.last_login_at) > fifteenDaysAgo;
+      const seen = user.last_seen_at || user.last_login_at; // fall back to login until last_seen_at is populated
+      matchesDropdown = seen && new Date(seen) > fifteenDaysAgo;
     } else if (filter === 'new') {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

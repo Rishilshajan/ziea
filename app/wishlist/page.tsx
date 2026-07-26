@@ -2,7 +2,9 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
-import ListManager from '../../components/client/shop/ListManager';
+import ListManager, { type ListItem } from '../../components/client/shop/ListManager';
+import { createClient } from '@/utils/supabase/server';
+import { formatINR } from '@/utils/price';
 import { MdOutlineFavoriteBorder } from 'react-icons/md';
 
 export const metadata: Metadata = {
@@ -10,7 +12,58 @@ export const metadata: Metadata = {
   description: 'A curated collection of your favorite everyday luxuries.',
 };
 
-export default function WishlistPage() {
+// Supabase's generated types can widen a to-one join to an array, so accept both shapes.
+type JoinedProduct = {
+  id: string;
+  product_code: string;
+  name: string;
+  material: string | null;
+  discounted_price: number | null;
+  original_price: number | null;
+  images: { url: string }[] | null;
+};
+
+interface WishlistRow {
+  id: string;
+  products: JoinedProduct | JoinedProduct[] | null;
+}
+
+export default async function WishlistPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let items: ListItem[] = [];
+
+  if (user) {
+    const { data } = await supabase
+      .from('wishlist_items')
+      .select(
+        'id, products(id, product_code, name, material, discounted_price, original_price, images)'
+      )
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    items = ((data ?? []) as WishlistRow[])
+      .map((row): ListItem | null => {
+        const product = Array.isArray(row.products) ? row.products[0] : row.products;
+        if (!product) return null;
+        const priceValue = product.discounted_price ?? product.original_price ?? 0;
+        return {
+          id: row.id,
+          productId: product.id,
+          productCode: product.product_code,
+          title: product.name,
+          variant: product.material ?? '',
+          priceValue,
+          price: formatINR(priceValue),
+          image: product.images?.[0]?.url ?? '/placeholder-product.jpg',
+        };
+      })
+      .filter((i): i is ListItem => i !== null);
+  }
+
   return (
     <>
       <Header />
@@ -41,7 +94,7 @@ export default function WishlistPage() {
             type="wishlist"
             icon={<MdOutlineFavoriteBorder />}
             emptyDescription="Start exploring our collection to find your next favorite pieces."
-            items={[]}
+            items={items}
           />
 
         </div>

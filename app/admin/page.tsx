@@ -53,10 +53,13 @@ export default async function AdminPage() {
   };
 
   const getTypeBadgeClass = (type: string) => {
-    if (type?.includes('Login') || type?.includes('Registration')) return 'bg-blue-50 text-blue-700 border-blue-200';
-    if (type?.includes('Product')) return 'bg-green-50 text-green-700 border-green-200';
-    if (type?.includes('Category')) return 'bg-purple-50 text-purple-700 border-purple-200';
-    if (type?.includes('Newsletter') || type?.includes('Subscription')) return 'bg-amber-50 text-amber-700 border-amber-200';
+    const t = type || '';
+    if (t.includes('Added')) return 'bg-[#7A9268]/10 text-[#4c623d] border-[#7A9268]/40';
+    if (t.includes('Updated')) return 'bg-[#C4856A]/15 text-[#8f5a41] border-[#C4856A]/40';
+    if (t.includes('Deleted')) return 'bg-red-50 text-red-700 border-red-200';
+    if (t.includes('Enquiry')) return 'bg-indigo-50 text-indigo-700 border-indigo-200';
+    if (t.includes('Login') || t.includes('Registration')) return 'bg-blue-50 text-blue-700 border-blue-200';
+    if (t.includes('Newsletter') || t.includes('Subscription')) return 'bg-amber-50 text-amber-700 border-amber-200';
     return 'bg-gray-50 text-gray-700 border-gray-200';
   };
 

@@ -5,11 +5,23 @@ import UnauthenticatedState from './UnauthenticatedState';
 import EmptyState from './EmptyState';
 import PopulatedList from './PopulatedList';
 import { createClient } from '@/utils/supabase/client';
+import { formatINR } from '@/utils/price';
 
-interface ListItem {
+export interface ListItem {
+  /** Row id: cart_items.id for a cart, wishlist_items.id for a wishlist. */
   id: string;
+  /** The underlying product id (used for wishlist/cart mutations). */
+  productId: string;
+  productCode: string;
   title: string;
+  /** Human-readable secondary line (size for cart, material for wishlist). */
   variant: string;
+  /** Cart size, when applicable. */
+  size?: string | null;
+  quantity?: number;
+  /** Numeric unit price for totals. */
+  priceValue: number;
+  /** Preformatted price string for display. */
   price: string;
   image: string;
 }
@@ -19,7 +31,7 @@ interface ListManagerProps {
   type: 'wishlist' | 'cart';
   icon: React.ReactNode;
   emptyDescription: string;
-  /** Real list items for the signed-in user. Empty until the wishlist/cart DB is wired up. */
+  /** Real list items for the signed-in user. */
   items?: ListItem[];
 }
 
@@ -72,8 +84,12 @@ export default function ListManager({ title, type, icon, emptyDescription, items
     );
   }
 
-  // Signed in, with items
-  const subtotal = items[0]?.price ?? '';
+  // Signed in, with items — subtotal computed from the real items.
+  const subtotal = items.reduce(
+    (sum, item) => sum + item.priceValue * (item.quantity ?? 1),
+    0,
+  );
+  const subtotalLabel = formatINR(subtotal);
 
   return (
     <div className="relative min-h-[50vh]">
@@ -87,7 +103,7 @@ export default function ListManager({ title, type, icon, emptyDescription, items
             <h3 className="cormorant text-2xl mb-4 text-[#211a15]">Order Summary</h3>
             <div className="flex justify-between font-jost text-[#44483f] mb-3">
               <span>Subtotal</span>
-              <span>{subtotal}</span>
+              <span>{subtotalLabel}</span>
             </div>
             <div className="flex justify-between font-jost text-[#44483f] mb-4 pb-4 border-b border-[#e1e3de]">
               <span>Shipping</span>
@@ -95,7 +111,7 @@ export default function ListManager({ title, type, icon, emptyDescription, items
             </div>
             <div className="flex justify-between font-jost font-semibold text-lg mb-6 text-[#211a15]">
               <span>Total</span>
-              <span className="text-[#6d8a57]">{subtotal}</span>
+              <span className="text-[#6d8a57]">{subtotalLabel}</span>
             </div>
             <button className="w-full bg-primary text-white py-3 rounded-full font-label-md hover:opacity-90 active:scale-[0.97] transition-all shadow-sm">
               Proceed to Checkout

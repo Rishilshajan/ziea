@@ -2,9 +2,11 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import ProductCard from "../../client/product/ProductCard";
 import type { Product } from "@/types/product";
+import { getWishlistProductIds } from "@/app/actions/wishlist";
 
 export default async function CollectionsGrid() {
   const supabase = await createClient();
+  const wishlistedIds = await getWishlistProductIds();
 
   const { data: products, error } = await supabase
     .from("products")
@@ -15,7 +17,8 @@ export default async function CollectionsGrid() {
       original_price,
       discounted_price,
       images,
-      badges
+      badges,
+      delivery_days
     `)
     .eq("is_published", true)
     .eq("status", "published")
@@ -69,6 +72,11 @@ export default async function CollectionsGrid() {
               }
               altText={product.name}
               badge={product.badges?.[0]}
+              cropX={product.images?.[0]?.crop_x ?? 50}
+              cropY={product.images?.[0]?.crop_y ?? 50}
+              zoom={product.images?.[0]?.zoom ?? 100}
+              initialWishlisted={wishlistedIds.includes(product.id)}
+              deliveryDays={product.delivery_days}
             />
           ))}
         </div>

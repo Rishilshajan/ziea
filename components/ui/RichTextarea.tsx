@@ -138,6 +138,37 @@ export default function RichTextarea({
     [onChange, checkActiveFormats],
   );
 
+  // ── Sanitize pasted content: strip inline styles/classes (e.g. background
+  //    colors) and any script/style tags so pasted text takes on our styling. ──
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent) => {
+      e.preventDefault();
+      const html = e.clipboardData.getData('text/html');
+      const text = e.clipboardData.getData('text/plain');
+
+      let cleaned: string;
+      if (html) {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        doc.querySelectorAll('script, style, meta, link').forEach((n) => n.remove());
+        doc.querySelectorAll('*').forEach((el) => {
+          el.removeAttribute('style');
+          el.removeAttribute('class');
+          el.removeAttribute('bgcolor');
+          el.removeAttribute('color');
+          el.removeAttribute('face');
+        });
+        cleaned = doc.body.innerHTML;
+      } else {
+        cleaned = text.replace(/\n/g, '<br>');
+      }
+
+      document.execCommand('insertHTML', false, cleaned);
+      const el = editorRef.current;
+      if (el) onChange(el.innerHTML);
+    },
+    [onChange],
+  );
+
   const isEmpty = !value || value === '' || value === '<br>' || value === '<p><br></p>';
 
   return (
@@ -206,6 +237,7 @@ export default function RichTextarea({
             suppressContentEditableWarning
             onInput={handleInput}
             onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
             onFocus={() => {
               isFocused.current = true;
               checkActiveFormats();

@@ -47,6 +47,12 @@ export default function AddProductForm({ categories = [], initialData }: { categ
   const [shippingInfo, setShippingInfo] = useState(initialData?.shipping_info || '');
   const [contents, setContents] = useState(initialData?.contents || '');
 
+  // Delivery lead time in days — the storefront computes "deliverable by" as today + this,
+  // so it always stays current. Defaults to 7.
+  const [deliveryDays, setDeliveryDays] = useState(
+    initialData?.delivery_days != null ? String(initialData.delivery_days) : '7'
+  );
+
   // Badges
   const [productBadge, setProductBadge] = useState(initialData?.badges?.[0] || '');
   const [universalBadges, setUniversalBadges] = useState(['Bestseller', '50% OFF', 'New Arrival', 'Limited Edition']);
@@ -253,6 +259,7 @@ export default function AddProductForm({ categories = [], initialData }: { categ
         care_instructions: careInstructions,
         shipping_info: shippingInfo,
         contents,
+        delivery_days: parseInt(deliveryDays, 10) || 7,
         is_published: !isDraft,
         status: isDraft ? 'draft' : 'published',
         sizes,
@@ -352,6 +359,19 @@ export default function AddProductForm({ categories = [], initialData }: { categ
                   className="w-full px-4 py-3 bg-white border border-[#d6c3b3] rounded-xl font-jost font-normal text-base text-[#2C3829] transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 hover:border-primary/50 duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   placeholder="2499"
                 />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="font-jost text-sm font-medium text-[#2C3829] mb-1 block">Delivery In (Days)</label>
+                <input
+                  type="number" min="0" value={deliveryDays}
+                  onChange={e => setDeliveryDays(e.target.value)}
+                  className="w-full px-4 py-3 bg-white border border-[#d6c3b3] rounded-xl font-jost font-normal text-base text-[#2C3829] transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 hover:border-primary/50 duration-200 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="7"
+                />
+                <p className="text-xs text-[#2C3829]/50 mt-1">Storefront shows "Deliverable by" as today + this many days.</p>
               </div>
             </div>
 

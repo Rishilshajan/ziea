@@ -11,24 +11,24 @@ import { Button } from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import { createClient } from "@/utils/supabase/client";
 
-type InquiryType = "support" | "business" | "collaboration";
+type InquiryType = "collaboration" | "business" | "personal";
 
 const INQUIRY_LABELS: Record<InquiryType, string> = {
-  support: "Customer Support",
-  business: "Business Enquiries",
-  collaboration: "Collaborations",
+  collaboration: "Collaboration",
+  business: "Business",
+  personal: "Personal",
 };
 
 const INQUIRY_ACTIVITY_LABELS: Record<InquiryType, string> = {
-  support: "customer support",
-  business: "business",
   collaboration: "collaboration",
+  business: "business",
+  personal: "personal",
 };
 
 const MESSAGE_PLACEHOLDERS: Record<InquiryType, string> = {
-  support: "How can we help you today?",
-  business: "Tell us about your business enquiry...",
   collaboration: "Tell us about your collaboration idea...",
+  business: "Tell us about your business enquiry...",
+  personal: "Share your personal message with us...",
 };
 
 export default function ContactForm() {
@@ -39,7 +39,7 @@ export default function ContactForm() {
   >("idle");
 
   const [inquiryType, setInquiryType] =
-    useState<InquiryType>("support");
+    useState<InquiryType>("collaboration");
 
   const [toast, setToast] = useState({
     show: false,
