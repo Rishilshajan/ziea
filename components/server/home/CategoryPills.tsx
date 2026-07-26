@@ -9,6 +9,9 @@ interface Category {
   id: string;
   name: string;
   image_url: string;
+  image_pos_x?: string;
+  image_pos_y?: string;
+  image_zoom?: number;
 }
 
 export default function CategoryPills() {
@@ -21,7 +24,7 @@ export default function CategoryPills() {
     const fetchCategories = async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id, name, image_url")
+        .select("id, name, image_url, image_pos_x, image_pos_y, image_zoom")
         .order("created_at", { ascending: true });
 
       if (error) {
@@ -73,6 +76,11 @@ export default function CategoryPills() {
                   fill
                   className="object-cover"
                   sizes="112px"
+                  style={{
+                    objectPosition: `${category.image_pos_x || "50%"} ${category.image_pos_y || "50%"}`,
+                    transform: `scale(${category.image_zoom || 1})`,
+                    transformOrigin: "center",
+                  }}
                 />
               </div>
 

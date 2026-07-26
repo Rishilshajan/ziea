@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { MdAdd, MdAddCircleOutline, MdEdit, MdDelete, MdClose, MdContentCopy, MdCategory } from 'react-icons/md';
+import React, { useState, useEffect } from 'react';
+import { MdAdd, MdAddCircleOutline, MdEdit, MdDelete, MdClose, MdContentCopy, MdCategory, MdChevronLeft, MdChevronRight } from 'react-icons/md';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -17,6 +17,18 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
   const supabase = createClient();
   const [categories, setCategories] = useState(initialCategories);
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCategories = categories.slice(startIndex, startIndex + itemsPerPage);
+
+  // Keep the current page valid when categories are added/removed
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) setCurrentPage(totalPages);
+  }, [totalPages, currentPage]);
+
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -27,6 +39,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
   const [imageUrl, setImageUrl] = useState('');
   const [imagePosX, setImagePosX] = useState(50);
   const [imagePosY, setImagePosY] = useState(50);
+  const [zoom, setZoom] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -71,6 +84,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
     setImageUrl('');
     setImagePosX(50);
     setImagePosY(50);
+    setZoom(1);
     setError('');
     setIsModalOpen(true);
   };
@@ -81,6 +95,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
     setImageUrl(category.image_url);
     setImagePosX(parseInt(category.image_pos_x) || 50);
     setImagePosY(parseInt(category.image_pos_y) || 50);
+    setZoom(parseFloat(category.image_zoom) || 1);
     setError('');
     setIsModalOpen(true);
   };
@@ -131,7 +146,8 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
         name,
         image_url: imageUrl,
         image_pos_x: `${imagePosX}%`,
-        image_pos_y: `${imagePosY}%`
+        image_pos_y: `${imagePosY}%`,
+        image_zoom: zoom
       };
 
       if (activeCategory) {
@@ -250,15 +266,15 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
           <div className="md:hidden">
             <Card className="!rounded-xl !p-0 border border-[#d6c3b3]/30 overflow-hidden">
               <div className="divide-y divide-[#d6c3b3]/30">
-                {categories.map((cat) => (
+                {paginatedCategories.map((cat) => (
                   <div key={cat.id} className="p-6 flex items-center justify-between gap-4">
                     <div className="flex gap-4 items-center">
                       <div className="w-24 h-28 shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
-                        <img 
-                          src={cat.image_url} 
-                          alt={cat.name} 
-                          className="w-full h-full object-cover" 
-                          style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}` }} 
+                        <img
+                          src={cat.image_url}
+                          alt={cat.name}
+                          className="w-full h-full object-cover"
+                          style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}`, transform: `scale(${cat.image_zoom || 1})`, transformOrigin: 'center' }}
                         />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -292,25 +308,22 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
 
           {/* Desktop View: Grid */}
           <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((cat) => (
+            {paginatedCategories.map((cat) => (
               <Card key={cat.id} className="bg-white border border-[#d6c3b3]/30 shadow-sm !rounded-[16px] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-[320px]">
                 {/* Image Section (Top Half) */}
                 <div className="relative w-full h-[240px] bg-surface-variant overflow-hidden shrink-0">
                   <img
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}` }}
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}`, transform: `scale(${cat.image_zoom || 1})`, transformOrigin: 'center' }}
                     alt={cat.name}
                     src={cat.image_url}
                   />
                 </div>
 
                 {/* Content Section (Bottom Half) */}
-                <div className="flex justify-between items-center p-5 flex-1">
-                  <div>
-                    <p className="text-[10px] font-jost text-[#2C3829]/40 uppercase tracking-widest mb-0.5">400 × 400 px</p>
-                    <h2 className="font-jost text-xl text-[#2C3829] font-semibold mb-1">{cat.name}</h2>
-                  </div>
-                  <div className="flex gap-2">
+                <div className="flex justify-between items-center gap-3 p-5 flex-1">
+                  <h2 className="font-jost text-xl text-[#2C3829] font-semibold flex-1 min-w-0 break-words leading-snug">{cat.name}</h2>
+                  <div className="flex gap-2 shrink-0">
                     <Button
                       variant="auth-primary"
                       onClick={(e: React.MouseEvent) => { e.preventDefault(); openEditModal(cat); }}
@@ -330,12 +343,37 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
               </Card>
             ))}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="font-label-sm text-[#2C3829]/60 text-center sm:text-left">
+                Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, categories.length)} of {categories.length} categories
+              </span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[#d6c3b3]/50 text-[#2C3829] hover:bg-[#d6c3b3]/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <MdChevronLeft className="text-xl" />
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[#d6c3b3]/50 text-[#2C3829] hover:bg-[#d6c3b3]/30 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <MdChevronRight className="text-xl" />
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       )}
 
       {/* Add/Edit Side Sheet */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-40 flex justify-end">
+        <div className="fixed inset-0 z-[70] flex justify-end">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-[#2C3829]/20 backdrop-blur-sm transition-opacity"
@@ -426,18 +464,30 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                           src={imageUrl}
                           alt="Preview"
                           draggable={false}
-                          className="absolute object-cover pointer-events-none select-none max-w-none"
+                          className="w-full h-full object-cover pointer-events-none select-none"
                           style={{
-                            width: '150%',
-                            height: '150%',
-                            left: `-${imagePosX / 2}%`,
-                            top: `-${imagePosY / 2}%`
+                            objectPosition: `${imagePosX}% ${imagePosY}%`,
+                            transform: `scale(${zoom})`,
+                            transformOrigin: 'center'
                           }}
                           onError={(e) => e.currentTarget.style.display = 'none'}
                         />
                       </div>
 
                       <div className="w-full space-y-4 px-2">
+                        <div>
+                          <div className="flex justify-between text-xs text-[#2C3829]/70 font-jost mb-1">
+                            <span>Zoom</span>
+                            <span>{Math.round(zoom * 100)}%</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0.5" max="3" step="0.05"
+                            value={zoom}
+                            onChange={(e) => setZoom(Number(e.target.value))}
+                            className="w-full accent-[#2C3829]"
+                          />
+                        </div>
                         <div>
                           <div className="flex justify-between text-xs text-[#2C3829]/70 font-jost mb-1">
                             <span>Horizontal Pan</span>
