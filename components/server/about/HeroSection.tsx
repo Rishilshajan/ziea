@@ -1,9 +1,17 @@
 import React from 'react';
+import Link from 'next/link';
 import RevealOnScroll from '../../ui/RevealOnScroll';
 
 export default function HeroSection() {
   return (
-    <section className="px-4 pt-4 pb-8 md:px-12 md:pt-12 md:pb-24 lg:px-24 lg:pt-16 lg:pb-32 xl:px-32 flex flex-col justify-center min-h-[30vh] md:min-h-[calc(100vh-140px)]">
+    <section className="px-page pt-4 pb-8 md:pt-12 md:pb-24 lg:pt-16 lg:pb-32 flex flex-col justify-center min-h-[30vh] md:min-h-[calc(100vh-140px)]">
+      {/* Mobile-only breadcrumb (desktop shows it over the sticky image) */}
+      <nav className="md:hidden flex items-center text-[13px] text-muted mb-6">
+        <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+        <span className="mx-2 text-muted/40">/</span>
+        <span className="text-text">About Us</span>
+      </nav>
+
       <RevealOnScroll>
         <span className="font-label-md text-primary uppercase tracking-[0.2em] mb-6 block">Our Legacy</span>
         <h2 className="cormorant text-5xl md:text-7xl lg:text-7xl text-[#211a15] leading-tight mb-8">

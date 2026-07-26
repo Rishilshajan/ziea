@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
 import HeroSection from '../../components/server/about/HeroSection';
@@ -28,7 +29,14 @@ export default function AboutUsPage() {
               className="w-full h-full object-cover brightness-95"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_H16GCEqOX20nTrx6JIViHELuqM1mo4t0DmneeEo4qRuHiHF8cxHK9eNnREb9MzjlG1HLp0k4dDGN-hmp2LaF79EDsbcRgSe8HzaE9ghbrC7KzV0NNs7sKIwyItuItuJHgxmgvTwFpONn8ugNJReG575-0ITxpFMqoDCSyHWRXbUZriMISur3g48RKyLZ1LjBxsD9oROAg9SMMKNd9J3XnkeSY71D2_vRhxCAAi3nogchr96syBF0qWUONYKhh2t_J88cnTpKAUQ"
             />
-            <div className="absolute inset-0 bg-deep-forest/10"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-black/25 to-transparent"></div>
+
+            {/* Breadcrumb over the image (top-left), matching Contact Us */}
+            <nav className="absolute top-6 left-8 z-20 flex items-center text-sm text-white/85 drop-shadow">
+              <Link href="/" className="transition-colors hover:text-white">Home</Link>
+              <span className="mx-2 text-white/50">/</span>
+              <span className="text-white">About Us</span>
+            </nav>
           </div>
 
           {/* Right Side: Scrolling Content Area */}
