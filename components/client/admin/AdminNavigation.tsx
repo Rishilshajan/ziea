@@ -17,7 +17,8 @@ import {
   MdCategory,
   MdHistory,
   MdClose,
-  MdOutlineBrandingWatermark
+  MdOutlineBrandingWatermark,
+  MdOutlineInsights
 } from 'react-icons/md';
 
 const AVATAR_COLORS = [
@@ -99,6 +100,7 @@ export default function AdminNavigation() {
 
   const navLinks = [
     { href: "/admin", icon: <MdDashboard className="text-xl" />, label: "Dashboard" },
+    { href: "/admin/analytics", icon: <MdOutlineInsights className="text-xl" />, label: "Analytics" },
     { href: "/admin/products", icon: <MdInventory2 className="text-xl" />, label: "Products" },
     { href: "/admin/categories", icon: <MdCategory className="text-xl" />, label: "Categories" },
     { href: "/admin/customers", icon: <MdGroup className="text-xl" />, label: "Customers" },

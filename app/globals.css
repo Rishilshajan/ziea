@@ -198,3 +198,14 @@
   background-color: transparent !important;
   color: inherit !important;
 }
+
+/* Analytics bar chart: bars grow up from the baseline on mount. */
+@keyframes barGrowIn {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
