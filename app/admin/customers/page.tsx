@@ -16,7 +16,13 @@ export default async function CustomersPage() {
 
   const authPromise = supabase.auth.getUser();
 
-  const [usersResponse, authResponse] = await Promise.all([usersPromise, authPromise]);
+  const wishlistPromise = supabase.from('wishlist_items').select('user_id');
+
+  const [usersResponse, authResponse, wishlistResponse] = await Promise.all([
+    usersPromise,
+    authPromise,
+    wishlistPromise,
+  ]);
   const { data: users, error } = usersResponse;
   const adminUser = authResponse.data?.user;
 
@@ -35,7 +41,17 @@ export default async function CustomersPage() {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   const newUsers = users ? users.filter(u => new Date(u.created_at) > thirtyDaysAgo).length : 0;
 
-  const retentionRate = "78%"; // Mock metric
+  // Wishlist Activity — % of customers who have added at least one item to their wishlist
+  const wishlistUserIds = new Set(
+    (wishlistResponse.data ?? []).map((r: { user_id: string }) => r.user_id)
+  );
+  const customerList = (users ?? []).filter((u: { role?: string }) => u.role === 'Customer');
+  const totalCustomers = customerList.length;
+  const customersWithWishlist = customerList.filter(
+    (u: { id: string }) => wishlistUserIds.has(u.id)
+  ).length;
+  const wishlistPct =
+    totalCustomers > 0 ? Math.round((customersWithWishlist / totalCustomers) * 100) : 0;
 
   // Fetch admin name for export
   let adminName = "Admin";
@@ -75,7 +91,7 @@ export default async function CustomersPage() {
           />
           <MetricCard
             title="Wishlist Activity"
-            value="42%"
+            value={`${wishlistPct}%`}
             subtitle="Added items to wishlist"
             icon={MdOutlineStarBorder}
           />

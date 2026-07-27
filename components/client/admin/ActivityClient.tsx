@@ -21,6 +21,7 @@ export function ActivityClient() {
     { value: 'Category', label: 'Category', match: (t) => t.includes('Category') },
     { value: 'Product', label: 'Product', match: (t) => t.includes('Product') },
     { value: 'Newsletter', label: 'Newsletter', match: (t) => t.includes('Newsletter') || t.includes('Subscription') },
+    { value: 'WishlistCart', label: 'Wishlist & Cart', match: (t) => t.includes('Wishlist') || t.includes('Cart') },
   ];
   const toggleType = (val: string) =>
     setSelectedTypes(prev => (prev.includes(val) ? prev.filter(t => t !== val) : [...prev, val]));
@@ -97,6 +98,8 @@ export function ActivityClient() {
 
   const getActivityColor = (type: string) => {
     const t = type || '';
+    if (t.includes('Wishlist')) return 'bg-[#C4856A]';  // Terracotta
+    if (t.includes('Cart')) return 'bg-[#4c623d]';      // Deep sage
     if (t.includes('Added')) return 'bg-[#7A9268]';   // Sage Grove
     if (t.includes('Updated')) return 'bg-[#C4856A]';  // Terracotta
     if (t.includes('Deleted')) return 'bg-[#E63946]';  // Red
@@ -108,6 +111,8 @@ export function ActivityClient() {
 
   const getTypeBadgeClass = (type: string) => {
     const t = type || '';
+    if (t.includes('Wishlist')) return 'bg-[#C4856A]/15 text-[#8f5a41] border-[#C4856A]/40';
+    if (t.includes('Cart')) return 'bg-[#7A9268]/10 text-[#4c623d] border-[#7A9268]/40';
     if (t.includes('Added')) return 'bg-[#7A9268]/10 text-[#4c623d] border-[#7A9268]/40';   // Sage Grove
     if (t.includes('Updated')) return 'bg-[#C4856A]/15 text-[#8f5a41] border-[#C4856A]/40';  // Terracotta
     if (t.includes('Deleted')) return 'bg-red-50 text-red-700 border-red-200';               // Red

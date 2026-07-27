@@ -2,6 +2,7 @@ import React from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import AdminNavigation from '@/components/client/admin/AdminNavigation';
+import ActivityNotificationsProvider from '@/components/client/admin/ActivityNotificationsProvider';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -23,11 +24,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="bg-[#F5F0E8] font-body-md text-body-md pb-0 lg:pl-72 min-h-screen">
-      <AdminNavigation />
-      
-      {/* Main Content Canvas */}
-      {children}
-    </div>
+    <ActivityNotificationsProvider>
+      <div className="bg-[#F5F0E8] font-body-md text-body-md pb-0 lg:pl-72 min-h-screen">
+        <AdminNavigation />
+
+        {/* Main Content Canvas */}
+        {children}
+      </div>
+    </ActivityNotificationsProvider>
   );
 }

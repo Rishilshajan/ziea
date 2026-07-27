@@ -107,10 +107,11 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
           .single();
 
         if (profile) {
+          const roleLabel = profile.role === 'Admin' ? 'Admin' : 'Customer';
           await supabase.from('activity_logs').insert({
             user_id: data.user.id,
-            type: 'Customer Login',
-            description: `Customer ${profile.first_name || ''} ${profile.last_name || ''}`.trim() + ' logged in'
+            type: `${roleLabel} Login`,
+            description: `${roleLabel} ${profile.first_name || ''} ${profile.last_name || ''}`.trim() + ' logged in'
           });
         }
 

@@ -27,11 +27,12 @@ export async function GET(request: Request) {
         // Update last login
         await supabase.from('users').update({ last_login_at: new Date().toISOString() }).eq('id', data.session.user.id);
         
-        // Log activity
+        // Log activity (role-based label)
+        const roleLabel = userData.role === 'Admin' ? 'Admin' : 'Customer';
         await supabase.from('activity_logs').insert({
           user_id: data.session.user.id,
-          type: 'Customer Login',
-          description: `Customer ${userData.first_name || ''} ${userData.last_name || ''}`.trim() + ' logged in'
+          type: `${roleLabel} Login`,
+          description: `${roleLabel} ${userData.first_name || ''} ${userData.last_name || ''}`.trim() + ' logged in'
         });
         
         finalRedirect = (userData.role === 'Admin') ? '/admin' : next;

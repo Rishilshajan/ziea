@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+import { logProductInteraction } from "@/app/actions/activity";
 
 /**
  * Toggle a product in the current user's wishlist.
@@ -30,6 +31,7 @@ export async function toggleWishlist(productId: string) {
   await supabase
     .from("wishlist_items")
     .insert({ user_id: user.id, product_id: productId });
+  await logProductInteraction(productId, "Wishlist");
   revalidatePath("/wishlist");
   return { wishlisted: true };
 }

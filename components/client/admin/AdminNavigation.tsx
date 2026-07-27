@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { Button } from '@/components/ui/Button';
+import NotificationBell from '@/components/client/admin/NotificationBell';
 import {
   MdDashboard,
   MdInventory2,
@@ -189,6 +190,7 @@ export default function AdminNavigation() {
           />
         </div>
         <div className="flex items-center gap-3 z-10">
+          <NotificationBell variant="light" />
           {user && profile ? (
             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-jost font-medium text-xs shadow-sm ${getAvatarColor()}`}>
               {getInitials()}

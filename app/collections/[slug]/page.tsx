@@ -6,6 +6,7 @@ import ProductGallery from '../../../components/client/product/ProductGallery';
 import ProductActions from '../../../components/client/product/ProductActions';
 import ProductInfo from '../../../components/server/product/ProductInfo';
 import RelatedProducts from '../../../components/server/product/RelatedProducts';
+import ProductViewTracker from '../../../components/client/product/ProductViewTracker';
 import Footer from '../../../components/server/layout/Footer';
 import { getProductByCode } from '@/utils/products';
 import { resolvePrice } from '@/utils/price';
@@ -55,14 +56,12 @@ export default async function ProductDetailPage(props: PageProps) {
     if (category?.name) categoryName = category.name;
   }
 
-  // Increment view count (best-effort; ignore errors).
-  await supabase.rpc('increment_product_view_count', { p_id: product.id });
-
   const { price, original } = resolvePrice(product.original_price, product.discounted_price);
 
   return (
     <>
       <Header />
+      <ProductViewTracker productId={product.id} />
 
       <main className="pt-20 md:pt-28 pb-16 min-h-screen w-full px-4 xl:px-8 max-w-[1600px] mx-auto">
 

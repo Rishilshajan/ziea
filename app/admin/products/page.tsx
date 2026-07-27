@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { MdInventory, MdAdd, MdOutlineShoppingBag, MdErrorOutline, MdOutlineStarBorder, MdOutlineWhatshot } from 'react-icons/md';
+import { MdInventory, MdAdd, MdOutlineShoppingBag, MdErrorOutline, MdOutlineStarBorder, MdOutlineVisibility } from 'react-icons/md';
 import { createClient } from '@/utils/supabase/server';
 import { ProductsTableWithFilters } from '@/components/client/admin/ProductsTableWithFilters';
 import { MetricCard } from '@/components/ui/MetricCard';
@@ -50,8 +50,17 @@ export default async function ProductsPage() {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   const newProducts = products ? products.filter(p => new Date(p.created_at) > thirtyDaysAgo).length : 0;
 
-  // 6. Top Sellers (Mocked)
-  const topSellersCount = "124"; // Mock metric
+  // 6. Most Viewed product (by view_count) — show its product code + view count
+  let topProduct: (typeof products extends (infer T)[] ? T : any) | null = null;
+  if (products) {
+    for (const p of products) {
+      if (!topProduct || (Number(p.view_count) || 0) > (Number(topProduct.view_count) || 0)) {
+        topProduct = p;
+      }
+    }
+  }
+  const mostViewedCode = topProduct?.product_code ?? '—';
+  const mostViewedViews = Number(topProduct?.view_count) || 0;
 
   return (
     <main className="pt-[88px] lg:pt-6 px-6 lg:px-10 max-w-7xl mx-auto pb-6 lg:pb-10 min-h-screen">
@@ -93,10 +102,10 @@ export default async function ProductsPage() {
           icon={MdOutlineStarBorder}
         />
         <MetricCard
-          title="Top Sellers"
-          value={topSellersCount}
-          subtitle="Items sold this week"
-          icon={MdOutlineWhatshot}
+          title="Most Viewed"
+          value={mostViewedCode}
+          subtitle={topProduct ? `${mostViewedViews.toLocaleString()} views` : 'No products'}
+          icon={MdOutlineVisibility}
         />
       </div>
 

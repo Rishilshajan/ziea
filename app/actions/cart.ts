@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+import { logProductInteraction } from "@/app/actions/activity";
 
 /**
  * Add a product (optionally sized) to the current user's cart.
@@ -40,6 +41,7 @@ export async function addToCart(
       size,
       quantity: qty,
     });
+    await logProductInteraction(productId, "Cart");
   }
 
   revalidatePath("/cart");

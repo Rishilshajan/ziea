@@ -4,6 +4,7 @@ import { MdOutlineInventory2, MdOutlineVisibility, MdOutlineGroup, MdOutlineCate
 import { Card } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { Button } from "@/components/ui/Button";
+import NotificationBell from "@/components/client/admin/NotificationBell";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { createClient } from "@/utils/supabase/server";
 
@@ -25,12 +26,15 @@ export default async function AdminPage() {
 
   const productsCountPromise = supabase.from('products').select('*', { count: 'exact', head: true });
 
-  const [countResponse, categoriesCountResponse, profileResponse, activitiesResponse, productsCountResponse] = await Promise.all([
+  const productViewsPromise = supabase.from('products').select('view_count');
+
+  const [countResponse, categoriesCountResponse, profileResponse, activitiesResponse, productsCountResponse, productViewsResponse] = await Promise.all([
     usersCountPromise,
     categoriesCountPromise,
     profilePromise,
     activitiesPromise,
-    productsCountPromise
+    productsCountPromise,
+    productViewsPromise
   ]);
 
   const { count: usersCount } = countResponse;
@@ -42,6 +46,12 @@ export default async function AdminPage() {
 
   const { count: productsCount } = productsCountResponse;
   const displayProductsCount = productsCount || 0;
+
+  // Total product views = sum of every product's view_count.
+  const totalProductViews = (productViewsResponse.data ?? []).reduce(
+    (sum: number, p: { view_count: number | null }) => sum + (p.view_count ?? 0),
+    0
+  );
 
   const recentActivities = activitiesResponse.data || [];
 
@@ -83,6 +93,9 @@ export default async function AdminPage() {
           <p className="font-body-md lg:font-body-lg text-[#2C3829]/70">Here is an overview of ZIEA's natural elegance and performance today.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center w-full lg:w-auto">
+          <div className="hidden lg:flex justify-end shrink-0">
+            <NotificationBell variant="light" />
+          </div>
           <Button variant="auth-social" className="w-full sm:!w-auto px-6">Generate Report</Button>
           <Button variant="auth-primary" className="w-full sm:!w-auto !py-3.5 !text-sm px-6">Add New Product</Button>
         </div>
@@ -97,9 +110,9 @@ export default async function AdminPage() {
           icon={MdOutlineInventory2}
         />
         <MetricCard
-          title="Users Viewed"
-          value="14,892"
-          subtitle="+4.2k today"
+          title="Product Views"
+          value={totalProductViews.toLocaleString()}
+          subtitle="Across all products"
           icon={MdOutlineVisibility}
         />
         <MetricCard
