@@ -95,31 +95,11 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
 
       if (error) throw error;
 
-      // Check role and redirect
+      // Role-based redirect + login bookkeeping happen on the server (post-login
+      // page), which reads the role from the authenticated session cookie. Doing
+      // it here on the client raced RLS and sometimes sent admins to '/'.
       if (data.user) {
-        // Update last login
-        await supabase.from('users').update({ last_login_at: new Date().toISOString() }).eq('id', data.user.id);
-
-        const { data: profile } = await supabase
-          .from('users')
-          .select('first_name, last_name, role')
-          .eq('id', data.user.id)
-          .single();
-
-        if (profile) {
-          const roleLabel = profile.role === 'Admin' ? 'Admin' : 'Customer';
-          await supabase.from('activity_logs').insert({
-            user_id: data.user.id,
-            type: `${roleLabel} Login`,
-            description: `${roleLabel} ${profile.first_name || ''} ${profile.last_name || ''}`.trim() + ' logged in'
-          });
-        }
-
-        if (profile?.role === 'Admin') {
-          router.push('/admin');
-        } else {
-          router.push('/');
-        }
+        router.push('/auth/post-login');
       }
     } catch (error: any) {
       // If user is not found or wrong password, it hits here

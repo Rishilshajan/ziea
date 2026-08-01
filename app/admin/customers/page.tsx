@@ -4,27 +4,19 @@ import { Card } from '@/components/ui/Card';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { CustomersTableWithSearch } from '@/components/client/admin/CustomersTableWithSearch';
 import { createClient } from "@/utils/supabase/server";
+import { getAdminProfile } from "@/utils/admin/session";
 
 export default async function CustomersPage() {
   const supabase = await createClient();
 
-  // Fetch all users and auth user in parallel
-  const usersPromise = supabase
-    .from('users')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  const authPromise = supabase.auth.getUser();
-
-  const wishlistPromise = supabase.from('wishlist_items').select('user_id');
-
-  const [usersResponse, authResponse, wishlistResponse] = await Promise.all([
-    usersPromise,
-    authPromise,
-    wishlistPromise,
+  // Users, wishlist rows, and the admin's own profile (for the export byline)
+  // all fetched concurrently — no second getUser() and no post-batch waterfall.
+  const [profile, usersResponse, wishlistResponse] = await Promise.all([
+    getAdminProfile(),
+    supabase.from('users').select('*').order('created_at', { ascending: false }),
+    supabase.from('wishlist_items').select('user_id'),
   ]);
-  const { data: users, error } = usersResponse;
-  const adminUser = authResponse.data?.user;
+  const { data: users } = usersResponse;
 
   const totalUsers = users ? users.length : 0;
 
@@ -53,18 +45,9 @@ export default async function CustomersPage() {
   const wishlistPct =
     totalCustomers > 0 ? Math.round((customersWithWishlist / totalCustomers) * 100) : 0;
 
-  // Fetch admin name for export
-  let adminName = "Admin";
-  if (adminUser) {
-    const { data: profileData } = await supabase
-      .from('users')
-      .select('first_name, last_name')
-      .eq('id', adminUser.id)
-      .maybeSingle();
-    if (profileData) {
-      adminName = `${profileData.first_name || ''} ${profileData.last_name || ''}`.trim() || 'Admin';
-    }
-  }
+  // Admin name for the export byline — from the shared profile (already fetched).
+  const adminName =
+    `${profile?.firstName || ''} ${profile?.lastName || ''}`.trim() || 'Admin';
 
   return (
     <main className="pt-[88px] lg:pt-6 px-6 lg:px-10 max-w-7xl mx-auto pb-6 lg:pb-10 min-h-screen">

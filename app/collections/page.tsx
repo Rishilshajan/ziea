@@ -6,8 +6,9 @@ import ProductGrid from '../../components/server/collections/ProductGrid';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
 import Link from 'next/link';
-import { getProductFacets, type ProductSort } from '@/utils/products';
-import { createClient } from '@/utils/supabase/server';
+import { getFilteredProducts, getProductFacets, type ProductSort } from '@/utils/products';
+import { getCategories } from '@/utils/categories';
+import { getWishlistProductIds } from '@/app/actions/wishlist';
 
 export const metadata: Metadata = {
   title: 'ZIEA - Collections',
@@ -65,15 +66,28 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
     ? (params.sort as ProductSort)
     : undefined;
 
-  const supabase = await createClient();
-  const [facets, { data: categoryRows }] = await Promise.all([
+  const normalizedPage = Number.isNaN(pageNumber) ? undefined : pageNumber;
+
+  // Fetch everything the page needs concurrently instead of waterfalling
+  // facets/categories → products → wishlist across nested components.
+  const [facets, categories, productData, wishlistedIds] = await Promise.all([
     getProductFacets(),
-    supabase
-      .from('categories')
-      .select('id, name')
-      .order('created_at', { ascending: true }),
+    getCategories(),
+    getFilteredProducts({
+      category,
+      page: normalizedPage,
+      q,
+      minPrice,
+      maxPrice,
+      onSale,
+      inStock,
+      badges,
+      sizes,
+      materials,
+      sort,
+    }),
+    getWishlistProductIds(),
   ]);
-  const categories = (categoryRows ?? []) as { id: string; name: string }[];
 
   return (
     <>
@@ -99,8 +113,11 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
         <FiltersPanel categories={categories} facets={facets} />
 
         <ProductGrid
+          items={productData.items}
+          total={productData.total}
+          wishlistedIds={wishlistedIds}
           category={category}
-          page={Number.isNaN(pageNumber) ? undefined : pageNumber}
+          page={normalizedPage}
           q={q}
           minPrice={minPrice}
           maxPrice={maxPrice}

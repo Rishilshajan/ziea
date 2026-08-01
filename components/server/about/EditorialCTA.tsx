@@ -2,15 +2,10 @@ import React from 'react';
 import RevealOnScroll from '../../ui/RevealOnScroll';
 import Link from 'next/link';
 import { Button } from '../../ui/Button';
-import { createClient } from '@/utils/supabase/server';
+import { getCategories } from '@/utils/categories';
 
 export default async function EditorialCTA() {
-  const supabase = await createClient();
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('id, name')
-    .order('created_at', { ascending: true })
-    .limit(4);
+  const categories = (await getCategories()).slice(0, 4);
 
   return (
     <section className="pt-20 pb-12 bg-white text-center">

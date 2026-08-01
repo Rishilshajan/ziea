@@ -1,32 +1,32 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
+import { getAdminClaims } from '@/utils/admin/session';
 import AdminNavigation from '@/components/client/admin/AdminNavigation';
+import AdminNavServer from '@/components/server/admin/AdminNavServer';
 import ActivityNotificationsProvider from '@/components/client/admin/ActivityNotificationsProvider';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Local JWT verification + role claim (no Auth-server round-trip; and no DB
+  // query at all once the custom-claim hook is configured, so this gate stops
+  // blocking the page content below).
+  const claims = await getAdminClaims();
 
-  if (!user) {
+  if (!claims) {
     redirect('/login?next=/admin');
   }
 
-  // Check role
-  const { data: userData } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .maybeSingle();
-
-  if (!userData || userData.role !== 'Admin') {
+  if (claims.role !== 'Admin') {
     redirect('/');
   }
 
   return (
     <ActivityNotificationsProvider>
       <div className="bg-[#F5F0E8] font-body-md text-body-md pb-0 lg:pl-72 min-h-screen">
-        <AdminNavigation />
+        {/* Nav profile streams in so it never blocks the page content. The
+            fallback renders the full sidebar (just without the avatar). */}
+        <Suspense fallback={<AdminNavigation initialProfile={null} initialUserId={claims.userId} />}>
+          <AdminNavServer userId={claims.userId} />
+        </Suspense>
 
         {/* Main Content Canvas */}
         {children}

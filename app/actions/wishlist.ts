@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+import { getUserId } from "@/utils/supabase/user";
 import { logProductInteraction } from "@/app/actions/activity";
 
 /**
@@ -55,16 +56,15 @@ export async function removeWishlistItem(productId: string) {
 
 /** Product ids currently wishlisted by the signed-in user (for initial heart state). */
 export async function getWishlistProductIds(): Promise<string[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return [];
+  // Read path: resolve the user id from the JWT locally (no Auth-server hop).
+  const userId = await getUserId();
+  if (!userId) return [];
 
+  const supabase = await createClient();
   const { data } = await supabase
     .from("wishlist_items")
     .select("product_id")
-    .eq("user_id", user.id);
+    .eq("user_id", userId);
 
   return (data ?? []).map((row) => row.product_id as string);
 }

@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Create an unmodified response
   let response = NextResponse.next({
     request: {
@@ -32,8 +32,8 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Use getSession instead of getUser in middleware to prevent network timeouts.
-  // getSession decodes the JWT locally, making it infinitely faster and avoiding 
+  // Use getSession instead of getUser in proxy to prevent network timeouts.
+  // getSession decodes the JWT locally, making it infinitely faster and avoiding
   // the 'fetch failed' Edge Runtime crash you are experiencing.
   const { data: { session } } = await supabase.auth.getSession();
 
@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
       // Not logged in -> redirect to login
       return NextResponse.redirect(new URL('/login?next=/admin', request.url));
     }
-    // Note: Role check is deferred to layout.tsx to reduce middleware latency.
+    // Note: Role check is deferred to layout.tsx to reduce proxy latency.
   }
 
   return response;

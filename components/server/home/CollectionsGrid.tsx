@@ -1,33 +1,15 @@
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
 import ProductCard from "../../client/product/ProductCard";
 import type { Product } from "@/types/product";
+import { getLatestProducts } from "@/utils/products";
 import { getWishlistProductIds } from "@/app/actions/wishlist";
 
 export default async function CollectionsGrid() {
-  const supabase = await createClient();
-  const wishlistedIds = await getWishlistProductIds();
-
-  const { data: products, error } = await supabase
-    .from("products")
-    .select(`
-      id,
-      product_code,
-      name,
-      original_price,
-      discounted_price,
-      images,
-      badges,
-      delivery_days
-    `)
-    .eq("is_published", true)
-    .eq("status", "published")
-    .order("created_at", { ascending: false })
-    .limit(8);
-
-  if (error) {
-    console.error("Error fetching latest collections:", error);
-  }
+  // Cached catalog read + per-user wishlist state, fetched concurrently.
+  const [products, wishlistedIds] = await Promise.all([
+    getLatestProducts(8),
+    getWishlistProductIds(),
+  ]);
 
   return (
     <section className="px-page space-y-8 bg-background">

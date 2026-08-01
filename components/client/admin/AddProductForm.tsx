@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { MdCameraAlt, MdClose, MdAdd, MdRemove, MdStar, MdStarBorder, MdArrowBack, MdArrowForward, MdKeyboardArrowDown } from 'react-icons/md';
 import { createClient } from '@/utils/supabase/client';
+import { revalidateStorefront } from '@/app/actions/revalidate';
 import { useRouter } from 'next/navigation';
 import RichTextarea from '@/components/ui/RichTextarea';
 import { Button } from '@/components/ui/Button';
@@ -289,6 +290,7 @@ export default function AddProductForm({ categories = [], initialData }: { categ
         });
       }
 
+      await revalidateStorefront('products');
       showToast(`Product ${isDraft ? 'saved as draft' : 'published'} successfully!`, false);
       router.push('/admin/products');
 

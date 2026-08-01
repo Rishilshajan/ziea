@@ -1,15 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import NewsletterForm from "@/components/client/home/NewsletterForm";
-import { createClient } from "@/utils/supabase/server";
+import { getCategories } from "@/utils/categories";
 
 export default async function Footer() {
-  const supabase = await createClient();
-
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("id, name")
-    .order("created_at", { ascending: true });
+  const categories = await getCategories();
 
   return (
     <footer className="bg-[#2C3829] text-white">

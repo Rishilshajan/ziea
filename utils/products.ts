@@ -1,11 +1,21 @@
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+import { createPublicClient } from "@/utils/supabase/public";
 import type { Product } from "@/types/product";
 
-// Single source of truth for the storefront product shape.
+// Single source of truth for the storefront product shape (detail pages).
 const PRODUCT_SELECT = `
   id, product_code, name, description, category_id,
   original_price, discounted_price, material, care_instructions,
   shipping_info, contents, delivery_days, images, sizes, badges, is_published, status, created_at
+`;
+
+// Trimmed shape for listing/grid + filtering — omits the heavy long-form
+// columns (description, care_instructions, shipping_info, contents) that the
+// card never renders, cutting the payload the Collections page transfers.
+const LIST_SELECT = `
+  id, product_code, name, category_id, original_price, discounted_price,
+  material, delivery_days, images, sizes, badges, created_at
 `;
 
 interface ListParams {
@@ -50,6 +60,36 @@ function effectivePrice(p: Product): number {
   return p.discounted_price ?? p.original_price ?? 0;
 }
 
+/**
+ * Published catalog rows for a given category/search, cached across requests.
+ * The DB query only depends on (category, q) — all other Collections filters are
+ * applied in-memory afterward — so caching this covers every filter/sort/page
+ * combination for the same category+search. Public (cookie-less) client, tagged
+ * `products`, invalidated on admin product changes with a 5-minute fallback.
+ */
+const getCatalogRows = unstable_cache(
+  async (category?: string, q?: string): Promise<Product[]> => {
+    const supabase = createPublicClient();
+    let query = supabase
+      .from("products")
+      .select(`${LIST_SELECT}, view_count`)
+      .eq("is_published", true)
+      .eq("status", "published");
+
+    if (category) query = query.eq("category_id", category);
+    if (q && q.trim()) {
+      const term = q.trim().replace(/[%,]/g, "");
+      query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
+    }
+
+    const { data, error } = await query;
+    if (error) console.error("getCatalogRows:", error.message);
+    return (data ?? []) as Product[];
+  },
+  ["storefront-catalog"],
+  { tags: ["products"], revalidate: 300 },
+);
+
 export type ProductSort = "newest" | "price_asc" | "price_desc" | "popular";
 
 interface FilterParams {
@@ -87,24 +127,9 @@ export async function getFilteredProducts({
   page = 1,
   pageSize = 12,
 }: FilterParams = {}): Promise<{ items: Product[]; total: number }> {
-  const supabase = await createClient();
-
-  let query = supabase
-    .from("products")
-    .select(`${PRODUCT_SELECT}, view_count`)
-    .eq("is_published", true)
-    .eq("status", "published");
-
-  if (category) query = query.eq("category_id", category);
-  if (q && q.trim()) {
-    const term = q.trim().replace(/[%,]/g, "");
-    query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
-  }
-
-  const { data, error } = await query;
-  if (error) console.error("getFilteredProducts:", error.message);
-
-  let items = (data ?? []) as Product[];
+  // Cached DB read (keyed by category + search); all remaining filters/sort/
+  // pagination run in-memory on the cached rows below.
+  let items = await getCatalogRows(category, q);
 
   // Price bounds (each optional; NaN is guarded by the callers).
   if (typeof minPrice === "number" && !Number.isNaN(minPrice)) {
@@ -182,9 +207,14 @@ export interface ProductFacets {
   maxPrice: number;
 }
 
-/** Distinct filter option data computed from ALL published products. */
-export async function getProductFacets(): Promise<ProductFacets> {
-  const supabase = await createClient();
+/**
+ * Distinct filter option data computed from ALL published products. Cached
+ * across requests (public client, tagged `products`, 5-minute fallback);
+ * invalidated on admin product changes via `revalidateTag('products')`.
+ */
+export const getProductFacets = unstable_cache(
+  async (): Promise<ProductFacets> => {
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("products")
     .select("original_price, discounted_price, material, badges")
@@ -216,7 +246,33 @@ export async function getProductFacets(): Promise<ProductFacets> {
     minPrice: Number.isFinite(min) ? Math.floor(min) : 0,
     maxPrice: Math.ceil(max),
   };
-}
+  },
+  ["storefront-facets"],
+  { tags: ["products"], revalidate: 300 },
+);
+
+/**
+ * Latest published products for the home "Latest Collections" grid. Cached
+ * across requests (public client, tagged `products`, 5-minute fallback).
+ */
+export const getLatestProducts = unstable_cache(
+  async (limit = 8): Promise<Product[]> => {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        "id, product_code, name, original_price, discounted_price, images, badges, delivery_days",
+      )
+      .eq("is_published", true)
+      .eq("status", "published")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (error) console.error("getLatestProducts:", error.message);
+    return (data ?? []) as Product[];
+  },
+  ["storefront-latest"],
+  { tags: ["products"], revalidate: 300 },
+);
 
 /** A single published product by its DB-generated product_code (the storefront slug). */
 export async function getProductByCode(code: string): Promise<Product | null> {

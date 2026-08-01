@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import Toast from '@/components/ui/Toast';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { createClient } from '@/utils/supabase/client';
+import { revalidateStorefront } from '@/app/actions/revalidate';
 import { useRouter } from 'next/navigation';
 
 // Constants removed as they are no longer needed for standard grid
@@ -190,6 +191,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
       }
       setIsModalOpen(false);
       showToast(activeCategory ? 'Category updated successfully!' : 'Category added successfully!');
+      await revalidateStorefront('categories');
       router.refresh();
     } catch (err: any) {
       setError(err.message || 'Failed to save category');
@@ -221,6 +223,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
 
       setIsDeleteModalOpen(false);
       showToast('Category deleted successfully!');
+      await revalidateStorefront('categories');
       router.refresh();
     } catch (err: any) {
       console.error(err);

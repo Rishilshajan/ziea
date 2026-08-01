@@ -33,42 +33,34 @@ const AVATAR_COLORS = [
   'bg-[#7A7068] text-white',
 ];
 
-export default function AdminNavigation() {
+interface AdminNavProfile {
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  role: string | null;
+}
+
+export default function AdminNavigation({
+  initialProfile = null,
+  initialUserId = null,
+}: {
+  initialProfile?: AdminNavProfile | null;
+  initialUserId?: string | null;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+  // Identity comes from the server (props) — no getSession()/profile query on
+  // mount. We only listen for sign-out to clear the UI.
+  const [user, setUser] = useState<any>(initialUserId ? { id: initialUserId } : null);
+  const [profile, setProfile] = useState<any>(initialProfile);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser(session.user);
-        const { data: profileData } = await supabase
-          .from('users')
-          .select('first_name, last_name, email, role')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        if (profileData) setProfile(profileData);
-      }
-    };
-
-    fetchUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setUser(session.user);
-        const { data: profileData } = await supabase
-          .from('users')
-          .select('first_name, last_name, email, role')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        if (profileData) setProfile(profileData);
-      } else {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session?.user) {
         setUser(null);
         setProfile(null);
       }

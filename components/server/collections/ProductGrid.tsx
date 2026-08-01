@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { MdOutlineChevronLeft, MdOutlineChevronRight } from "react-icons/md";
 import ProductCard from "../../client/product/ProductCard";
-import { getFilteredProducts, type ProductSort } from "@/utils/products";
-import { getWishlistProductIds } from "@/app/actions/wishlist";
+import { type ProductSort } from "@/utils/products";
+import type { Product } from "@/types/product";
 
 const PAGE_SIZE = 12;
 
 interface ProductGridProps {
+  items: Product[];
+  total: number;
+  wishlistedIds: string[];
   category?: string;
   page?: number;
   q?: string;
@@ -20,7 +23,15 @@ interface ProductGridProps {
   sort?: ProductSort;
 }
 
-export default async function ProductGrid({
+/**
+ * Presentational product grid + pager. Data is fetched by the Collections page
+ * (in parallel with facets/categories) and passed in, so this component adds no
+ * round-trips of its own.
+ */
+export default function ProductGrid({
+  items,
+  total,
+  wishlistedIds,
   category,
   page,
   q,
@@ -34,22 +45,6 @@ export default async function ProductGrid({
   sort,
 }: ProductGridProps) {
   const currentPage = page && page > 0 ? page : 1;
-  const { items, total } = await getFilteredProducts({
-    category,
-    q,
-    minPrice,
-    maxPrice,
-    onSale,
-    badges,
-    inStock,
-    sizes,
-    materials,
-    sort,
-    page: currentPage,
-    pageSize: PAGE_SIZE,
-  });
-
-  const wishlistedIds = await getWishlistProductIds();
 
   if (items.length === 0) {
     return (

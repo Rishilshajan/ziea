@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/Select';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { createClient } from '@/utils/supabase/client';
+import { revalidateStorefront } from '@/app/actions/revalidate';
 import Toast from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
 
@@ -90,6 +91,7 @@ export function ProductsTableWithFilters({ initialProducts }: ProductsTableWithF
       });
 
       setProducts(products.filter(p => p.id !== productToDelete.id));
+      await revalidateStorefront('products');
       showToast(`Product "${productToDelete.name}" deleted successfully.`);
     } catch (err: any) {
       showToast(err.message || 'Error deleting product', true);

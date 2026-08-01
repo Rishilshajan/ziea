@@ -7,49 +7,34 @@ import { Button } from "@/components/ui/Button";
 import NotificationBell from "@/components/client/admin/NotificationBell";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { createClient } from "@/utils/supabase/server";
+import { getAdminProfile } from "@/utils/admin/session";
 
 export default async function AdminPage() {
   const supabase = await createClient();
 
-  // getSession is fast and local (JWT decode). layout.tsx already did the secure getUser() check.
-  const { data: { session } } = await supabase.auth.getSession();
-  const userId = session?.user?.id;
-
-  // Parallelize ALL queries into a single batch
-  const usersCountPromise = supabase.from('users').select('*', { count: 'exact', head: true });
-  const categoriesCountPromise = supabase.from('categories').select('*', { count: 'exact', head: true });
-  const profilePromise = userId
-    ? supabase.from('users').select('first_name').eq('id', userId).maybeSingle()
-    : Promise.resolve({ data: null });
-
-  const activitiesPromise = supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(10);
-
-  const productsCountPromise = supabase.from('products').select('*', { count: 'exact', head: true });
-
-  const productViewsPromise = supabase.from('products').select('view_count');
-
-  const [countResponse, categoriesCountResponse, profileResponse, activitiesResponse, productsCountResponse, productViewsResponse] = await Promise.all([
-    usersCountPromise,
-    categoriesCountPromise,
-    profilePromise,
-    activitiesPromise,
-    productsCountPromise,
-    productViewsPromise
+  // Identity/name comes from the shared, request-cached admin profile (already
+  // resolved by the layout — no extra auth call). All counts run in parallel.
+  const [profile, countResponse, categoriesCountResponse, activitiesResponse, productViewsResponse] = await Promise.all([
+    getAdminProfile(),
+    supabase.from('users').select('*', { count: 'exact', head: true }),
+    supabase.from('categories').select('*', { count: 'exact', head: true }),
+    supabase.from('activity_logs').select('id, type, description, created_at').order('created_at', { ascending: false }).limit(10),
+    supabase.from('products').select('view_count'),
   ]);
 
   const { count: usersCount } = countResponse;
-  const firstName = profileResponse.data?.first_name || "Admin";
+  const firstName = profile?.firstName || "Admin";
 
   const displayCustomersCount = usersCount || 0;
   const { count: categoriesCount } = categoriesCountResponse;
   const displayCategoriesCount = categoriesCount || 0;
 
-  const { count: productsCount } = productsCountResponse;
-  const displayProductsCount = productsCount || 0;
-
-  // Total product views = sum of every product's view_count.
-  const totalProductViews = (productViewsResponse.data ?? []).reduce(
-    (sum: number, p: { view_count: number | null }) => sum + (p.view_count ?? 0),
+  // Products count + total views derive from the single view_count fetch (one
+  // row per product), so we don't also run a separate count query.
+  const productViewRows = (productViewsResponse.data ?? []) as { view_count: number | null }[];
+  const displayProductsCount = productViewRows.length;
+  const totalProductViews = productViewRows.reduce(
+    (sum, p) => sum + (p.view_count ?? 0),
     0
   );
 
