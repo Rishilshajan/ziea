@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
 import { randomBytes } from 'crypto';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-// Filesystem writes require the Node.js runtime (not Edge).
 export const runtime = 'nodejs';
 
 const MAX_BYTES = 15 * 1024 * 1024; // 15 MB per image
@@ -18,15 +16,10 @@ const ALLOWED_TYPES = new Map<string, string>([
   ['image/svg+xml', 'svg'],
 ]);
 
-// Where files land and the public base they are served from. Files are served
-// back by app/cdn/[...path]/route.ts (which reads from this same dir), so serving
-// works everywhere the Node app runs — no dependency on static-file config.
-//   PROD (Hostinger): ASSET_UPLOAD_DIR=/home/<user>/domains/ziea.in/public_html/cdn
-//                     NEXT_PUBLIC_ASSET_BASE_URL=https://ziea.in/cdn
-//   DEV (defaults):   ./storage/cdn  served at  /cdn
-const UPLOAD_DIR =
-  process.env.ASSET_UPLOAD_DIR || path.join(process.cwd(), 'storage', 'cdn');
-const BASE_URL = (process.env.NEXT_PUBLIC_ASSET_BASE_URL || '/cdn').replace(/\/+$/, '');
+// TEMP (works on Vercel/serverless): upload to a public Supabase Storage bucket.
+// Swap back to the Hostinger filesystem implementation (commented at the bottom)
+// once the app runs on Hostinger as a Node app.
+const STORAGE_BUCKET = 'Testing';
 
 /** Turn an original filename into a short, url-safe slug (no extension). */
 function slugify(name: string): string {
@@ -72,19 +65,51 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'File too large (max 15MB)' }, { status: 413 });
     }
 
-    // Collision-proof unique name: <timestamp>-<random>-<slug>.<ext>
+    // Collision-proof unique key: <folder>/<timestamp>-<random>-<slug>.<ext>
     const unique = `${Date.now()}-${randomBytes(4).toString('hex')}`;
-    const finalName = `${unique}-${slugify(file.name)}.${ext}`;
+    const objectPath = `${folder}/${unique}-${slugify(file.name)}.${ext}`;
 
-    const destDir = path.join(UPLOAD_DIR, folder);
-    await mkdir(destDir, { recursive: true });
-    await writeFile(path.join(destDir, finalName), Buffer.from(await file.arrayBuffer()));
+    // Service-role client — server-side only, bypasses storage RLS for the
+    // admin upload. Never exposed to the browser.
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { persistSession: false } },
+    );
 
-    // Public URL served directly by the web server (offloads the Node app).
-    return NextResponse.json({ url: `${BASE_URL}/${folder}/${finalName}` });
+    const { error: uploadError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(objectPath, Buffer.from(await file.arrayBuffer()), {
+        contentType: file.type,
+        upsert: false,
+      });
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(objectPath);
+    return NextResponse.json({ url: data.publicUrl });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Internal Server Error';
     console.error('Image upload error:', error);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+ * HOSTINGER FILESYSTEM STORAGE — restore this block (and remove the Supabase
+ * block above) once the app is deployed on Hostinger as a Node app. Requires:
+ *   ASSET_UPLOAD_DIR=/home/<user>/.../public_html/cdn
+ *   NEXT_PUBLIC_ASSET_BASE_URL=https://ziea.in/cdn
+ * (Also re-add: import { writeFile, mkdir } from 'fs/promises'; import path from 'path';)
+ *
+ * const UPLOAD_DIR =
+ *   process.env.ASSET_UPLOAD_DIR || path.join(process.cwd(), 'storage', 'cdn');
+ * const BASE_URL = (process.env.NEXT_PUBLIC_ASSET_BASE_URL || '/cdn').replace(/\/+$/, '');
+ *
+ * // inside POST, replacing the Supabase upload:
+ * const unique = `${Date.now()}-${randomBytes(4).toString('hex')}`;
+ * const finalName = `${unique}-${slugify(file.name)}.${ext}`;
+ * const destDir = path.join(UPLOAD_DIR, folder);
+ * await mkdir(destDir, { recursive: true });
+ * await writeFile(path.join(destDir, finalName), Buffer.from(await file.arrayBuffer()));
+ * return NextResponse.json({ url: `${BASE_URL}/${folder}/${finalName}` });
+ * ─────────────────────────────────────────────────────────────────────────── */

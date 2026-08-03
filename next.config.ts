@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.ziea.in",
       },
+      {
+        // TEMP: Supabase Storage (Testing bucket) used while hosted on Vercel.
+        protocol: "https",
+        hostname: "igzgiyulxkvkrjymisqy.supabase.co",
+      },
     ],
   },
 };
