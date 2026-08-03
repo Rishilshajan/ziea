@@ -3,17 +3,21 @@ import Link from 'next/link';
 import { MdOutlineSpa } from "react-icons/md";
 import RevealOnScroll from '../../ui/RevealOnScroll';
 import { Button } from '../../ui/Button';
+import SmartImage from '../../ui/SmartImage';
+import type { BrandImage } from '@/utils/branding';
 
-export default function PhilosophySection() {
+const FALLBACK: BrandImage = {
+  url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAADuBpks4zXCEFnARVZRJxDJH4VPCdXebQLIf3PLjBzxHotwZf5Bl3WnN_oCL_S9DWZpQpymw2StUCt3rRqi10rDS9TLnFr4_lj9A3t6HZGldzSA1W_dnDuyz1hkopoSArfMXk2Zwpb-8QHjaS6kxE-UFCsvLsBb4Q2iIiyYV-z133f-HOQuxXqupHOEosEbZZ6xzj04sS87lSJ-rIQgsQFAwXzy1Wrc54CH_2EzuLC19JBiJm7VpXlAUCuqQxi1tXZW15qhm0E74",
+  cropX: 50, cropY: 50, zoom: 100,
+};
+
+export default function PhilosophySection({ image }: { image?: BrandImage | null }) {
+  const bg = image ?? FALLBACK;
   return (
     <section className="relative py-24 md:py-36 flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
-        <img
-          className="w-full h-full object-cover"
-          alt="Lifestyle portrait in ZIEA nightdress."
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAADuBpks4zXCEFnARVZRJxDJH4VPCdXebQLIf3PLjBzxHotwZf5Bl3WnN_oCL_S9DWZpQpymw2StUCt3rRqi10rDS9TLnFr4_lj9A3t6HZGldzSA1W_dnDuyz1hkopoSArfMXk2Zwpb-8QHjaS6kxE-UFCsvLsBb4Q2iIiyYV-z133f-HOQuxXqupHOEosEbZZ6xzj04sS87lSJ-rIQgsQFAwXzy1Wrc54CH_2EzuLC19JBiJm7VpXlAUCuqQxi1tXZW15qhm0E74"
-        />
-        <div className="absolute inset-0 bg-[#1a2318]/60 backdrop-blur-[2px]"></div>
+        <SmartImage src={bg.url} alt="ZIEA philosophy" cropX={bg.cropX} cropY={bg.cropY} zoom={bg.zoom} sizes="100vw" />
+        <div className="absolute inset-0 bg-[#1a2318]/60 backdrop-blur-[2px] z-10"></div>
       </div>
       <div className="relative z-10 text-center px-page max-w-4xl">
         <RevealOnScroll>

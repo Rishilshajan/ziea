@@ -16,7 +16,7 @@ export function BarChart({ data, highlightLabel, className = "" }: BarChartProps
   if (!data || data.length === 0) {
     return (
       <div
-        className={`h-64 flex items-center justify-center text-[#2C3829]/50 font-jost text-sm ${className}`}
+        className={`h-48 sm:h-64 flex items-center justify-center text-[#2C3829]/50 font-jost text-sm ${className}`}
       >
         No data yet
       </div>
@@ -41,7 +41,7 @@ export function BarChart({ data, highlightLabel, className = "" }: BarChartProps
       role="img"
       aria-label={`Bar chart. ${ariaSummary}.`}
     >
-      <div className="h-64 flex items-end gap-2 sm:gap-3">
+      <div className="h-48 sm:h-64 flex items-end gap-2 sm:gap-3">
         {data.map((d, i) => {
           const isHi = d.label === highlighted;
           const heightPct = (d.value / max) * 100;

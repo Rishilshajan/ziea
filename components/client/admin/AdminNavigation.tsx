@@ -202,9 +202,9 @@ export default function AdminNavigation({
             className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
             onClick={() => setIsMenuOpen(false)}
           />
-          <div className="relative w-72 bg-[#2C3829] h-full shadow-2xl flex flex-col pt-6 transform transition-transform animate-in slide-in-from-left duration-300">
-            <div className="px-6 flex justify-center mb-6 relative">
-              <div className="flex flex-col items-center gap-4">
+          <div className="relative w-72 bg-[#2C3829] h-full shadow-2xl flex flex-col pt-4 overflow-y-auto hide-scrollbar transform transition-transform animate-in slide-in-from-left duration-300">
+            <div className="px-6 flex justify-center mb-4 relative">
+              <div className="flex flex-col items-center gap-2">
                 <Image
                   src="/Ziea_Splash.png"
                   alt="ZIEA Logo"
@@ -223,7 +223,7 @@ export default function AdminNavigation({
               </Button>
             </div>
 
-            <nav className="flex-1 space-y-2 px-2">
+            <nav className="flex-1 space-y-1 px-2">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/admin" && pathname.startsWith(link.href));
                 return (
@@ -231,7 +231,7 @@ export default function AdminNavigation({
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 font-jost tracking-wide ${isActive
+                    className={`rounded-lg px-4 py-2.5 flex items-center gap-4 transition-all duration-200 font-jost tracking-wide ${isActive
                         ? "bg-[#647b53] text-[#f9ffed] font-bold"
                         : "text-[#d6c3b3] hover:bg-white/5 hover:text-white"
                       }`}
@@ -243,8 +243,8 @@ export default function AdminNavigation({
               })}
             </nav>
 
-            <div className="mt-auto px-2 pb-6 pt-6 border-t border-[#d6c3b3]/20">
-              <div className="mb-6 px-4 flex items-center gap-4">
+            <div className="mt-auto px-2 pb-4 pt-4 border-t border-[#d6c3b3]/20">
+              <div className="mb-4 px-4 flex items-center gap-4">
                 {user && profile ? (
                   <>
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-jost font-medium text-sm shadow-sm ${getAvatarColor()}`}>
@@ -266,7 +266,7 @@ export default function AdminNavigation({
 
               <button
                 onClick={() => setIsLogoutModalOpen(true)}
-                className="text-[#d6c3b3] hover:bg-white/5 hover:text-white rounded-lg px-4 py-3 flex items-center gap-4 transition-all duration-200 w-full text-left font-jost tracking-wide"
+                className="text-[#d6c3b3] hover:bg-white/5 hover:text-white rounded-lg px-4 py-2.5 flex items-center gap-4 transition-all duration-200 w-full text-left font-jost tracking-wide"
               >
                 <MdLogout className="text-xl" />
                 <span>Logout</span>

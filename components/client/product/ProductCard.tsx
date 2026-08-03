@@ -8,6 +8,7 @@ import type { ProductCardProps } from "@/types/product";
 import { getBadgeColor } from "@/utils/badge";
 import { deliveryByLabel } from "@/utils/price";
 import { Button } from "../../ui/Button";
+import SmartImage from "../../ui/SmartImage";
 import { toggleWishlist } from "@/app/actions/wishlist";
 import { addToCart } from "@/app/actions/cart";
 import { notifyCountsChanged } from "@/utils/counts";
@@ -75,17 +76,13 @@ export default function ProductCard({
       {/* Product Image */}
       <div className="relative bg-surface rounded-xl overflow-hidden aspect-[4/5] shadow-[0px_2px_16px_rgba(44,56,41,0.08)]">
         <div className="absolute inset-0 group-hover:scale-105 transition-transform duration-700 ease-in-out">
-          <img
+          <SmartImage
             src={imageUrl}
             alt={altText ?? title}
-            className="absolute object-cover max-w-none select-none pointer-events-none"
-            style={{
-              width: `${zoom}%`,
-              height: `${zoom}%`,
-              left: `${cropX}%`,
-              top: `${cropY}%`,
-              transform: "translate(-50%, -50%)",
-            }}
+            cropX={cropX}
+            cropY={cropY}
+            zoom={zoom}
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           />
         </div>
 

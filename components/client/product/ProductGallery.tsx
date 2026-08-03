@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { ProductImage } from '@/types/product';
+import SmartImage from '@/components/ui/SmartImage';
 
 interface ProductGalleryProps {
   images: ProductImage[];
@@ -12,28 +13,22 @@ function CroppedImage({
   image,
   alt,
   priority,
+  sizes,
 }: {
   image: ProductImage;
   alt: string;
   priority?: boolean;
+  sizes: string;
 }) {
-  const zoom = image.zoom ?? 100;
-  const cropX = image.crop_x ?? 50;
-  const cropY = image.crop_y ?? 50;
-
   return (
-    <img
+    <SmartImage
       src={image.url}
       alt={alt}
-      loading={priority ? 'eager' : 'lazy'}
-      className="absolute object-cover max-w-none select-none pointer-events-none"
-      style={{
-        width: `${zoom}%`,
-        height: `${zoom}%`,
-        left: `${cropX}%`,
-        top: `${cropY}%`,
-        transform: 'translate(-50%, -50%)',
-      }}
+      cropX={image.crop_x ?? 50}
+      cropY={image.crop_y ?? 50}
+      zoom={image.zoom ?? 100}
+      sizes={sizes}
+      priority={priority}
     />
   );
 }
@@ -54,7 +49,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
             className={`relative aspect-[4/5] w-full rounded-md overflow-hidden border-2 transition-all ${activeImage === idx ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
               }`}
           >
-            <CroppedImage image={img} alt={`Thumbnail ${idx + 1}`} />
+            <CroppedImage image={img} alt={`Thumbnail ${idx + 1}`} sizes="96px" />
           </button>
         ))}
       </div>
@@ -62,7 +57,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
       {/* Main Image View */}
       <div className="relative w-full aspect-[4/5] md:aspect-auto md:h-[600px] rounded-xl overflow-hidden bg-[#eee0d6]/30 shadow-sm">
         {active && (
-          <CroppedImage image={active} alt="Product Main Image" priority />
+          <CroppedImage image={active} alt="Product Main Image" priority sizes="(min-width: 768px) 480px, 100vw" />
         )}
       </div>
 
@@ -75,7 +70,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
             className={`relative aspect-[4/5] w-16 sm:w-20 shrink-0 rounded-md overflow-hidden border-2 transition-all ${activeImage === idx ? "border-primary" : "border-transparent opacity-70"
               }`}
           >
-            <CroppedImage image={img} alt={`Thumbnail ${idx + 1}`} />
+            <CroppedImage image={img} alt={`Thumbnail ${idx + 1}`} sizes="80px" />
           </button>
         ))}
       </div>

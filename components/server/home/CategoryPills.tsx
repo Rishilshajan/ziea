@@ -1,4 +1,4 @@
-import Image from "next/image";
+import SmartImage from "../../ui/SmartImage";
 import { getCategories } from "@/utils/categories";
 import { ScrollArea } from "../../ui/ScrollArea";
 
@@ -23,17 +23,13 @@ export default async function CategoryPills() {
               className="w-28 shrink-0 flex flex-col items-center gap-3"
             >
               <div className="relative h-28 w-28 overflow-hidden rounded-full border border-border bg-muted/20">
-                <Image
+                <SmartImage
                   src={category.image_url}
                   alt={category.name}
-                  fill
-                  className="object-cover"
+                  cropX={category.cropX}
+                  cropY={category.cropY}
+                  zoom={category.zoom}
                   sizes="112px"
-                  style={{
-                    objectPosition: `${category.image_pos_x || "50%"} ${category.image_pos_y || "50%"}`,
-                    transform: `scale(${category.image_zoom || 1})`,
-                    transformOrigin: "center",
-                  }}
                 />
               </div>
 

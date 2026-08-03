@@ -1,12 +1,19 @@
 import ResetPasswordForm from '@/components/client/auth/ResetPasswordForm';
 import { Metadata } from 'next';
+import { getBranding } from '@/utils/branding.server';
 
 export const metadata: Metadata = {
   title: 'Reset Password | ZIEA',
   description: 'Create a new password for your ZIEA account.',
 };
 
-export default function ResetPasswordPage() {
+const FALLBACK_TL = "https://images.unsplash.com/photo-1600166898405-da9535204843?q=80&w=1974&auto=format&fit=crop";
+const FALLBACK_BR = "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1920&auto=format&fit=crop";
+
+export default async function ResetPasswordPage() {
+  const { auth } = await getBranding();
+  const tl = auth.topLeft?.url ?? FALLBACK_TL;
+  const br = auth.bottomRight?.url ?? FALLBACK_BR;
   return (
     <div className="min-h-screen bg-[#fff8f5] text-[#211a15] font-jost flex flex-col relative overflow-clip">
       {/* Background with noise texture */}
@@ -21,7 +28,7 @@ export default function ResetPasswordPage() {
           <div
             className="w-full h-full bg-cover bg-center rounded-3xl shadow-2xl"
             title="Editorial product shot of soft organic linen loungewear"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600166898405-da9535204843?q=80&w=1974&auto=format&fit=crop')" }}
+            style={{ backgroundImage: `url('${tl}')` }}
           ></div>
         </div>
       </div>
@@ -32,7 +39,7 @@ export default function ResetPasswordPage() {
           <div
             className="w-full h-full bg-cover bg-center rounded-3xl shadow-2xl"
             title="Editorial product shot of comfortable sleepwear"
-            style={{ backgroundImage: "url('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1920&auto=format&fit=crop')" }}
+            style={{ backgroundImage: `url('${br}')` }}
           ></div>
         </div>
       </div>

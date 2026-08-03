@@ -2,8 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import RevealOnScroll from '../../ui/RevealOnScroll';
+import type { BrandImage } from '@/utils/branding';
 
-export default function CraftsmanshipCarousel() {
+const FALLBACK: BrandImage[] = [
+  { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAko-FQldqkXCWKP6RuDFWx1-fSKrnfs0-byR7m3hhQ4UV2l6Pf-thjznzyxzWz_cCazQATSRt0PSgPMfS5WmdOUVXLg-PxWTS2moY3TBWRK66Sw8TTCtaW7Mn9TMNfJY2LoPlENILbLAuLYY-tg_SK1LfWLElma2NLzKsgAjR2xpVCasMMlFNH7HqLPtnk5utwnfCiueYZ20o5ICJQrOtuQshuP-c9ns8QY1PUGg8ZBDBaEx22y3AK3rWB7ZLnSWduz2oLgA_vJQ4", cropX: 50, cropY: 50, zoom: 100 },
+  { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuDgR88qG9r8GV6YSLHaeh8ae3JqGl6S6UgUD5u5aTS1fJRPM-1tmqBD_UqZR3YtAZNV5sp4220u0Cn2CFsp4DpeEsD6i7sgdKb0zKIlo4krFfgMy1jyb7btzFQoHpZtDrYSs3VidROntZybKHOL5TgoCm-TpJZfo56Ir-pcJB8XHVfgkki97Mgx4nf2nABQyPcg4f2y3Vxd86ir_caWXN9xO2w4dKDQdpKcNbwnKXxznnuUP-3uSFDuTRbsd55rsFxy0xxYXtozJI8", cropX: 50, cropY: 50, zoom: 100 },
+];
+
+export default function CraftsmanshipCarousel({ images }: { images?: BrandImage[] }) {
+  const imgs = images && images.length ? images : FALLBACK;
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -31,7 +38,8 @@ export default function CraftsmanshipCarousel() {
                 <img
                   alt="Traditional Looms"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAko-FQldqkXCWKP6RuDFWx1-fSKrnfs0-byR7m3hhQ4UV2l6Pf-thjznzyxzWz_cCazQATSRt0PSgPMfS5WmdOUVXLg-PxWTS2moY3TBWRK66Sw8TTCtaW7Mn9TMNfJY2LoPlENILbLAuLYY-tg_SK1LfWLElma2NLzKsgAjR2xpVCasMMlFNH7HqLPtnk5utwnfCiueYZ20o5ICJQrOtuQshuP-c9ns8QY1PUGg8ZBDBaEx22y3AK3rWB7ZLnSWduz2oLgA_vJQ4"
+                  style={{ objectPosition: `${imgs[0]?.cropX ?? 50}% ${imgs[0]?.cropY ?? 50}%` }}
+                  src={imgs[0]?.url}
                 />
               </div>
               <div className="p-4 flex-grow">
@@ -48,7 +56,8 @@ export default function CraftsmanshipCarousel() {
                 <img
                   alt="Natural Fibers"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgR88qG9r8GV6YSLHaeh8ae3JqGl6S6UgUD5u5aTS1fJRPM-1tmqBD_UqZR3YtAZNV5sp4220u0Cn2CFsp4DpeEsD6i7sgdKb0zKIlo4krFfgMy1jyb7btzFQoHpZtDrYSs3VidROntZybKHOL5TgoCm-TpJZfo56Ir-pcJB8XHVfgkki97Mgx4nf2nABQyPcg4f2y3Vxd86ir_caWXN9xO2w4dKDQdpKcNbwnKXxznnuUP-3uSFDuTRbsd55rsFxy0xxYXtozJI8"
+                  style={{ objectPosition: `${imgs[1]?.cropX ?? 50}% ${imgs[1]?.cropY ?? 50}%` }}
+                  src={imgs[1]?.url}
                 />
               </div>
               <div className="p-4 flex-grow">

@@ -11,7 +11,38 @@ import { createClient } from '@/utils/supabase/client';
 import { revalidateStorefront } from '@/app/actions/revalidate';
 import { useRouter } from 'next/navigation';
 
-// Constants removed as they are no longer needed for standard grid
+/** Normalize the DB crop columns into the product crop model (matches SmartImage
+ *  + the storefront). image_zoom <= 5 is treated as a legacy ×multiplier. */
+function catCrop(cat: any) {
+  const cropX = parseInt(cat?.image_pos_x ?? '50', 10);
+  const cropY = parseInt(cat?.image_pos_y ?? '50', 10);
+  const rawZoom = parseFloat(cat?.image_zoom ?? '100');
+  const zoom = !rawZoom ? 100 : rawZoom <= 5 ? rawZoom * 100 : rawZoom;
+  return {
+    cropX: Number.isNaN(cropX) ? 50 : cropX,
+    cropY: Number.isNaN(cropY) ? 50 : cropY,
+    zoom,
+  };
+}
+
+/** Same pan/zoom crop math as SmartImage (raw <img> for admin previews).
+ *  Caller supplies a `relative overflow-hidden` frame. */
+function CropPreview({ url, cropX, cropY, zoom, alt }: { url: string; cropX: number; cropY: number; zoom: number; alt: string; }) {
+  return (
+    <div
+      className="absolute"
+      style={{ width: `${zoom}%`, height: `${zoom}%`, left: `${cropX}%`, top: `${cropY}%`, transform: 'translate(-50%, -50%)' }}
+    >
+      <img
+        src={url}
+        alt={alt}
+        draggable={false}
+        className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
+        onError={(e) => (e.currentTarget.style.display = 'none')}
+      />
+    </div>
+  );
+}
 
 export default function CategoriesClient({ initialCategories }: { initialCategories: any[] }) {
   const router = useRouter();
@@ -40,7 +71,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
   const [imageUrl, setImageUrl] = useState('');
   const [imagePosX, setImagePosX] = useState(50);
   const [imagePosY, setImagePosY] = useState(50);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(100); // percent (100 = fit), matches product crop model
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,7 +116,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
     setImageUrl('');
     setImagePosX(50);
     setImagePosY(50);
-    setZoom(1);
+    setZoom(100);
     setError('');
     setIsModalOpen(true);
   };
@@ -94,9 +125,12 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
     setActiveCategory(category);
     setName(category.name);
     setImageUrl(category.image_url);
-    setImagePosX(parseInt(category.image_pos_x) || 50);
-    setImagePosY(parseInt(category.image_pos_y) || 50);
-    setZoom(parseFloat(category.image_zoom) || 1);
+    {
+      const c = catCrop(category);
+      setImagePosX(c.cropX);
+      setImagePosY(c.cropY);
+      setZoom(c.zoom);
+    }
     setError('');
     setIsModalOpen(true);
   };
@@ -146,9 +180,9 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
       const payload = {
         name,
         image_url: imageUrl,
-        image_pos_x: `${imagePosX}%`,
-        image_pos_y: `${imagePosY}%`,
-        image_zoom: zoom
+        image_pos_x: `${Math.round(imagePosX)}`,
+        image_pos_y: `${Math.round(imagePosY)}`,
+        image_zoom: Math.round(zoom) // percent
       };
 
       if (activeCategory) {
@@ -272,13 +306,8 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                 {paginatedCategories.map((cat) => (
                   <div key={cat.id} className="p-6 flex items-center justify-between gap-4">
                     <div className="flex gap-4 items-center">
-                      <div className="w-24 h-28 shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
-                        <img
-                          src={cat.image_url}
-                          alt={cat.name}
-                          className="w-full h-full object-cover"
-                          style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}`, transform: `scale(${cat.image_zoom || 1})`, transformOrigin: 'center' }}
-                        />
+                      <div className="relative w-24 h-28 shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
+                        <CropPreview url={cat.image_url} alt={cat.name} {...catCrop(cat)} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h2 className="font-medium text-[#2C3829] font-body-md line-clamp-2 leading-tight">
@@ -315,12 +344,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
               <Card key={cat.id} className="bg-white border border-[#d6c3b3]/30 shadow-sm !rounded-[16px] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-[320px]">
                 {/* Image Section (Top Half) */}
                 <div className="relative w-full h-[240px] bg-surface-variant overflow-hidden shrink-0">
-                  <img
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: `${cat.image_pos_x || '50%'} ${cat.image_pos_y || '50%'}`, transform: `scale(${cat.image_zoom || 1})`, transformOrigin: 'center' }}
-                    alt={cat.name}
-                    src={cat.image_url}
-                  />
+                  <CropPreview url={cat.image_url} alt={cat.name} {...catCrop(cat)} />
                 </div>
 
                 {/* Content Section (Bottom Half) */}
@@ -463,29 +487,18 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                       <p className="font-jost font-semibold text-[#2C3829] mb-4 uppercase tracking-widest text-xs">Storefront Preview & Crop</p>
 
                       <div className="w-40 h-40 rounded-full overflow-hidden border-2 border-[#d6c3b3] shadow-md relative bg-[#f3e6dc] select-none mb-6">
-                        <img
-                          src={imageUrl}
-                          alt="Preview"
-                          draggable={false}
-                          className="w-full h-full object-cover pointer-events-none select-none"
-                          style={{
-                            objectPosition: `${imagePosX}% ${imagePosY}%`,
-                            transform: `scale(${zoom})`,
-                            transformOrigin: 'center'
-                          }}
-                          onError={(e) => e.currentTarget.style.display = 'none'}
-                        />
+                        <CropPreview url={imageUrl} alt="Preview" cropX={imagePosX} cropY={imagePosY} zoom={zoom} />
                       </div>
 
                       <div className="w-full space-y-4 px-2">
                         <div>
                           <div className="flex justify-between text-xs text-[#2C3829]/70 font-jost mb-1">
                             <span>Zoom</span>
-                            <span>{Math.round(zoom * 100)}%</span>
+                            <span>{Math.round(zoom)}%</span>
                           </div>
                           <input
                             type="range"
-                            min="0.5" max="3" step="0.05"
+                            min="100" max="300" step="5"
                             value={zoom}
                             onChange={(e) => setZoom(Number(e.target.value))}
                             className="w-full accent-[#2C3829]"

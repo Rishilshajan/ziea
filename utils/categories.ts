@@ -5,9 +5,29 @@ export interface StoreCategory {
   id: string;
   name: string;
   image_url: string;
-  image_pos_x?: string;
-  image_pos_y?: string;
-  image_zoom?: number;
+  /** Product-model crop, normalized from the DB columns for SmartImage. */
+  cropX: number; // 0–100
+  cropY: number; // 0–100
+  zoom: number; // percent (100 = fit)
+}
+
+/** Normalize the legacy category crop columns into the product crop model.
+ *  image_pos_x/y were stored as "50%" (or numbers); image_zoom was a ×multiplier
+ *  (1) — values <= 5 are treated as legacy multipliers and scaled to percent. */
+function normalizeCrop(row: {
+  image_pos_x?: string | number | null;
+  image_pos_y?: string | number | null;
+  image_zoom?: string | number | null;
+}) {
+  const cropX = parseInt(String(row.image_pos_x ?? "50"), 10);
+  const cropY = parseInt(String(row.image_pos_y ?? "50"), 10);
+  const rawZoom = parseFloat(String(row.image_zoom ?? "100"));
+  const zoom = !rawZoom ? 100 : rawZoom <= 5 ? rawZoom * 100 : rawZoom;
+  return {
+    cropX: Number.isNaN(cropX) ? 50 : cropX,
+    cropY: Number.isNaN(cropY) ? 50 : cropY,
+    zoom,
+  };
 }
 
 /**
@@ -25,7 +45,12 @@ export const getCategories = unstable_cache(
       .from("categories")
       .select("id, name, image_url, image_pos_x, image_pos_y, image_zoom")
       .order("created_at", { ascending: true });
-    return (data ?? []) as StoreCategory[];
+    return (data ?? []).map((row) => ({
+      id: row.id as string,
+      name: row.name as string,
+      image_url: row.image_url as string,
+      ...normalizeCrop(row),
+    }));
   },
   ["storefront-categories"],
   { tags: ["categories"], revalidate: 3600 },

@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "../../ui/Button";
+import SmartImage from "../../ui/SmartImage";
+import type { HeroSlide } from "@/utils/branding";
 
 interface SlideData {
   image: string;
   subHeadline: string;
 }
 
-export default function Hero() {
+export default function Hero({ slides: brandingSlides }: { slides?: HeroSlide[] }) {
   const bgRef = useRef<HTMLDivElement>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -54,6 +56,16 @@ export default function Hero() {
     "Ziea - The Evolution of SHE!",
   ];
 
+  // Fallback slides (used until Branding → Home Page slides are uploaded).
+  const fallbackSlides: HeroSlide[] = slides.map((s, i) => ({
+    id: `fallback-${i}`,
+    desktop: { url: s.image, cropX: 50, cropY: 50, zoom: 100 },
+    mobile: { url: s.image, cropX: 50, cropY: 50, zoom: 100 },
+    headline: headlines[i % headlines.length],
+    subHeadline: s.subHeadline,
+  }));
+  const activeSlides = brandingSlides && brandingSlides.length ? brandingSlides : fallbackSlides;
+
   useEffect(() => {
     const handleScroll = () => {
       if (bgRef.current) {
@@ -67,10 +79,10 @@ export default function Hero() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex: number) => (prevIndex + 1) % slides.length);
+      setCurrentImageIndex((prevIndex: number) => (prevIndex + 1) % activeSlides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [activeSlides.length]);
 
   const handleShopNow = () => {
     if (isLoggedIn) {
@@ -93,23 +105,31 @@ export default function Hero() {
     setCurrentImageIndex(index);
   };
 
-  const currentSlide = slides[currentImageIndex];
-  const currentHeadline = headlines[currentImageIndex % headlines.length];
+  const slideIndex = activeSlides.length ? currentImageIndex % activeSlides.length : 0;
+  const currentSlide = activeSlides[slideIndex];
+  const currentHeadline = currentSlide?.headline || headlines[slideIndex % headlines.length];
+  const desktopImg = currentSlide?.desktop ?? currentSlide?.mobile ?? null;
+  const mobileImg = currentSlide?.mobile ?? currentSlide?.desktop ?? null;
 
   return (
     <section
       id="hero"
       className="relative w-full h-[460px] md:h-[600px] lg:h-[650px] flex flex-col justify-center items-center text-center overflow-hidden"
     >
-      {/* Background Image with Parallax */}
+      {/* Background Image with Parallax (desktop + mobile art direction) */}
       <div className="absolute inset-0 transition-opacity duration-1000">
-        <div
-          ref={bgRef}
-          className="bg-cover bg-center w-full h-[120%] transition-all duration-1000 ease-in-out"
-          style={{
-            backgroundImage: `url('${currentSlide.image}')`,
-          }}
-        />
+        <div ref={bgRef} className="relative w-full h-[120%] transition-all duration-1000 ease-in-out">
+          {desktopImg && (
+            <div className="hidden md:block absolute inset-0 overflow-hidden">
+              <SmartImage src={desktopImg.url} alt={currentHeadline} cropX={desktopImg.cropX} cropY={desktopImg.cropY} zoom={desktopImg.zoom} sizes="100vw" priority />
+            </div>
+          )}
+          {mobileImg && (
+            <div className="md:hidden absolute inset-0 overflow-hidden">
+              <SmartImage src={mobileImg.url} alt={currentHeadline} cropX={mobileImg.cropX} cropY={mobileImg.cropY} zoom={mobileImg.zoom} sizes="100vw" priority />
+            </div>
+          )}
+        </div>
         <div className="absolute inset-0 bg-[#2C3829]/50" />
       </div>
 
@@ -132,7 +152,7 @@ export default function Hero() {
           className="text-sm md:text-base text-[#F5F0E8]/85 leading-relaxed max-w-lg mx-auto transition-all duration-700"
           style={{ fontFamily: "'Jost', sans-serif" }}
         >
-          {currentSlide.subHeadline}
+          {currentSlide?.subHeadline}
         </p>
 
         {/* CTA Buttons */}
@@ -158,7 +178,7 @@ export default function Hero() {
 
       {/* Slide Navigation Dots */}
       <div className="absolute bottom-6 z-20 flex gap-2">
-        {slides.map((_, index) => (
+        {activeSlides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}

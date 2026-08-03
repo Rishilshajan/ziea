@@ -55,7 +55,7 @@ export function AnalyticsTrends({ initial }: AnalyticsTrendsProps) {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         {/* Range toggle */}
-        <div className="inline-flex bg-[#f9ebe1] rounded-full p-1">
+        <div className="flex w-full sm:w-auto sm:inline-flex bg-[#f9ebe1] rounded-full p-1">
           {RANGES.map((r) => {
             const active = r.value === range;
             return (
@@ -64,7 +64,7 @@ export function AnalyticsTrends({ initial }: AnalyticsTrendsProps) {
                 type="button"
                 aria-pressed={active}
                 onClick={() => load(r.value, 0)}
-                className={`px-4 py-1.5 rounded-full text-sm font-jost font-medium transition-colors ${
+                className={`flex-1 sm:flex-none text-center px-4 py-1.5 rounded-full text-sm font-jost font-medium transition-colors ${
                   active
                     ? "bg-white text-[#2C3829] shadow-sm"
                     : "text-[#2C3829]/60 hover:text-[#2C3829]"
@@ -77,7 +77,7 @@ export function AnalyticsTrends({ initial }: AnalyticsTrendsProps) {
         </div>
 
         {/* Window pager */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-normal">
           <button
             type="button"
             aria-label="Previous window"
@@ -86,7 +86,7 @@ export function AnalyticsTrends({ initial }: AnalyticsTrendsProps) {
           >
             <MdChevronLeft className="text-xl" />
           </button>
-          <span className="font-jost text-sm text-[#2C3829] min-w-[9rem] text-center">
+          <span className="font-jost text-sm text-[#2C3829] text-center flex-1 sm:flex-none sm:min-w-[9rem]">
             {windowLabel}
           </span>
           <button
