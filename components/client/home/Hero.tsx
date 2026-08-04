@@ -114,7 +114,7 @@ export default function Hero({ slides: brandingSlides }: { slides?: HeroSlide[] 
   return (
     <section
       id="hero"
-      className="relative w-full h-[460px] md:h-[600px] lg:h-[650px] flex flex-col justify-center items-center text-center overflow-hidden"
+      className="relative w-full h-[460px] md:h-[calc(100vh-80px)] flex flex-col justify-center items-center text-center overflow-hidden"
     >
       {/* Background Image with Parallax (desktop + mobile art direction) */}
       <div className="absolute inset-0 transition-opacity duration-1000">

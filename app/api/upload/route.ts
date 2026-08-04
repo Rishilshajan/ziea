@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
+import { getAdminClaims } from '@/utils/admin/session';
 
 export const runtime = 'nodejs';
 
@@ -46,6 +47,13 @@ function safeFolder(input: string): string {
 
 export async function POST(request: Request) {
   try {
+    // Admin-only: this endpoint uses the service-role key, so it must never be
+    // callable by anonymous users.
+    const claims = await getAdminClaims();
+    if (!claims || claims.role !== 'Admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const folder = safeFolder((formData.get('folder') as string) || 'uploads');

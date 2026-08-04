@@ -442,7 +442,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                 </div>
                 <div>
                   <label className="block text-sm font-jost font-semibold text-[#2C3829] mb-1">Category Image</label>
-                  <p className="text-xs font-jost text-[#2C3829]/50 mb-3">Recommended size: <span className="font-semibold text-[#2C3829]/70">400 × 400 px</span> — square images work best for the circular display.</p>
+                  <p className="text-xs font-jost text-[#2C3829]/50 mb-3">Recommended size: <span className="font-semibold text-[#2C3829]/70">1080 × 1350 px</span> — portrait images work best for the category cards.</p>
 
                   {/* Large File Upload Area */}
                   <label className={`cursor-pointer w-full border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center gap-3 transition-colors ${isSubmitting ? 'border-[#d6c3b3]/50 bg-transparent' : 'border-[#d6c3b3] hover:bg-white bg-white/50'}`}>
@@ -486,7 +486,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                     <div className="mt-8 flex flex-col items-center bg-white p-6 rounded-xl border border-[#d6c3b3]/30 shadow-sm">
                       <p className="font-jost font-semibold text-[#2C3829] mb-4 uppercase tracking-widest text-xs">Storefront Preview & Crop</p>
 
-                      <div className="w-40 h-40 rounded-full overflow-hidden border-2 border-[#d6c3b3] shadow-md relative bg-[#f3e6dc] select-none mb-6">
+                      <div className="w-44 aspect-[4/5] rounded-2xl overflow-hidden border-2 border-[#d6c3b3] shadow-md relative bg-[#f3e6dc] select-none mb-6">
                         <CropPreview url={imageUrl} alt="Preview" cropX={imagePosX} cropY={imagePosY} zoom={zoom} />
                       </div>
 
@@ -498,7 +498,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                           </div>
                           <input
                             type="range"
-                            min="100" max="300" step="5"
+                            min="50" max="300" step="5"
                             value={zoom}
                             onChange={(e) => setZoom(Number(e.target.value))}
                             className="w-full accent-[#2C3829]"

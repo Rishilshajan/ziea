@@ -50,6 +50,14 @@ export default function Header() {
   const [profile, setProfile] = useState<any>(null);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cartCount, setCartCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    setIsMenuOpen(false);
+    router.push(q ? `/collections?q=${encodeURIComponent(q)}` : "/collections");
+  };
 
   useEffect(() => {
     // Click outside to close dropdown
@@ -227,12 +235,16 @@ export default function Header() {
 
           <div className="flex-1 flex items-center justify-end gap-4 lg:gap-6">
             <div className="hidden xl:block w-64 lg:w-80">
-              <Input
-                type="text"
-                placeholder="Search designs..."
-                leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
-                aria-label="Search designs"
-              />
+              <form onSubmit={handleSearch}>
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search designs..."
+                  leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
+                  aria-label="Search designs"
+                />
+              </form>
             </div>
 
             <div className="flex gap-4">

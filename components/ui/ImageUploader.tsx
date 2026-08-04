@@ -105,7 +105,7 @@ export default function ImageUploader({
       {/* Controls */}
       {value?.url ? (
         <div className="space-y-3 rounded-xl border border-[#d6c3b3]/30 bg-white p-3">
-          <Slider label="Zoom" min={100} max={300} step={5} value={value.zoom} suffix="%" onChange={(v) => set({ zoom: v })} />
+          <Slider label="Zoom" min={50} max={300} step={5} value={value.zoom} suffix="%" onChange={(v) => set({ zoom: v })} />
           <Slider label="Horizontal" min={0} max={100} step={1} value={value.cropX} suffix="%" onChange={(v) => set({ cropX: v })} />
           <Slider label="Vertical" min={0} max={100} step={1} value={value.cropY} suffix="%" onChange={(v) => set({ cropY: v })} />
           <div className="flex gap-2 pt-1">

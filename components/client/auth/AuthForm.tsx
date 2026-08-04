@@ -224,10 +224,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                 error={emailError}
               />
               <div className="group relative">
-                <div className="flex justify-between items-center mb-2 ml-1">
-                  <label className="font-jost font-medium text-sm text-on-surface-variant">Password</label>
-                  <Link href="/forgot-password" className="text-[15px] font-jost font-medium text-primary hover:opacity-80 hover:underline transition-opacity">Forgot?</Link>
-                </div>
+                <label className="block font-jost font-medium text-sm text-on-surface-variant mb-2 ml-1">Password</label>
                 <Input
                   placeholder="••••••••"
                   required
@@ -245,6 +242,9 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
                     </button>
                   }
                 />
+                <div className="flex justify-end mt-2">
+                  <Link href="/forgot-password" className="text-[15px] font-jost font-medium text-primary hover:opacity-80 hover:underline transition-opacity">Forgot?</Link>
+                </div>
               </div>
               <div>
                 <Button variant="auth-primary" type="submit" disabled={isLoading}>

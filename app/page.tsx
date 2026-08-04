@@ -12,7 +12,7 @@ export default async function Home() {
   return (
     <>
       <Header />
-      <main className="mt-16 md:mt-20 overflow-x-hidden flex flex-col gap-10 pb-10">
+      <main className="mt-16 md:mt-20 overflow-x-hidden flex flex-col gap-8 md:gap-6 pb-10">
         <Hero slides={home.heroSlides} />
         <CategoryPills />
         <CollectionsGrid />

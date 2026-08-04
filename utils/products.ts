@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { createPublicClient } from "@/utils/supabase/public";
+import { getCategories } from "@/utils/categories";
 import type { Product } from "@/types/product";
 
 // Single source of truth for the storefront product shape (detail pages).
@@ -127,9 +128,24 @@ export async function getFilteredProducts({
   page = 1,
   pageSize = 12,
 }: FilterParams = {}): Promise<{ items: Product[]; total: number }> {
-  // Cached DB read (keyed by category + search); all remaining filters/sort/
-  // pagination run in-memory on the cached rows below.
+  // Cached DB read (keyed by category + search) — matches product name/description.
   let items = await getCatalogRows(category, q);
+
+  // Also let the search match CATEGORY names: if the query matches a category,
+  // include that category's products (union, deduped). Skipped when the user is
+  // already filtered to a specific category via the tabs.
+  if (q && q.trim() && !category) {
+    const term = q.trim().toLowerCase();
+    const cats = await getCategories();
+    const matchIds = cats
+      .filter((c) => c.name.toLowerCase().includes(term))
+      .map((c) => c.id);
+    if (matchIds.length) {
+      const seen = new Set(items.map((p) => p.id));
+      const byCat = (await Promise.all(matchIds.map((id) => getCatalogRows(id)))).flat();
+      items = [...items, ...byCat.filter((p) => !seen.has(p.id))];
+    }
+  }
 
   // Price bounds (each optional; NaN is guarded by the callers).
   if (typeof minPrice === "number" && !Number.isNaN(minPrice)) {

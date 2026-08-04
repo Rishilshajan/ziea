@@ -27,12 +27,15 @@ export default async function CollectionsGrid() {
         </Link>
       </div>
 
-      {/* Empty State */}
+      {/* Empty State (matches the Collections page product empty state) */}
       {!products || products.length === 0 ? (
-        <div className="py-16 text-center border rounded-xl border-border bg-muted/10">
-          <h4 className="font-semibold text-lg text-primary-dark">
-            No products available
-          </h4>
+        <div className="py-20 text-center">
+          <p className="cormorant text-3xl text-primary">
+            No pieces here yet
+          </p>
+          <p className="jost mt-2 text-sm md:text-base text-muted">
+            Our latest arrivals are on their way - check back soon.
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10">
