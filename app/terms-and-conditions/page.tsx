@@ -17,9 +17,9 @@ export default function PrivacyPolicyPage() {
 
 
                     {/* Heading */}
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-8 md:mb-12">
 
-                        <h1 className="cormorant text-5xl md:text-6xl italic text-primary-dark py-6">
+                        <h1 className="cormorant text-4xl md:text-5xl text-primary-dark py-3">
                             Terms of Service
                         </h1>
 
@@ -33,13 +33,13 @@ export default function PrivacyPolicyPage() {
                     </div>
 
                     {/* Content */}
-                    <article className="space-y-12 text-text leading-8">
+                    <article className="space-y-8 md:space-y-12 text-text leading-8">
 
                         {/* 1 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">1.</span> Acceptance of Terms
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">1.</span> Acceptance of Terms
                             </h2>
 
                             <p>
@@ -54,8 +54,8 @@ export default function PrivacyPolicyPage() {
                         {/* 2 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">2.</span> Use of Website
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">2.</span> Use of Website
                             </h2>
 
                             <p className="mb-5">
@@ -75,8 +75,8 @@ export default function PrivacyPolicyPage() {
                         {/* 3 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">3.</span> Products & Pricing
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">3.</span> Products & Pricing
                             </h2>
 
                             <p>
@@ -91,8 +91,8 @@ export default function PrivacyPolicyPage() {
                         {/* 4 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">4.</span> Orders & Payment
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">4.</span> Orders & Payment
                             </h2>
 
                             <p>
@@ -107,8 +107,8 @@ export default function PrivacyPolicyPage() {
                         {/* 5 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">5.</span> Shipping & Delivery
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">5.</span> Shipping & Delivery
                             </h2>
 
                             <p>
@@ -123,8 +123,8 @@ export default function PrivacyPolicyPage() {
                         {/* 6 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">6.</span> Returns & Refunds
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">6.</span> Returns & Refunds
                             </h2>
 
                             <p>
@@ -139,8 +139,8 @@ export default function PrivacyPolicyPage() {
                         {/* 7 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">7.</span> Intellectual Property
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">7.</span> Intellectual Property
                             </h2>
 
                             <p>
@@ -155,8 +155,8 @@ export default function PrivacyPolicyPage() {
                         {/* 8 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">8.</span> User Accounts
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">8.</span> User Accounts
                             </h2>
 
                             <p>
@@ -171,8 +171,8 @@ export default function PrivacyPolicyPage() {
                         {/* 9 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">9.</span> Limitation of Liability
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">9.</span> Limitation of Liability
                             </h2>
 
                             <p>
@@ -187,8 +187,8 @@ export default function PrivacyPolicyPage() {
                         {/* 10 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">10.</span> Indemnification
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">10.</span> Indemnification
                             </h2>
 
                             <p>
@@ -203,8 +203,8 @@ export default function PrivacyPolicyPage() {
                         {/* 11 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">11.</span> Governing Law
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">11.</span> Governing Law
                             </h2>
 
                             <p>
@@ -217,8 +217,8 @@ export default function PrivacyPolicyPage() {
                         {/* 12 */}
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">12.</span> Changes to These Terms
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">12.</span> Changes to These Terms
                             </h2>
 
                             <p>
@@ -233,8 +233,8 @@ export default function PrivacyPolicyPage() {
                         {/* Contact */}
                         <section className="rounded-3xl bg-primary/10 border border-primary/10 p-8 md:p-10">
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-6">
-                                <span className="font-jost not-italic text-2xl">13.</span> Contact Information
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-5">
+                                <span className="font-jost not-italic text-lg md:text-xl">13.</span> Contact Information
                             </h2>
 
                             <p className="mb-8">
@@ -256,7 +256,7 @@ export default function PrivacyPolicyPage() {
 
                                     <a
                                         href="mailto:contact@ziea.in"
-                                        className="text-secondary font-semibold hover:underline"
+                                        className="text-primary font-semibold hover:underline"
                                     >
                                         contact@ziea.in
                                     </a>
@@ -271,7 +271,7 @@ export default function PrivacyPolicyPage() {
 
                                     <a
                                         href="tel:+918301027765"
-                                        className="text-secondary font-semibold hover:underline"
+                                        className="text-primary font-semibold hover:underline"
                                     >
                                         +91 8301 027 765
                                     </a>

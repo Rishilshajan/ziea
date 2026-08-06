@@ -181,7 +181,7 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
             priority
           />
         </Link>
-        <h1 className="font-cormorant text-3xl text-primary-dark tracking-wide italic">
+        <h1 className="font-cormorant text-3xl text-primary-dark tracking-wide">
           {mode === 'login' ? 'Welcome Back' : 'Join ZIEA'}
         </h1>
       </header>

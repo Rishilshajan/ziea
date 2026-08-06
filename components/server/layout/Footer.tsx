@@ -1,14 +1,30 @@
 import Link from "next/link";
 import Image from "next/image";
+import { FaInstagram, FaWhatsapp, FaGlobe } from "react-icons/fa6";
 import NewsletterForm from "@/components/client/home/NewsletterForm";
 import { getCategories } from "@/utils/categories";
+
+// WhatsApp "click to chat" (wa.me/<countrycode+number>) — no Business API needed.
+// The ?text= param pre-fills the customer's message box so their chat opens
+// ready to send, written from a dress-shopping perspective.
+const WHATSAPP_NUMBER = "918139045083";
+const WHATSAPP_MESSAGE =
+  "Hi ZIEA, I came across your collection and I'd love some help. Could you tell me about availability, sizes, fabric and pricing for your dresses?";
+const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+
+// Social / contact links. Swap these hrefs for the real accounts.
+const SOCIAL_LINKS = [
+  { label: "Instagram", href: "https://instagram.com/ziea", Icon: FaInstagram },
+  { label: "WhatsApp", href: WHATSAPP_HREF, Icon: FaWhatsapp },
+  { label: "Website", href: "https://ziea.in", Icon: FaGlobe },
+];
 
 export default async function Footer() {
   const categories = await getCategories();
 
   return (
     <footer className="bg-[#2C3829] text-white">
-      <div className="px-page pt-10 pb-8 lg:pt-16 lg:pb-12">
+      <div className="px-page pt-4 pb-8 lg:pt-16 lg:pb-12">
 
         {/* Top */}
         <div className="flex flex-col lg:flex-row justify-between">
@@ -17,7 +33,7 @@ export default async function Footer() {
           <div className="lg:w-[34%] flex flex-col items-start">
 
             {/* Logo */}
-            <div className="w-full -mt-8 -mb-10 lg:-mt-24 lg:-mb-20">
+            <div className="w-full -mt-16 -mb-12 lg:-mt-24 lg:-mb-20">
               <Image
                 src="/Ziea_Logo.png"
                 alt="ZIEA"
@@ -39,8 +55,8 @@ export default async function Footer() {
             <div className="space-y-4">
 
               <h3
-                className="text-[22px] italic text-[#F5F0E8]"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                className="text-[22px] text-[#F5F0E8]"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 Shop
               </h3>
@@ -72,8 +88,8 @@ export default async function Footer() {
             <div className="space-y-4">
 
               <h3
-                className="text-[22px] italic text-[#F5F0E8]"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                className="text-[22px] text-[#F5F0E8]"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 Company
               </h3>
@@ -113,8 +129,8 @@ export default async function Footer() {
             <div className="space-y-4">
 
               <h3
-                className="text-[22px] italic text-[#F5F0E8]"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                className="text-[22px] text-[#F5F0E8]"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 Support
               </h3>
@@ -147,45 +163,27 @@ export default async function Footer() {
             <div className="space-y-4">
 
               <h3
-                className="text-[22px] italic text-[#F5F0E8]"
-                style={{ fontFamily: "'Cormorant Garamond', serif" }}
+                className="text-[22px] text-[#F5F0E8]"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
                 Connect
               </h3>
 
-              <ul className="space-y-3 text-[15px] text-white/80">
-
-                <li>
+              <div className="flex gap-3">
+                {SOCIAL_LINKS.map(({ label, href, Icon }) => (
                   <Link
-                    href="https://instagram.com"
+                    key={label}
+                    href={href}
                     target="_blank"
-                    className="hover:text-white transition-colors"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    title={label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-white/80 transition-colors hover:border-white hover:bg-white hover:text-[#2C3829]"
                   >
-                    Instagram
+                    <Icon className="text-[17px]" />
                   </Link>
-                </li>
-
-                <li>
-                  <Link
-                    href="https://facebook.com"
-                    target="_blank"
-                    className="hover:text-white transition-colors"
-                  >
-                    Facebook
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    href="https://ziea.in"
-                    target="_blank"
-                    className="hover:text-white transition-colors"
-                  >
-                    Website
-                  </Link>
-                </li>
-
-              </ul>
+                ))}
+              </div>
 
             </div>
 

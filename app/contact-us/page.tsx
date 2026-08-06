@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -41,7 +42,7 @@ export default function ContactPage() {
           {/* Heading */}
           <div className="mx-auto mb-8 md:mb-10 max-w-3xl text-center">
 
-            <h1 className="cormorant text-5xl md:text-6xl italic text-primary-dark">
+            <h1 className="cormorant text-5xl md:text-6xl text-primary-dark">
               Connect With Us
             </h1>
 
@@ -61,7 +62,9 @@ export default function ContactPage() {
             {/* LEFT COLUMN — Form (sticky on desktop while the info scrolls) */}
             <div className="xl:col-span-7 flex flex-col gap-8 xl:sticky xl:top-24 xl:self-start">
 
-              <ContactForm />
+              <Suspense fallback={null}>
+                <ContactForm />
+              </Suspense>
 
             </div>
 

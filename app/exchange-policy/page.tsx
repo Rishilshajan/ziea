@@ -17,9 +17,9 @@ export default function PrivacyPolicyPage() {
 
 
                     {/* Heading */}
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-8 md:mb-12">
 
-                        <h1 className="cormorant text-5xl md:text-6xl italic text-primary-dark py-6">
+                        <h1 className="cormorant text-4xl md:text-5xl text-primary-dark py-3">
                             Exchange Policy
                         </h1>
 
@@ -32,14 +32,14 @@ export default function PrivacyPolicyPage() {
 
                     </div>
                     {/* Content */}
-                    <article className="space-y-12 text-text leading-8">
+                    <article className="space-y-8 md:space-y-12 text-text leading-8">
 
                         {/* 1 */}
 
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">1.</span> Exchange Policy
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">1.</span> Exchange Policy
                             </h2>
 
                             <p>
@@ -54,8 +54,8 @@ export default function PrivacyPolicyPage() {
 
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">2.</span> Exchange Eligibility
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">2.</span> Exchange Eligibility
                             </h2>
 
                             <p className="mb-5">
@@ -82,8 +82,8 @@ export default function PrivacyPolicyPage() {
 
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">3.</span> Size <span className="font-jost not-italic text-2xl">&</span> Colour Exchanges
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">3.</span> Size <span className="font-jost not-italic text-lg md:text-xl">&</span> Colour Exchanges
                             </h2>
 
                             <p className="mb-5">
@@ -108,8 +108,8 @@ export default function PrivacyPolicyPage() {
 
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">4.</span> How to Request an Exchange
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">4.</span> How to Request an Exchange
                             </h2>
 
                             <p className="mb-5">
@@ -141,8 +141,8 @@ export default function PrivacyPolicyPage() {
 
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">5.</span> Return Address
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">5.</span> Return Address
                             </h2>
 
                             <div className="rounded-2xl bg-primary/5 border border-primary/10 p-6">
@@ -175,8 +175,8 @@ export default function PrivacyPolicyPage() {
 
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">6.</span> Damages <span className="font-jost not-italic text-2xl">&</span> Issues
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">6.</span> Damages <span className="font-jost not-italic text-lg md:text-xl">&</span> Issues
                             </h2>
 
                             <p className="mb-5">
@@ -206,8 +206,8 @@ export default function PrivacyPolicyPage() {
 
                         <section>
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">7.</span> Exceptions
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">7.</span> Exceptions
                             </h2>
 
                             <p className="mb-5">
@@ -236,8 +236,8 @@ export default function PrivacyPolicyPage() {
 
                         <section className="rounded-3xl bg-primary/10 border border-primary/10 p-8 md:p-10">
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-6">
-                                <span className="font-jost not-italic text-2xl">8.</span> Contact Us
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-5">
+                                <span className="font-jost not-italic text-lg md:text-xl">8.</span> Contact Us
                             </h2>
 
                             <p className="mb-8">
@@ -258,7 +258,7 @@ export default function PrivacyPolicyPage() {
 
                                     <a
                                         href="mailto:feedback@ziea.in"
-                                        className="text-secondary font-semibold hover:underline"
+                                        className="text-primary font-semibold hover:underline"
                                     >
                                         feedback@ziea.in
                                     </a>
@@ -273,7 +273,7 @@ export default function PrivacyPolicyPage() {
 
                                     <a
                                         href="tel:+918301027765"
-                                        className="text-secondary font-semibold hover:underline"
+                                        className="text-primary font-semibold hover:underline"
                                     >
                                         +91 8301 027 765
                                     </a>

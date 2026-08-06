@@ -78,12 +78,10 @@ export default function ProductActions({ productId, sizes }: ProductActionsProps
             );
           })}
         </div>
-        {selected ? (
+        {selected && (
           <p className="text-sm font-semibold text-[#2C3829]">
             {selected.quantity} left in stock
           </p>
-        ) : (
-          <p className="text-sm font-medium text-[#2C3829]/70">Select a size</p>
         )}
       </div>
 

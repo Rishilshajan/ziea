@@ -5,6 +5,7 @@ import Header from '../../../components/client/layout/Header';
 import ProductGallery from '../../../components/client/product/ProductGallery';
 import ProductActions from '../../../components/client/product/ProductActions';
 import ProductInfo from '../../../components/server/product/ProductInfo';
+import ProductDetails from '../../../components/server/product/ProductDetails';
 import RelatedProducts from '../../../components/server/product/RelatedProducts';
 import ProductViewTracker from '../../../components/client/product/ProductViewTracker';
 import Footer from '../../../components/server/layout/Footer';
@@ -90,14 +91,18 @@ export default async function ProductDetailPage(props: PageProps) {
               title={product.name}
               price={price}
               original={original ?? undefined}
+              originalPrice={product.original_price}
+              discountedPrice={product.discounted_price}
               description={product.description ?? ''}
+              deliveryDays={product.delivery_days}
+            />
+            <ProductActions productId={product.id} sizes={product.sizes} />
+            <ProductDetails
               material={product.material ?? undefined}
               careInstructions={product.care_instructions ?? undefined}
               shippingInfo={product.shipping_info ?? undefined}
               contents={product.contents ?? undefined}
-              deliveryDays={product.delivery_days}
             />
-            <ProductActions productId={product.id} sizes={product.sizes} />
           </div>
 
         </div>

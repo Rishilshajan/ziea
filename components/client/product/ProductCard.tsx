@@ -148,7 +148,7 @@ export default function ProductCard({
         {deliveryLabel && (
           <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[#2C3829] mt-1.5">
             <MdOutlineLocalShipping className="text-[16px] text-[#2C3829]" />
-            Deliverable by {deliveryLabel}
+            Deliverable by or before {deliveryLabel}
           </p>
         )}
 

@@ -22,7 +22,7 @@ export default function PhilosophySection({ image }: { image?: BrandImage | null
       <div className="relative z-10 text-center px-page max-w-4xl">
         <RevealOnScroll>
           <MdOutlineSpa className="text-primary-container text-5xl mb-6" />
-          <h3 className="cormorant text-4xl md:text-6xl text-white italic mb-8 drop-shadow-md">"A ritual of rest."</h3>
+          <h3 className="cormorant text-4xl md:text-6xl text-white mb-8 drop-shadow-md">"A ritual of rest."</h3>
           <p className="font-jost text-white/95 text-xl md:text-2xl leading-relaxed mb-10 font-light drop-shadow">
             At ZIEA, we believe that the clothes you wear to rest are the most important in your wardrobe. They are the transition from the noise of the world to the sanctuary of the self. Our philosophy of slow living isn't just about pace—it's about the intentionality of touch, the quality of fiber, and the heritage of the hands that made them.
           </p>

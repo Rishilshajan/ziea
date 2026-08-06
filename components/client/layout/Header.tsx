@@ -20,7 +20,9 @@ import {
   MdHome,
   MdOutlineStyle,
   MdOutlineInfo,
-  MdOutlineMail
+  MdOutlineMail,
+  MdOutlineInventory2,
+  MdOutlineDesignServices
 } from "react-icons/md";
 
 const AVATAR_COLORS = [
@@ -207,9 +209,10 @@ export default function Header() {
   const menuItems = [
     { icon: <MdHome className="text-2xl" />, label: "Home", href: "/" },
     { icon: <MdOutlineStyle className="text-2xl" />, label: "Collections", href: "/collections" },
-    { icon: <MdOutlineFavoriteBorder className="text-2xl" />, label: "Wishlist", href: "/wishlist" },
     { icon: <MdOutlineInfo className="text-2xl" />, label: "About Us", href: "/about-us" },
     { icon: <MdOutlineMail className="text-2xl" />, label: "Contact Us", href: "/contact-us" },
+    { icon: <MdOutlineInventory2 className="text-2xl" />, label: "Bulk Orders", href: "/contact-us?type=collaboration" },
+    { icon: <MdOutlineDesignServices className="text-2xl" />, label: "Customization Studio", href: "/contact-us?type=personal" },
   ];
 
   return (
@@ -218,12 +221,13 @@ export default function Header() {
       <header className="hidden md:flex w-full fixed top-0 left-0 z-50 bg-background shadow-sm h-20">
         <div className="flex w-full h-full px-page items-center">
           <div className="flex-1 flex items-center justify-start">
-            <nav className="flex items-center gap-4 lg:gap-6 text-xs lg:text-sm font-semibold tracking-wide text-text/80">
-              <Link href="/" className="hover:text-primary transition-colors">HOME</Link>
-              <Link href="/collections" className="hover:text-primary transition-colors">COLLECTIONS</Link>
-              <Link href="/wishlist" className="hover:text-primary transition-colors">WISHLIST</Link>
-              <Link href="/about-us" className="hover:text-primary transition-colors">ABOUT US</Link>
-              <Link href="/contact-us" className="hover:text-primary transition-colors">CONTACT US</Link>
+            <nav className="flex items-center gap-3 lg:gap-5 text-[11px] lg:text-[13px] font-semibold tracking-wide text-text/80">
+              <Link href="/" className="hover:text-primary transition-colors whitespace-nowrap">HOME</Link>
+              <Link href="/collections" className="hover:text-primary transition-colors whitespace-nowrap">COLLECTIONS</Link>
+              <Link href="/about-us" className="hover:text-primary transition-colors whitespace-nowrap">ABOUT US</Link>
+              <Link href="/contact-us" className="hover:text-primary transition-colors whitespace-nowrap">CONTACT US</Link>
+              <Link href="/contact-us?type=collaboration" className="hover:text-primary transition-colors whitespace-nowrap">BULK ORDERS</Link>
+              <Link href="/contact-us?type=personal" className="hover:text-primary transition-colors whitespace-nowrap">CUSTOMIZATION STUDIO</Link>
             </nav>
           </div>
 
@@ -363,32 +367,40 @@ export default function Header() {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsMenuOpen(false)}
           /> 
-          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-7 pt-6 transform transition-transform animate-in slide-in-from-left duration-300">
+          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-4 pt-6 transform transition-transform animate-in slide-in-from-left duration-300">
             <div className="flex items-center justify-center mb-6 border-b border-border/60">
               <Image src="/ZIEA_Splash2.png" alt="ZIEA" width={500} height={500} className="h-16 w-auto object-contain" priority />
             </div>
 
-            <nav className="flex flex-col gap-6">
-              {menuItems.map((item, index) => (
-                <Link
-                  key={index}
-                  href={item.href || "#"}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-4 text-text hover:text-primary transition-colors"
-                >
-                  {item.icon}
-                  <span className="font-label-lg">{item.label}</span>
-                </Link>
-              ))}
+            <nav className="flex flex-col gap-1">
+              {menuItems.map((item, index) => {
+                const isActive = item.href === pathname;
+                return (
+                  <Link
+                    key={index}
+                    href={item.href || "#"}
+                    onClick={() => setIsMenuOpen(false)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`flex items-center gap-4 rounded-xl px-3 py-2.5 transition-colors ${
+                      isActive
+                        ? "bg-primary/15 text-primary font-semibold"
+                        : "text-text hover:bg-primary/10 hover:text-primary"
+                    }`}
+                  >
+                    {item.icon}
+                    <span className="font-label-lg">{item.label}</span>
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="mt-auto pb-8 border-t border-border/50 pt-6">
               {!user ? (
-                <nav className="flex flex-col gap-6">
+                <nav className="flex flex-col gap-1">
                   <Link
                     href="/login"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-4 text-text/80 hover:text-primary transition-colors"
+                    className="flex items-center gap-4 rounded-xl px-3 py-2.5 text-text/80 hover:bg-primary/10 hover:text-primary transition-colors"
                   >
                     <MdOutlineLogin className="text-2xl" />
                     <span className="font-label-lg">Login</span>
@@ -396,7 +408,7 @@ export default function Header() {
                   <Link
                     href="/signup"
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-4 text-text/80 hover:text-primary transition-colors"
+                    className="flex items-center gap-4 rounded-xl px-3 py-2.5 text-text/80 hover:bg-primary/10 hover:text-primary transition-colors"
                   >
                     <MdOutlinePersonAdd className="text-2xl" />
                     <span className="font-label-lg">Sign Up</span>

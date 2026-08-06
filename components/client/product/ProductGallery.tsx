@@ -54,8 +54,10 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
         ))}
       </div>
 
-      {/* Main Image View */}
-      <div className="relative w-full aspect-[4/5] md:aspect-auto md:h-[600px] rounded-xl overflow-hidden bg-[#eee0d6]/30 shadow-sm">
+      {/* Main Image View — locked to the 4:5 master ratio (1080×1350) so the full
+          image shows with no top/bottom crop. On desktop a fixed height derives
+          the matching 4:5 width. */}
+      <div className="relative w-full aspect-[4/5] md:w-auto md:h-[600px] xl:h-[680px] rounded-xl overflow-hidden bg-[#eee0d6]/30 shadow-sm">
         {active && (
           <CroppedImage image={active} alt="Product Main Image" priority sizes="(min-width: 768px) 480px, 100vw" />
         )}

@@ -17,9 +17,9 @@ export default function PrivacyPolicyPage() {
 
 
                     {/* Heading */}
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-8 md:mb-12">
 
-                        <h1 className="cormorant text-5xl md:text-6xl italic text-primary-dark py-6">
+                        <h1 className="cormorant text-4xl md:text-5xl text-primary-dark py-3">
                             Privacy Policy
                         </h1>
 
@@ -33,11 +33,11 @@ export default function PrivacyPolicyPage() {
                     </div>
 
                     {/* Content */}
-                    <article className="space-y-12 text-text leading-8">
+                    <article className="space-y-8 md:space-y-12 text-text leading-8">
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">1.</span> Introduction
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">1.</span> Introduction
                             </h2>
 
                             <p>
@@ -49,8 +49,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">2.</span> Information We Collect
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">2.</span> Information We Collect
                             </h2>
 
                             <p className="mb-5">
@@ -73,8 +73,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">3.</span> How We Use Your Information
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">3.</span> How We Use Your Information
                             </h2>
 
                             <p className="mb-5">
@@ -92,8 +92,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">4.</span> Information Sharing
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">4.</span> Information Sharing
                             </h2>
 
                             <p>
@@ -107,8 +107,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">5.</span> Data Security
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">5.</span> Data Security
                             </h2>
 
                             <p>
@@ -121,8 +121,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">6.</span> Cookies
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">6.</span> Cookies
                             </h2>
 
                             <p>
@@ -134,8 +134,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">7.</span> Your Rights
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">7.</span> Your Rights
                             </h2>
 
                             <p className="mb-5">
@@ -151,8 +151,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">8.</span> Children's Privacy
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">8.</span> Children's Privacy
                             </h2>
 
                             <p>
@@ -163,8 +163,8 @@ export default function PrivacyPolicyPage() {
                         </section>
 
                         <section>
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-5">
-                                <span className="font-jost not-italic text-2xl">9.</span> Changes to This Policy
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4">
+                                <span className="font-jost not-italic text-lg md:text-xl">9.</span> Changes to This Policy
                             </h2>
 
                             <p>
@@ -177,8 +177,8 @@ export default function PrivacyPolicyPage() {
                         {/* Contact Card */}
                         <section className="rounded-3xl bg-primary/10 border border-primary/10 p-8 md:p-10">
 
-                            <h2 className="cormorant text-4xl italic text-primary-dark mb-6">
-                                <span className="font-jost not-italic text-2xl">10.</span> Contact Us
+                            <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-5">
+                                <span className="font-jost not-italic text-lg md:text-xl">10.</span> Contact Us
                             </h2>
 
                             <p className="mb-8">
@@ -198,7 +198,7 @@ export default function PrivacyPolicyPage() {
                                     <span className="font-semibold text-primary-dark">Email:</span>
                                     <a
                                         href="mailto:contact@ziea.in"
-                                        className="text-secondary font-semibold hover:underline"
+                                        className="text-primary font-semibold hover:underline"
                                     >
                                         contact@ziea.in
                                     </a>
@@ -208,7 +208,7 @@ export default function PrivacyPolicyPage() {
                                     <span className="font-semibold text-primary-dark">Phone:</span>
                                     <a
                                         href="tel:+918301027765"
-                                        className="text-secondary font-semibold hover:underline"
+                                        className="text-primary font-semibold hover:underline"
                                     >
                                         +91 8301 027 765
                                     </a>

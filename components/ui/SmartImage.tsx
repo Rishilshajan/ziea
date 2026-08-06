@@ -11,6 +11,8 @@ interface SmartImageProps {
   sizes: string;
   priority?: boolean;
   className?: string;
+  /** next/image quality (1–100). Default 75; use higher for hero/large imagery. */
+  quality?: number;
 }
 
 /**
@@ -30,6 +32,7 @@ export default function SmartImage({
   sizes,
   priority = false,
   className = "",
+  quality,
 }: SmartImageProps) {
   // Legacy BunnyCDN images can't be fetched by the server-side optimizer
   // (hotlink protection), so serve them straight to the browser like before.
@@ -46,6 +49,7 @@ export default function SmartImage({
       fill
       sizes={sizes}
       priority={priority}
+      quality={quality}
       unoptimized={unoptimized}
       className={`object-cover select-none pointer-events-none ${className}`}
       style={{

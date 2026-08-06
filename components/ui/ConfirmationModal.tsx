@@ -36,7 +36,7 @@ export default function ConfirmationModal({
 
       {/* Modal Content */}
       <div className="relative bg-[#FDFAF6] w-full max-w-[400px] rounded-3xl p-8 shadow-2xl animate-in zoom-in-95 fade-in duration-300 mx-4">
-        <h3 className="font-cormorant text-2xl text-primary-dark italic mb-3 flex items-center gap-2">
+        <h3 className="font-cormorant text-2xl text-primary-dark mb-3 flex items-center gap-2">
           {icon && <span className="flex items-center text-[26px]">{icon}</span>}
           {title}
         </h3>

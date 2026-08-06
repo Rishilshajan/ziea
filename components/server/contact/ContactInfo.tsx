@@ -14,13 +14,13 @@ export default function ContactInfo() {
     <div className="flex flex-col gap-6">
 
       {/* Visit Studio */}
-      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
+      <div className="rounded-2xl md:rounded-3xl bg-background border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
 
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
           <MdOutlineLocationOn size={26} />
         </div>
 
-        <h3 className="cormorant text-3xl md:text-[34px] italic text-primary-dark mb-5 md:mb-6">
+        <h3 className="cormorant text-3xl md:text-[34px] text-primary-dark mb-5 md:mb-6">
           Visit Our Studio
         </h3>
 
@@ -36,7 +36,7 @@ export default function ContactInfo() {
           href="https://maps.app.goo.gl/JqVsYEdVZWprU3aa8"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 mt-8 text-secondary font-medium hover:gap-3 transition-all"
+          className="inline-flex items-center gap-2 mt-8 text-primary font-medium hover:gap-3 transition-all"
         >
           View on Google Maps
           <MdOutlineArrowOutward />
@@ -45,13 +45,13 @@ export default function ContactInfo() {
       </div>
 
       {/* Reach Out */}
-      <div className="rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
+      <div className="rounded-2xl md:rounded-3xl bg-background border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
 
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
           <MdOutlineContactSupport size={24} />
         </div>
 
-        <h3 className="cormorant text-3xl md:text-[34px] italic text-primary-dark mb-5 md:mb-6">
+        <h3 className="cormorant text-3xl md:text-[34px] text-primary-dark mb-5 md:mb-6">
           Reach Out
         </h3>
 
@@ -113,7 +113,7 @@ export default function ContactInfo() {
 
         </div>
 
-        <div className="mt-8 rounded-2xl bg-background/70 border border-border p-4">
+        <div className="mt-8 rounded-2xl bg-primary/5 border border-border p-4">
 
           <p className="font-jost text-base font-medium uppercase tracking-widest text-muted mb-2">
             Response Time

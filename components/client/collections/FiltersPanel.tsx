@@ -73,6 +73,33 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
   const toggle = (arr: string[], value: string) =>
     arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
 
+  // Clamp a typed price into the catalog's real [minPrice, maxPrice] range.
+  // Empty/non-numeric input clears the field. Returns a clean string.
+  const clampPrice = (raw: string): string => {
+    const t = raw.trim();
+    if (t === "" || Number.isNaN(Number(t))) return "";
+    const n = Math.round(Number(t));
+    const clamped = Math.min(Math.max(n, facets.minPrice), facets.maxPrice);
+    return String(clamped);
+  };
+
+  // On blur: clamp to bounds, then keep min ≤ max relative to the other field.
+  const handleMinBlur = () => {
+    let v = clampPrice(minPrice);
+    if (v && maxPrice.trim() && !Number.isNaN(Number(maxPrice)) && Number(v) > Number(maxPrice)) {
+      v = clampPrice(maxPrice);
+    }
+    setMinPrice(v);
+  };
+
+  const handleMaxBlur = () => {
+    let v = clampPrice(maxPrice);
+    if (v && minPrice.trim() && !Number.isNaN(Number(minPrice)) && Number(v) < Number(minPrice)) {
+      v = clampPrice(minPrice);
+    }
+    setMaxPrice(v);
+  };
+
   const pushParams = (mutate: (params: URLSearchParams) => void) => {
     const params = new URLSearchParams();
     // Preserve search term only.
@@ -86,12 +113,20 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
   };
 
   const handleApply = () => {
+    // Clamp both to the catalog range, then ensure min ≤ max (swap if inverted).
+    let min = clampPrice(minPrice);
+    let max = clampPrice(maxPrice);
+    if (min && max && Number(min) > Number(max)) {
+      [min, max] = [max, min];
+    }
+    // Reflect the corrected values back into the inputs.
+    setMinPrice(min);
+    setMaxPrice(max);
+
     pushParams((params) => {
       if (category) params.set("category", category);
-      if (minPrice.trim() && !Number.isNaN(Number(minPrice)))
-        params.set("minPrice", minPrice.trim());
-      if (maxPrice.trim() && !Number.isNaN(Number(maxPrice)))
-        params.set("maxPrice", maxPrice.trim());
+      if (min) params.set("minPrice", min);
+      if (max) params.set("maxPrice", max);
       if (sizes.length) params.set("sizes", sizes.join(","));
       if (badges.length) params.set("badges", badges.join(","));
       if (sort && sort !== "newest") params.set("sort", sort);
@@ -112,12 +147,13 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
         : "bg-[#eee0d6]/50 text-[#44483f] hover:bg-[#eee0d6]"
     }`;
 
-  const sectionTitle = "font-cormorant text-2xl italic text-[#2C3829] mb-3";
+  const sectionTitle = "font-cormorant text-2xl text-[#2C3829] mb-3";
 
   return (
     <>
-      {/* Toolbar row — Filters button only, aligned right */}
-      <div className="mb-6 md:mb-8 flex items-center justify-end">
+      {/* Filters trigger — placement is controlled by the parent (see collections page):
+          right-aligned inline with the category tabs on desktop, full-width on mobile. */}
+      <div className="flex justify-center md:justify-end">
         <button
           type="button"
           onClick={() => setIsOpen(true)}
@@ -146,7 +182,7 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
           <div className="relative w-full md:w-[450px] bg-[#FAF7F2] h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-[#d6c3b3]/30 bg-[#FAF7F2] shrink-0">
-              <h2 className="font-cormorant text-3xl text-[#2C3829] font-bold italic">
+              <h2 className="font-cormorant text-3xl text-[#2C3829] font-bold">
                 Filters
               </h2>
               <button
@@ -211,8 +247,11 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
                   <input
                     type="number"
                     inputMode="numeric"
+                    min={facets.minPrice}
+                    max={facets.maxPrice}
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
+                    onBlur={handleMinBlur}
                     placeholder={`Min ${facets.minPrice}`}
                     className="w-full px-4 py-2.5 border border-[#d6c3b3] rounded-xl bg-white font-jost text-sm text-[#2C3829] outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
@@ -220,8 +259,11 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
                   <input
                     type="number"
                     inputMode="numeric"
+                    min={facets.minPrice}
+                    max={facets.maxPrice}
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
+                    onBlur={handleMaxBlur}
                     placeholder={`Max ${facets.maxPrice}`}
                     className="w-full px-4 py-2.5 border border-[#d6c3b3] rounded-xl bg-white font-jost text-sm text-[#2C3829] outline-none focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />

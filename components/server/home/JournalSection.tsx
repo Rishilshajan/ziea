@@ -3,7 +3,7 @@ import { Card } from "../../ui/Card";
 export default function JournalSection() {
   return (
     <section className="py-20 px-page space-y-8 bg-background">
-      <h3 className="cormorant text-3xl text-primary-dark italic">Journal</h3>
+      <h3 className="cormorant text-3xl text-primary-dark">Journal</h3>
       <div className="space-y-8">
         <Card className="flex flex-col border border-border">
           <div className="h-56 relative">

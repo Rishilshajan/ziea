@@ -411,7 +411,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
           <div className="relative w-full md:w-[450px] bg-[#FAF7F2] h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Sheet Header */}
             <div className="flex items-center justify-between p-6 border-b border-[#d6c3b3]/30 bg-[#FAF7F2] shrink-0">
-              <h2 className="font-cormorant text-3xl text-[#2C3829] font-bold italic">
+              <h2 className="font-cormorant text-3xl text-[#2C3829] font-bold">
                 {activeCategory ? 'Edit Category' : 'Add Category'}
               </h2>
               <button

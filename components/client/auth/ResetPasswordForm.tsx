@@ -67,7 +67,7 @@ export default function ResetPasswordForm() {
           className="h-16 w-auto object-contain -mb-1"
           priority
         />
-        <h2 className="font-cormorant text-3xl text-primary-dark tracking-wide italic">Reset Password</h2>
+        <h2 className="font-cormorant text-3xl text-primary-dark tracking-wide">Reset Password</h2>
         <p className="font-jost text-sm text-on-surface-variant mt-2 text-center">Create a new, strong password.</p>
       </header>
 

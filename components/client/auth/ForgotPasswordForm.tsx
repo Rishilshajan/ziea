@@ -61,7 +61,7 @@ export default function ForgotPasswordForm() {
           className="h-16 w-auto object-contain -mb-1"
           priority
         />
-        <h2 className="font-cormorant text-3xl text-primary-dark tracking-wide italic">Forget Password</h2>
+        <h2 className="font-cormorant text-3xl text-primary-dark tracking-wide">Forget Password</h2>
         <p className="font-jost text-sm text-on-surface-variant mt-2 text-center">Enter your email and we'll send you a reset link.</p>
       </header>
 

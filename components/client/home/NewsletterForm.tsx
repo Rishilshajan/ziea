@@ -38,7 +38,7 @@ export default function NewsletterForm() {
             />
 
             <div className="mb-5">
-                <h3 className="cormorant text-[22px] italic text-[#F5F0E8]">
+                <h3 className="cormorant text-[22px] text-[#F5F0E8]">
                     Join Our Newsletter
                 </h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-white/70">

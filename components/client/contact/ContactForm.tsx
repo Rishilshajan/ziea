@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   MdOutlineSync,
   MdOutlineCheckCircle,
@@ -31,15 +32,28 @@ const MESSAGE_PLACEHOLDERS: Record<InquiryType, string> = {
   personal: "Share your personal message with us...",
 };
 
+const isInquiryType = (v: string | null): v is InquiryType =>
+  v === "collaboration" || v === "business" || v === "personal";
+
 export default function ContactForm() {
   const supabase = createClient();
+  const searchParams = useSearchParams();
+  // Deep links like /contact-us?type=collaboration (Bulk Orders) or
+  // /contact-us?type=personal (Customization Studio) pre-select the tab.
+  const typeParam = searchParams.get("type");
 
   const [formState, setFormState] = useState<
     "idle" | "sending" | "sent"
   >("idle");
 
-  const [inquiryType, setInquiryType] =
-    useState<InquiryType>("collaboration");
+  const [inquiryType, setInquiryType] = useState<InquiryType>(
+    isInquiryType(typeParam) ? typeParam : "collaboration"
+  );
+
+  // Keep the selected tab in sync if the query param changes via client nav.
+  useEffect(() => {
+    if (isInquiryType(typeParam)) setInquiryType(typeParam);
+  }, [typeParam]);
 
   const [toast, setToast] = useState({
     show: false,
@@ -124,7 +138,7 @@ export default function ContactForm() {
 
   return (
     <>
-      <section className="w-full rounded-2xl md:rounded-3xl bg-surface border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
+      <section className="w-full rounded-2xl md:rounded-3xl bg-background border border-border shadow-[0px_8px_30px_rgba(44,56,41,0.06)] p-4">
 
         {/* Header */}
         <div className="mb-8">
@@ -133,7 +147,7 @@ export default function ContactForm() {
             <FiSend size={24} />
           </div>
 
-          <h2 className="cormorant text-3xl md:text-[34px] italic text-primary-dark mb-6">
+          <h2 className="cormorant text-3xl md:text-[34px] text-primary-dark mb-6">
             Send a Message
           </h2>
 
@@ -145,7 +159,7 @@ export default function ContactForm() {
                 onClick={() => setInquiryType(type)}
                 className={`rounded-full px-7 py-3 font-jost text-sm font-medium uppercase tracking-[0.14em] transition-all duration-300 ${inquiryType === type
                   ? "bg-primary text-white shadow-sm"
-                  : "bg-background text-muted hover:bg-primary/10"
+                  : "border border-border bg-transparent text-muted hover:bg-primary/10"
                   }`}
               >
                 {INQUIRY_LABELS[type]}

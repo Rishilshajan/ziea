@@ -106,11 +106,16 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
         </div>
         
         {/* Page heading (shown on mobile + desktop) */}
-        <h1 className="cormorant text-4xl md:text-6xl italic text-primary-dark mb-3 md:mb-4 text-center">Collections</h1>
+        <h1 className="cormorant text-4xl md:text-6xl text-primary-dark mb-3 md:mb-4 text-center">Collections</h1>
 
-        <CategoryTabs />
-
-        <FiltersPanel categories={categories} facets={facets} />
+        {/* Category tabs (centered) with the Filters trigger pinned to the right on
+            desktop, and stacked full-width below the tabs on mobile. */}
+        <div className="relative mb-6 md:mb-8">
+          <CategoryTabs />
+          <div className="mt-3 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2">
+            <FiltersPanel categories={categories} facets={facets} />
+          </div>
+        </div>
 
         <ProductGrid
           items={productData.items}

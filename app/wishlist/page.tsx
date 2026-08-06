@@ -81,7 +81,7 @@ export default async function WishlistPage() {
 
           {/* Heading */}
           <div className="mx-auto mb-8 md:mb-10 max-w-3xl text-center">
-            <h1 className="cormorant text-5xl md:text-6xl italic text-primary-dark">
+            <h1 className="cormorant text-5xl md:text-6xl text-primary-dark">
               My Wishlist
             </h1>
             <p className="mt-5 font-jost text-base md:text-lg leading-8 text-muted">

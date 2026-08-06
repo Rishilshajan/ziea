@@ -12,7 +12,7 @@ export default async function EditorialCTA() {
       <div className="max-w-4xl mx-auto px-page">
         <RevealOnScroll>
           <div className="w-16 h-px bg-primary mx-auto mb-10"></div>
-          <h3 className="cormorant text-4xl md:text-5xl text-[#211a15] mb-6 italic">Experience the Comfort</h3>
+          <h3 className="cormorant text-4xl md:text-5xl text-[#211a15] mb-6">Experience the Comfort</h3>
           <p className="font-jost text-on-surface-variant mb-10 max-w-2xl mx-auto md:text-lg">
             Invite the tranquility of the backwaters into your home with our latest collection of hand-loomed essentials. Designed for the quiet moments that matter most.
           </p>
@@ -28,7 +28,7 @@ export default async function EditorialCTA() {
                 <Link
                   key={category.id}
                   href="/collections"
-                  className="flex justify-center items-center cormorant italic text-xl text-on-surface-variant hover:text-primary transition-colors"
+                  className="flex justify-center items-center cormorant text-xl text-on-surface-variant hover:text-primary transition-colors"
                 >
                   {category.name}
                 </Link>

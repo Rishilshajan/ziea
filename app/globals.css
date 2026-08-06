@@ -2,7 +2,7 @@
 
 @theme inline {
   --font-jost: "Jost", sans-serif;
-  --font-cormorant: "Cormorant Garamond", serif;
+  --font-cormorant: "Playfair Display", serif;
 
   --color-primary: #7A9268;
   --color-primary-dark: #2C3829;
@@ -51,14 +51,14 @@
 }
 
 @utility font-display-lg {
-  font-family: "Cormorant Garamond", serif;
+  font-family: "Playfair Display", serif;
   font-weight: 400;
   font-size: 3.5rem;
   line-height: 4rem;
 }
 
 @utility font-headline-lg-mobile {
-  font-family: "Cormorant Garamond", serif;
+  font-family: "Playfair Display", serif;
   font-weight: 600;
   font-size: 2rem;
   line-height: 2.5rem;
@@ -103,7 +103,7 @@
 }
 
 @utility cormorant {
-  font-family: "Cormorant Garamond", serif;
+  font-family: "Playfair Display", serif;
 }
 
 @utility jost {
