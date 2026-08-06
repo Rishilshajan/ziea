@@ -5,6 +5,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface BarDatum {
   label: string;
+  /** Optional secondary line under the axis label (e.g. the date under a weekday). */
+  subLabel?: string;
   value: number;
 }
 
@@ -25,6 +27,12 @@ export interface ActivityItem {
 
 export type InteractionRange = "daily" | "weekly" | "monthly";
 
+export interface ProductViewRow {
+  productCode: string;
+  name: string;
+  views: number;
+}
+
 export interface AnalyticsData {
   stats: {
     totalProducts: number;
@@ -40,6 +48,8 @@ export interface AnalyticsData {
   };
   popularProducts: DonutSegment[];
   topProduct: { title: string; value: string };
+  /** Top 5 products by view count (preview list on the Analytics page). */
+  productViews: ProductViewRow[];
   wishlistActivity: ActivityItem[];
   cartAdditions: ActivityItem[];
 }
@@ -105,6 +115,7 @@ function startOfMonth(d: Date): Date {
 
 interface Bucket {
   label: string;
+  subLabel?: string;
   start: number; // inclusive (ms)
   end: number; // exclusive (ms)
   value: number;
@@ -133,6 +144,7 @@ export async function buildInteractionSeries(
       const dayEnd = new Date(dayStart.getTime() + DAY_MS);
       buckets.push({
         label: WEEKDAY_MON[i],
+        subLabel: String(dayStart.getDate()), // date under the weekday
         start: dayStart.getTime(),
         end: dayEnd.getTime(),
         value: 0,
@@ -153,7 +165,9 @@ export async function buildInteractionSeries(
       const wkStart = new Date(firstWeek.getTime() + i * 7 * DAY_MS);
       const wkEnd = new Date(wkStart.getTime() + 7 * DAY_MS);
       buckets.push({
-        label: `${wkStart.getDate()} ${MONTH_SHORT[wkStart.getMonth()]}`,
+        // Split into date + month so it stays legible on mobile (no truncation).
+        label: String(wkStart.getDate()),
+        subLabel: MONTH_SHORT[wkStart.getMonth()],
         start: wkStart.getTime(),
         end: wkEnd.getTime(),
         value: 0,
@@ -206,7 +220,7 @@ export async function buildInteractionSeries(
   }
 
   return {
-    bars: buckets.map((b) => ({ label: b.label, value: b.value })),
+    bars: buckets.map((b) => ({ label: b.label, subLabel: b.subLabel, value: b.value })),
     windowLabel,
   };
 }
@@ -307,6 +321,13 @@ export async function getAnalytics(): Promise<AnalyticsData> {
     color: DONUT_PALETTE[i % DONUT_PALETTE.length],
   }));
 
+  // Top 5 products by views (product + code + view count) for the preview table.
+  const productViews: ProductViewRow[] = top5.map((p) => ({
+    productCode: p.product_code ?? "—",
+    name: p.name ?? "Unnamed",
+    views: p.view_count ?? 0,
+  }));
+
   const topRow = sortedPopular[0];
   const topProduct =
     topRow && (topRow.view_count ?? 0) > 0
@@ -337,6 +358,7 @@ export async function getAnalytics(): Promise<AnalyticsData> {
     },
     popularProducts,
     topProduct,
+    productViews,
     wishlistActivity,
     cartAdditions,
   };

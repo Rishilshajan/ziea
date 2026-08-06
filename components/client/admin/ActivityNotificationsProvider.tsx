@@ -15,6 +15,7 @@ export type ActivityRow = {
   type: string;
   description: string;
   created_at: string;
+  user_id?: string | null;
 };
 
 type ActivityNotificationsContextValue = {
@@ -50,6 +51,9 @@ export default function ActivityNotificationsProvider({
 
   // Keep lastSeen in a ref so the effect deps stay stable ([supabase] only).
   const lastSeenRef = useRef<string | null>(null);
+  // The current admin's own id. Their own actions are logged for everyone else,
+  // but self-suppressed here so they don't get notified about what they just did.
+  const selfIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     // Read lastSeen from localStorage; if missing, set it to now (so the
@@ -62,11 +66,21 @@ export default function ActivityNotificationsProvider({
     lastSeenRef.current = lastSeen;
 
     let isMounted = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    const fetchRecent = async () => {
+    const start = async () => {
+      // Resolve the current admin first so we can filter out their own actions
+      // both in the initial fetch and in the realtime stream.
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!isMounted) return;
+      const self = user?.id ?? null;
+      selfIdRef.current = self;
+
       const { data } = await supabase
         .from('activity_logs')
-        .select('id, type, description, created_at')
+        .select('id, type, description, created_at, user_id')
         .order('created_at', { ascending: false })
         .limit(12);
 
@@ -74,27 +88,33 @@ export default function ActivityNotificationsProvider({
 
       const rows = (data ?? []) as ActivityRow[];
       const seen = lastSeenRef.current;
-      // Only keep unread (newer than lastSeen).
-      setRecent(seen ? rows.filter((r) => r.created_at > seen) : []);
+      // Keep only unread (newer than lastSeen) AND not performed by this admin.
+      setRecent(
+        seen
+          ? rows.filter((r) => r.created_at > seen && r.user_id !== self)
+          : []
+      );
+
+      channel = supabase
+        .channel('admin-activity')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'activity_logs' },
+          (payload) => {
+            const row = payload.new as ActivityRow;
+            // Self-suppression: don't notify the admin who performed the action.
+            if (row.user_id && row.user_id === selfIdRef.current) return;
+            setRecent((prev) => [row, ...prev].slice(0, 50));
+          }
+        )
+        .subscribe();
     };
 
-    fetchRecent();
-
-    const channel = supabase
-      .channel('admin-activity')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'activity_logs' },
-        (payload) => {
-          const row = payload.new as ActivityRow;
-          setRecent((prev) => [row, ...prev].slice(0, 50));
-        }
-      )
-      .subscribe();
+    start();
 
     return () => {
       isMounted = false;
-      supabase.removeChannel(channel);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [supabase]);
 

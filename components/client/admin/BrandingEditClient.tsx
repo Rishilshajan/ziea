@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { MdArrowBack, MdAdd, MdDelete, MdSave, MdDesktopMac, MdSmartphone, MdArrowUpward, MdArrowDownward } from 'react-icons/md';
+import { MdArrowBack, MdAdd, MdDelete, MdDesktopMac, MdSmartphone, MdArrowUpward, MdArrowDownward } from 'react-icons/md';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
@@ -133,7 +133,7 @@ export default function BrandingEditClient({ section }: { section: any }) {
           disabled={saving}
           className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 rounded-full bg-[#2C3829] px-6 py-3 text-sm font-jost font-medium text-white hover:opacity-90 active:scale-[0.98] disabled:opacity-50 transition"
         >
-          <MdSave className="text-lg" /> {saving ? 'Saving…' : 'Save Changes'}
+          {saving ? 'Saving…' : 'Save Changes'}
         </button>
       </div>
 
@@ -159,20 +159,6 @@ export default function BrandingEditClient({ section }: { section: any }) {
                   <p className="flex items-center gap-1.5 font-jost text-xs uppercase tracking-wide text-[#2C3829]/60 mb-2"><MdSmartphone /> Mobile (4:5)</p>
                   <ImageUploader value={slide.mobile} onChange={(v) => updateSlide(slide.id, { mobile: v })} folder="branding/home" aspect="4/5" />
                 </div>
-              </div>
-              <div className="mt-5 space-y-3">
-                <input
-                  value={slide.headline}
-                  onChange={(e) => updateSlide(slide.id, { headline: e.target.value })}
-                  placeholder="Headline"
-                  className="w-full rounded-lg border border-[#d6c3b3]/50 bg-white px-3 py-2.5 text-sm text-[#2C3829] outline-none focus:border-[#2C3829]/40"
-                />
-                <input
-                  value={slide.subHeadline}
-                  onChange={(e) => updateSlide(slide.id, { subHeadline: e.target.value })}
-                  placeholder="Sub-headline"
-                  className="w-full rounded-lg border border-[#d6c3b3]/50 bg-white px-3 py-2.5 text-sm text-[#2C3829] outline-none focus:border-[#2C3829]/40"
-                />
               </div>
             </div>
           ))}

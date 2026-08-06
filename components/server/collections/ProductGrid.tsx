@@ -4,7 +4,9 @@ import ProductCard from "../../client/product/ProductCard";
 import { type ProductSort } from "@/utils/products";
 import type { Product } from "@/types/product";
 
-const PAGE_SIZE = 12;
+/** Products per page on the storefront Collections grid.
+ *  Exported so the page's data fetch uses the exact same page size. */
+export const PAGE_SIZE = 32;
 
 interface ProductGridProps {
   items: Product[];

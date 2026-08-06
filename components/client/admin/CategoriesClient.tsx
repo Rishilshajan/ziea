@@ -25,22 +25,23 @@ function catCrop(cat: any) {
   };
 }
 
-/** Same pan/zoom crop math as SmartImage (raw <img> for admin previews).
+/** Exactly mirrors SmartImage's crop math (object-cover + object-position + scale)
+ *  so the admin preview and category cards match the storefront pixel-for-pixel.
  *  Caller supplies a `relative overflow-hidden` frame. */
 function CropPreview({ url, cropX, cropY, zoom, alt }: { url: string; cropX: number; cropY: number; zoom: number; alt: string; }) {
   return (
-    <div
-      className="absolute"
-      style={{ width: `${zoom}%`, height: `${zoom}%`, left: `${cropX}%`, top: `${cropY}%`, transform: 'translate(-50%, -50%)' }}
-    >
-      <img
-        src={url}
-        alt={alt}
-        draggable={false}
-        className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
-        onError={(e) => (e.currentTarget.style.display = 'none')}
-      />
-    </div>
+    <img
+      src={url}
+      alt={alt}
+      draggable={false}
+      className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none"
+      style={{
+        objectPosition: `${cropX}% ${cropY}%`,
+        transform: zoom !== 100 ? `scale(${zoom / 100})` : undefined,
+        transformOrigin: 'center',
+      }}
+      onError={(e) => (e.currentTarget.style.display = 'none')}
+    />
   );
 }
 
@@ -86,7 +87,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
   const handleCopy = () => {
     if (!imageUrl) return;
     navigator.clipboard.writeText(imageUrl);
-    showToast("URL Copied to clipboard!");
+    showToast("URL copied to clipboard!");
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -306,7 +307,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                 {paginatedCategories.map((cat) => (
                   <div key={cat.id} className="p-6 flex items-center justify-between gap-4">
                     <div className="flex gap-4 items-center">
-                      <div className="relative w-24 h-28 shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
+                      <div className="relative w-24 aspect-[4/5] shrink-0 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#d6c3b3]/30">
                         <CropPreview url={cat.image_url} alt={cat.name} {...catCrop(cat)} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -341,9 +342,9 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
           {/* Desktop View: Grid */}
           <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {paginatedCategories.map((cat) => (
-              <Card key={cat.id} className="bg-white border border-[#d6c3b3]/30 shadow-sm !rounded-[16px] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-[320px]">
-                {/* Image Section (Top Half) */}
-                <div className="relative w-full h-[240px] bg-surface-variant overflow-hidden shrink-0">
+              <Card key={cat.id} className="bg-white border border-[#d6c3b3]/30 shadow-sm !rounded-[16px] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col">
+                {/* Image Section — 4:5 to match the storefront cards & crop preview */}
+                <div className="relative w-full aspect-[4/5] bg-surface-variant overflow-hidden shrink-0">
                   <CropPreview url={cat.image_url} alt={cat.name} {...catCrop(cat)} />
                 </div>
 
@@ -411,7 +412,7 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
           <div className="relative w-full md:w-[450px] bg-[#FAF7F2] h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Sheet Header */}
             <div className="flex items-center justify-between p-6 border-b border-[#d6c3b3]/30 bg-[#FAF7F2] shrink-0">
-              <h2 className="font-cormorant text-3xl text-[#2C3829] font-bold">
+              <h2 className="font-jost text-2xl text-[#2C3829] font-bold">
                 {activeCategory ? 'Edit Category' : 'Add Category'}
               </h2>
               <button
@@ -462,11 +463,11 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                     />
                   </label>
 
-                  {/* Direct URL Fallback */}
+                  {/* Direct URL + copy */}
                   <div className="mt-4 flex gap-2">
                     <div className="flex-1">
                       <Input
-                        placeholder="Or paste direct image URL (e.g. https://ziea.b-cdn.net/...)"
+                        placeholder="Or paste direct image URL"
                         value={imageUrl}
                         onChange={(e) => setImageUrl(e.target.value)}
                         required
@@ -475,8 +476,10 @@ export default function CategoriesClient({ initialCategories }: { initialCategor
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="shrink-0 w-12 h-12 flex items-center justify-center bg-white border border-[#d6c3b3]/50 rounded-xl hover:bg-[#f3e6dc] text-[#2C3829] transition-colors"
-                      title="Copy URL"
+                      disabled={!imageUrl}
+                      className="shrink-0 w-12 h-12 flex items-center justify-center bg-white border border-[#d6c3b3]/50 rounded-xl hover:bg-[#f3e6dc] text-[#2C3829] transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white"
+                      title="Copy image URL"
+                      aria-label="Copy image URL"
                     >
                       <MdContentCopy className="text-xl" />
                     </button>

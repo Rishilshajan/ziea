@@ -80,16 +80,27 @@ export function BarChart({ data, highlightLabel, className = "" }: BarChartProps
         {data.map((d, i) => {
           const isHi = d.label === highlighted;
           return (
-            <span
+            <div
               key={`${d.label}-label-${i}`}
-              className={`flex-1 min-w-0 truncate text-center text-xs uppercase tracking-widest ${
-                isHi
-                  ? "font-semibold text-[#2C3829]"
-                  : "text-[#2C3829]/60"
-              }`}
+              className="flex-1 min-w-0 flex flex-col items-center leading-tight"
             >
-              {d.label}
-            </span>
+              <span
+                className={`text-[10px] sm:text-xs uppercase tracking-wide ${
+                  isHi ? "font-semibold text-[#2C3829]" : "text-[#2C3829]/60"
+                }`}
+              >
+                {d.label}
+              </span>
+              {d.subLabel && (
+                <span
+                  className={`text-[10px] sm:text-xs mt-0.5 ${
+                    isHi ? "text-[#2C3829]/80" : "text-[#2C3829]/40"
+                  }`}
+                >
+                  {d.subLabel}
+                </span>
+              )}
+            </div>
           );
         })}
       </div>

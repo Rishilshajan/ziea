@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 import CategoryTabs from '../../components/client/collections/CategoryTabs';
 import FiltersPanel from '../../components/client/collections/FiltersPanel';
-import ProductGrid from '../../components/server/collections/ProductGrid';
+import ProductGrid, { PAGE_SIZE } from '../../components/server/collections/ProductGrid';
 import Header from '../../components/client/layout/Header';
 import Footer from '../../components/server/layout/Footer';
 import Link from 'next/link';
@@ -76,6 +76,7 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
     getFilteredProducts({
       category,
       page: normalizedPage,
+      pageSize: PAGE_SIZE,
       q,
       minPrice,
       maxPrice,

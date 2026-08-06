@@ -10,23 +10,20 @@ export const dynamic = 'force-dynamic';
 export default async function EditProductPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
   const supabase = await createClient();
-  
-  // 1. Fetch Categories for the dropdown
-  const { data: categories, error: catError } = await supabase
-    .from('categories')
-    .select('*')
-    .order('name');
-    
+
+  // Categories (dropdown) and the product being edited are independent — fetch
+  // them concurrently instead of waterfalling one after the other.
+  const [
+    { data: categories, error: catError },
+    { data: product, error: prodError },
+  ] = await Promise.all([
+    supabase.from('categories').select('*').order('name'),
+    supabase.from('products').select('*').eq('id', params.id).single(),
+  ]);
+
   if (catError) {
     console.error('Error fetching categories:', catError);
   }
-
-  // 2. Fetch the specific product by ID
-  const { data: product, error: prodError } = await supabase
-    .from('products')
-    .select('*')
-    .eq('id', params.id)
-    .single();
 
   if (prodError || !product) {
     console.error('Error fetching product:', prodError);

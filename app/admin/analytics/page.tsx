@@ -10,6 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { DonutChart } from '@/components/ui/DonutChart';
 import { ActivityRow } from '@/components/ui/ActivityRow';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { AnalyticsTrends } from '@/components/client/admin/AnalyticsTrends';
 import { getAnalytics } from '@/utils/analytics';
 
@@ -83,6 +84,80 @@ export default async function AnalyticsPage() {
           />
         </Card>
       </div>
+
+      {/* Product Views */}
+      <Card className="p-6 lg:p-8 mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="font-jost font-semibold text-[#2C3829]">Product Views</h2>
+            <p className="text-[#2C3829]/60 text-sm">Most-viewed products</p>
+          </div>
+          <Link
+            href="/admin/analytics/views"
+            className="text-[#4c623d] text-sm hover:underline shrink-0"
+          >
+            View All &rarr;
+          </Link>
+        </div>
+        {data.productViews.length > 0 ? (
+          <>
+            {/* Mobile: stacked list */}
+            <div className="md:hidden divide-y divide-[#d6c3b3]/25">
+              {data.productViews.map((p, i) => (
+                <div
+                  key={`views-m-${i}`}
+                  className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                >
+                  <div className="min-w-0">
+                    <span className="block font-medium text-[#2C3829] font-body-md break-words">
+                      {p.name}
+                    </span>
+                    <span className="block text-xs text-[#2C3829]/50 font-jost">
+                      {p.productCode}
+                    </span>
+                  </div>
+                  <span className="font-jost font-semibold text-[#2C3829] shrink-0">
+                    {p.views.toLocaleString()}
+                    <span className="ml-1 text-xs font-normal text-[#2C3829]/50">views</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: table */}
+            <div className="hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Product Code</TableHead>
+                    <TableHead className="text-right">Views</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.productViews.map((p, i) => (
+                    <TableRow key={`views-d-${i}`}>
+                      <TableCell>
+                        <span className="font-medium text-[#2C3829] font-body-md break-words">{p.name}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-jost text-[#2C3829]">{p.productCode}</span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span className="font-jost font-semibold text-[#2C3829]">
+                          {p.views.toLocaleString()}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
+        ) : (
+          <p className="text-[#2C3829]/60 text-sm py-6 text-center">No product views yet.</p>
+        )}
+      </Card>
 
       {/* Activity Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

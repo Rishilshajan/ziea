@@ -290,37 +290,54 @@ export const getLatestProducts = unstable_cache(
   { tags: ["products"], revalidate: 300 },
 );
 
-/** A single published product by its DB-generated product_code (the storefront slug). */
-export async function getProductByCode(code: string): Promise<Product | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("products")
-    .select(PRODUCT_SELECT)
-    .eq("product_code", code)
-    .eq("is_published", true)
-    .eq("status", "published")
-    .maybeSingle();
-  if (error) console.error("getProductByCode:", error.message);
-  return (data ?? null) as Product | null;
-}
+/**
+ * A single published product by its DB-generated product_code (the storefront slug).
+ * Public (cookie-less) client + `unstable_cache` so the detail page serves from cache
+ * and the double fetch (generateMetadata + page body) collapses to one query. Tagged
+ * `products`, invalidated on admin product changes with a 5-minute fallback.
+ */
+export const getProductByCode = unstable_cache(
+  async (code: string): Promise<Product | null> => {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      .eq("product_code", code)
+      .eq("is_published", true)
+      .eq("status", "published")
+      .maybeSingle();
+    if (error) console.error("getProductByCode:", error.message);
+    return (data ?? null) as Product | null;
+  },
+  ["storefront-product"],
+  { tags: ["products"], revalidate: 300 },
+);
 
-/** Related products in the same category (excluding the current one). */
-export async function getRelatedProducts(
-  categoryId: string | null,
-  excludeId: string,
-  limit = 4,
-): Promise<Product[]> {
-  const supabase = await createClient();
-  let query = supabase
-    .from("products")
-    .select(PRODUCT_SELECT)
-    .eq("is_published", true)
-    .eq("status", "published")
-    .neq("id", excludeId)
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  if (categoryId) query = query.eq("category_id", categoryId);
-  const { data, error } = await query;
-  if (error) console.error("getRelatedProducts:", error.message);
-  return (data ?? []) as Product[];
-}
+/**
+ * Related products in the same category (excluding the current one). Cached
+ * (public client, tagged `products`, 5-minute fallback) like the rest of the
+ * storefront reads — invalidated on admin product changes.
+ */
+export const getRelatedProducts = unstable_cache(
+  async (
+    categoryId: string | null,
+    excludeId: string,
+    limit = 4,
+  ): Promise<Product[]> => {
+    const supabase = createPublicClient();
+    let query = supabase
+      .from("products")
+      .select(LIST_SELECT)
+      .eq("is_published", true)
+      .eq("status", "published")
+      .neq("id", excludeId)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    if (categoryId) query = query.eq("category_id", categoryId);
+    const { data, error } = await query;
+    if (error) console.error("getRelatedProducts:", error.message);
+    return (data ?? []) as Product[];
+  },
+  ["storefront-related"],
+  { tags: ["products"], revalidate: 300 },
+);

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { MdArrowBack, MdOutlineFavoriteBorder } from 'react-icons/md';
 import { Card } from '@/components/ui/Card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import { AnalyticsPagination } from '@/components/ui/AnalyticsPagination';
 import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';
@@ -11,6 +12,8 @@ export const metadata = {
   title: 'Wishlist Activity | ZIEA Admin',
   robots: { index: false },
 };
+
+const PAGE_SIZE = 20;
 
 // The generated Supabase types may type the joined relations as either a single
 // object or an array (depending on how the FK is inferred). Handle both shapes.
@@ -30,13 +33,28 @@ interface WishlistRow {
   createdAt: string | null;
 }
 
-export default async function WishlistActivityPage() {
+export default async function WishlistActivityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const supabase = await createClient();
 
-  const { data } = await supabase
+  const params = await searchParams;
+  const page = Math.max(1, Number(params.page) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  const { data, count } = await supabase
     .from('wishlist_items')
-    .select('created_at, users(first_name, last_name, email), products(product_code, name)')
-    .order('created_at', { ascending: false });
+    .select('created_at, users(first_name, last_name, email), products(product_code, name)', {
+      count: 'exact',
+    })
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const rows: WishlistRow[] = (data ?? []).map((row: any) => {
     const user = firstOrNull<JoinedUser>(row.users);
@@ -186,6 +204,8 @@ export default async function WishlistActivityPage() {
           </>
         )}
       </Card>
+
+      <AnalyticsPagination basePath="/admin/analytics/wishlist" page={page} totalPages={totalPages} />
     </main>
   );
 }

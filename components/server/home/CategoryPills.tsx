@@ -20,16 +20,16 @@ export default async function CategoryPills() {
               <Link
                 key={category.id}
                 href={`/collections?category=${category.id}`}
-                className="group flex shrink-0 flex-col items-center gap-2.5 w-[108px]"
+                className="group flex shrink-0 flex-col items-center gap-2.5 w-[120px]"
               >
-                <div className="relative h-[104px] w-[104px] overflow-hidden rounded-full bg-muted/20 ring-1 ring-primary-dark/10 shadow-[0px_3px_14px_rgba(44,56,41,0.12)]">
+                <div className="relative h-[116px] w-[116px] overflow-hidden rounded-full bg-muted/20 ring-1 ring-primary-dark/10 shadow-[0px_3px_14px_rgba(44,56,41,0.12)]">
                   <SmartImage
                     src={category.image_url}
                     alt={category.name}
                     cropX={category.cropX}
                     cropY={category.cropY}
                     zoom={category.zoom}
-                    sizes="104px"
+                    sizes="116px"
                   />
                 </div>
                 <span className="jost text-xs leading-tight text-center text-primary-dark line-clamp-2">

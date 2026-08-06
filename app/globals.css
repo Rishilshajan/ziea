@@ -209,3 +209,14 @@
     transform: scaleY(1);
   }
 }
+
+/* Storefront loading-quote: a small indeterminate progress sweep. */
+@keyframes loadingbar {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  100% {
+    transform: translateX(240%);
+  }
+}

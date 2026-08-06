@@ -10,8 +10,8 @@ import RelatedProducts from '../../../components/server/product/RelatedProducts'
 import ProductViewTracker from '../../../components/client/product/ProductViewTracker';
 import Footer from '../../../components/server/layout/Footer';
 import { getProductByCode } from '@/utils/products';
+import { getCategories } from '@/utils/categories';
 import { resolvePrice } from '@/utils/price';
-import { createClient } from '@/utils/supabase/server';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -44,17 +44,13 @@ export default async function ProductDetailPage(props: PageProps) {
 
   if (!product) notFound();
 
-  const supabase = await createClient();
-
-  // Category name for the breadcrumb.
+  // Category name for the breadcrumb — resolved from the cached category list
+  // (no extra Supabase round-trip).
   let categoryName = 'Collections';
   if (product.category_id) {
-    const { data: category } = await supabase
-      .from('categories')
-      .select('name')
-      .eq('id', product.category_id)
-      .maybeSingle();
-    if (category?.name) categoryName = category.name;
+    const categories = await getCategories();
+    const match = categories.find((c) => c.id === product.category_id);
+    if (match?.name) categoryName = match.name;
   }
 
   const { price, original } = resolvePrice(product.original_price, product.discounted_price);

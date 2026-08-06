@@ -367,9 +367,9 @@ export default function Header() {
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsMenuOpen(false)}
           /> 
-          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-4 pt-6 transform transition-transform animate-in slide-in-from-left duration-300">
-            <div className="flex items-center justify-center mb-6 border-b border-border/60">
-              <Image src="/ZIEA_Splash2.png" alt="ZIEA" width={500} height={500} className="h-16 w-auto object-contain" priority />
+          <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-4 pt-2 transform transition-transform animate-in slide-in-from-left duration-300">
+            <div className="flex items-center justify-center mb-4 border-b border-border/60">
+              <Image src="/ZIEA_Splash2.png" alt="ZIEA" width={500} height={500} className="h-24 w-auto object-contain" priority />
             </div>
 
             <nav className="flex flex-col gap-1">

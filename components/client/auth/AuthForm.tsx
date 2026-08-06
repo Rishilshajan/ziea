@@ -95,11 +95,44 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
 
       if (error) throw error;
 
-      // Role-based redirect + login bookkeeping happen on the server (post-login
-      // page), which reads the role from the authenticated session cookie. Doing
-      // it here on the client raced RLS and sometimes sent admins to '/'.
       if (data.user) {
-        router.push('/auth/post-login');
+        // Resolve the role from the fresh, in-memory authenticated session (RLS
+        // query is reliable here — the session is active the moment sign-in
+        // resolves). We use it both for login logging AND the role-based redirect,
+        // so admins never race the server cookie propagation into the customer page.
+        let role: string | null = null;
+        try {
+          const { data: prof } = await supabase
+            .from('users')
+            .select('first_name, last_name, role')
+            .eq('id', data.user.id)
+            .maybeSingle();
+          role = prof?.role ?? null;
+          const roleLabel = role === 'Admin' ? 'Admin' : 'Customer';
+          const name = `${prof?.first_name ?? ''} ${prof?.last_name ?? ''}`.trim();
+          await supabase.from('activity_logs').insert({
+            user_id: data.user.id,
+            type: `${roleLabel} Login`,
+            description: `${roleLabel} ${name}`.trim() + ' logged in',
+          });
+          supabase
+            .from('users')
+            .update({ last_login_at: new Date().toISOString() })
+            .eq('id', data.user.id)
+            .then(() => {});
+        } catch {
+          // Logging/role read must never block sign-in.
+        }
+
+        // Admins land in the portal; everyone else on the storefront. If the role
+        // read failed for any reason, fall back to the server post-login gate.
+        if (role === 'Admin') {
+          router.push('/admin');
+        } else if (role) {
+          router.push('/');
+        } else {
+          router.push('/auth/post-login');
+        }
       }
     } catch (error: any) {
       // If user is not found or wrong password, it hits here
