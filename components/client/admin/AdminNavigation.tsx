@@ -8,6 +8,7 @@ import { createClient } from '@/utils/supabase/client';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { Button } from '@/components/ui/Button';
 import NotificationBell from '@/components/client/admin/NotificationBell';
+import { useEnquiries } from '@/components/client/admin/EnquiriesProvider';
 import {
   MdDashboard,
   MdInventory2,
@@ -18,7 +19,8 @@ import {
   MdHistory,
   MdClose,
   MdOutlineBrandingWatermark,
-  MdOutlineInsights
+  MdOutlineInsights,
+  MdOutlineForum
 } from 'react-icons/md';
 
 const AVATAR_COLORS = [
@@ -50,6 +52,7 @@ export default function AdminNavigation({
   const router = useRouter();
   const pathname = usePathname();
   const supabase = createClient();
+  const { unreadCount: enquiryCount } = useEnquiries();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -98,6 +101,7 @@ export default function AdminNavigation({
     { href: "/admin/customers", icon: <MdGroup className="text-xl" />, label: "Customers" },
     { href: "/admin/branding", icon: <MdOutlineBrandingWatermark className="text-xl" />, label: "Branding" },
     { href: "/admin/activity", icon: <MdHistory className="text-xl" />, label: "Activity" },
+    { href: "/admin/enquiries", icon: <MdOutlineForum className="text-xl" />, label: "Enquiries" },
   ];
 
   return (
@@ -132,6 +136,11 @@ export default function AdminNavigation({
               >
                 {link.icon}
                 <span>{link.label}</span>
+                {link.href === "/admin/enquiries" && enquiryCount > 0 && (
+                  <span className="ml-auto min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#7A9268] text-white text-[11px] font-semibold flex items-center justify-center leading-none">
+                    {enquiryCount > 99 ? "99+" : enquiryCount}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -238,6 +247,11 @@ export default function AdminNavigation({
                   >
                     {link.icon}
                     <span>{link.label}</span>
+                    {link.href === "/admin/enquiries" && enquiryCount > 0 && (
+                      <span className="ml-auto min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#7A9268] text-white text-[11px] font-semibold flex items-center justify-center leading-none">
+                        {enquiryCount > 99 ? "99+" : enquiryCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

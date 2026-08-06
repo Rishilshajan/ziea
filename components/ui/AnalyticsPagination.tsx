@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { MdChevronLeft, MdChevronRight } from 'react-icons/md';
 
 interface AnalyticsPaginationProps {
-  /** Route path without query, e.g. "/admin/analytics/views". */
+  /** Route path, optionally with an existing query string,
+   *  e.g. "/admin/analytics/views" or "/admin/enquiries?tab=read". */
   basePath: string;
   page: number;
   totalPages: number;
@@ -16,7 +17,10 @@ interface AnalyticsPaginationProps {
 export function AnalyticsPagination({ basePath, page, totalPages }: AnalyticsPaginationProps) {
   if (totalPages <= 1) return null;
 
-  const hrefFor = (p: number) => (p <= 1 ? basePath : `${basePath}?page=${p}`);
+  // Preserve any existing query on basePath (e.g. ?tab=read) by choosing the
+  // right separator for the page param.
+  const sep = basePath.includes("?") ? "&" : "?";
+  const hrefFor = (p: number) => (p <= 1 ? basePath : `${basePath}${sep}page=${p}`);
   const canPrev = page > 1;
   const canNext = page < totalPages;
 
