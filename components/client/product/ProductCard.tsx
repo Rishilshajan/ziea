@@ -49,15 +49,18 @@ export default function ProductCard({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Optimistic: show "Added!" immediately; persist in the background so the
+    // click feels instant regardless of network latency.
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
     startTransition(async () => {
       const res = await addToCart(id, null, 1);
       if (res && "error" in res && res.error === "unauthenticated") {
+        setIsAdded(false);
         router.push("/login");
         return;
       }
       notifyCountsChanged();
-      setIsAdded(true);
-      setTimeout(() => setIsAdded(false), 2000);
     });
   };
 
@@ -123,7 +126,7 @@ export default function ProductCard({
 
       {/* Product Details */}
       <div className="space-y-1">
-        <h3 className="font-label-md text-text line-clamp-2">
+        <h3 className="font-label-md text-text line-clamp-2 min-h-[2.5rem]">
           {title}
         </h3>
 

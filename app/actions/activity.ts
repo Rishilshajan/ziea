@@ -1,17 +1,18 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
+import { getUserId } from "@/utils/supabase/user";
 
 /** Logs a customer's wishlist/cart add to activity_logs. Skips admins. Best-effort. */
 export async function logProductInteraction(productId: string, kind: "Wishlist" | "Cart") {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    const userId = await getUserId();
+    if (!userId) return;
 
+    const supabase = await createClient();
     const { data: profile } = await supabase
       .from("users")
       .select("role, first_name, last_name")
-      .eq("id", user.id)
+      .eq("id", userId)
       .maybeSingle();
     if (!profile || profile.role === "Admin") return; // only log real customers
 

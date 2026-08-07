@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { MdOutlineDelete, MdOutlineLocalShipping } from 'react-icons/md';
 import type { ListItem } from './ListManager';
 import { QuantityStepper } from '@/components/ui/QuantityStepper';
+import { Button } from '@/components/ui/Button';
 import { updateCartQty, removeCartItem, addToCart } from '@/app/actions/cart';
 import { removeWishlistItem } from '@/app/actions/wishlist';
 import { notifyCountsChanged } from '@/utils/counts';
@@ -22,6 +23,9 @@ export default function PopulatedList({ items, type }: PopulatedListProps) {
   // Optimistic per-item quantity so the stepper feels instant before refresh.
   const [pendingQty, setPendingQty] = useState<Record<string, number>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
+  // Items hidden optimistically (removed/moved) so they vanish instantly while
+  // the DB write + subtotal reconcile happen in the background.
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
 
   const run = (id: string, action: () => Promise<unknown>) => {
     setBusyId(id);
@@ -33,25 +37,43 @@ export default function PopulatedList({ items, type }: PopulatedListProps) {
     });
   };
 
+  // Optimistic remove/move: hide the item now, persist + reconcile after.
+  const removeOptimistic = (id: string, action: () => Promise<unknown>) => {
+    setHiddenIds((prev) => new Set(prev).add(id));
+    startTransition(async () => {
+      await action();
+      notifyCountsChanged();
+      router.refresh();
+    });
+  };
+
   const handleQtyChange = (item: ListItem, next: number) => {
     setPendingQty((prev) => ({ ...prev, [item.id]: next }));
     run(item.id, () => updateCartQty(item.id, next));
   };
 
+  const visibleItems = items.filter((i) => !hiddenIds.has(i.id));
+
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 ${type === 'wishlist' ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
-      {items.map((item) => {
+    <div
+      className={`grid grid-cols-2 gap-x-4 gap-y-10 ${
+        type === 'wishlist' ? 'md:grid-cols-3 lg:grid-cols-4' : 'md:grid-cols-3'
+      }`}
+    >
+      {visibleItems.map((item) => {
         const qty = pendingQty[item.id] ?? item.quantity ?? 1;
         const rowBusy = busyId === item.id && isPending;
         return (
           <div key={item.id} className="flex flex-col group relative">
-            <div className="relative overflow-hidden rounded-xl bg-surface-container shadow-[0px_2px_16px_rgba(44,56,41,0.08)] aspect-[4/5] mb-4">
+            {/* Image — matches the collections ProductCard (4:5, surface, sizes) */}
+            <div className="relative overflow-hidden rounded-xl bg-surface shadow-[0px_2px_16px_rgba(44,56,41,0.08)] aspect-[4/5] mb-4">
               <Link href={`/collections/${item.productCode}`} className="block absolute inset-0">
                 <Image
                   src={item.image}
                   alt={item.title}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               </Link>
               <button
@@ -60,7 +82,7 @@ export default function PopulatedList({ items, type }: PopulatedListProps) {
                 disabled={rowBusy}
                 onClick={(e) => {
                   e.preventDefault();
-                  run(
+                  removeOptimistic(
                     item.id,
                     () =>
                       type === 'cart'
@@ -68,47 +90,51 @@ export default function PopulatedList({ items, type }: PopulatedListProps) {
                         : removeWishlistItem(item.productId),
                   );
                 }}
-                className="absolute top-3 right-3 w-8 h-8 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center transition-all hover:bg-black/60 z-10 text-white disabled:opacity-50"
+                className="absolute top-3 right-3 w-9 h-9 bg-background/80 backdrop-blur rounded-full flex items-center justify-center shadow-sm transition-all hover:scale-110 active:scale-95 z-10 text-[#2C3829] disabled:opacity-50"
               >
                 <MdOutlineDelete className="text-[18px]" />
               </button>
             </div>
 
-            <div className="space-y-1.5 px-1">
+            <div className="space-y-1">
               <Link href={`/collections/${item.productCode}`}>
-                <h3 className="cormorant text-xl font-semibold text-on-surface leading-snug truncate hover:text-primary transition-colors">{item.title}</h3>
+                <h3 className="font-label-md text-text line-clamp-2 min-h-[2.5rem] hover:text-primary transition-colors">{item.title}</h3>
               </Link>
               {item.variant ? (
-                <p className="font-jost text-[14px] text-on-surface-variant truncate">
+                <p className="font-jost text-[13px] text-on-surface-variant truncate">
                   {type === 'cart' ? `Size: ${item.variant}` : item.variant}
                 </p>
               ) : null}
-              <div className="flex justify-between items-center mt-1">
-                <span className="font-jost font-bold text-lg text-[#6d8a57]">{item.price}</span>
-                {type === 'cart' ? (
-                  <QuantityStepper value={qty} onChange={(n) => handleQtyChange(item, n)} min={1} />
-                ) : null}
-              </div>
-              <p className="text-[#72796c] text-[12px] mt-1.5 flex items-center gap-1">
-                <MdOutlineLocalShipping className="text-[14px]" />
+
+              <span className="block text-lg font-semibold text-text">{item.price}</span>
+
+              <p className="flex items-center gap-1.5 text-[13px] font-semibold text-[#2C3829] mt-1">
+                <MdOutlineLocalShipping className="text-[16px] text-[#2C3829]" />
                 Free delivery
               </p>
 
+              {type === 'cart' ? (
+                <div className="pt-2">
+                  <QuantityStepper value={qty} onChange={(n) => handleQtyChange(item, n)} min={1} />
+                </div>
+              ) : null}
+
               {type === 'wishlist' ? (
-                <button
+                <Button
                   type="button"
+                  variant="auth-primary"
                   disabled={rowBusy}
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent) => {
                     e.preventDefault();
-                    run(item.id, async () => {
+                    removeOptimistic(item.id, async () => {
                       await addToCart(item.productId, null, 1);
                       await removeWishlistItem(item.productId);
                     });
                   }}
-                  className="w-full mt-3 text-white py-2.5 rounded-full font-label-md hover:opacity-90 active:scale-[0.97] transition-all shadow-sm bg-primary disabled:opacity-50"
+                  className="mt-3 !py-3 !text-base disabled:opacity-50"
                 >
                   Move to Cart
-                </button>
+                </Button>
               ) : null}
             </div>
           </div>

@@ -163,7 +163,7 @@ export default function BuyNowModal({
 
     window.open(orderHref([item]), "_blank", "noopener,noreferrer");
 
-    setToast({ show: true, message: "Opening WhatsApp… your order is saved ✨", error: false });
+    setToast({ show: true, message: "Opening WhatsApp… your order is saved", error: false });
     setTimeout(() => {
       setToast({ show: false, message: "", error: false });
       setSubmitting(false);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MdClose, MdOutlineTune } from "react-icons/md";
 import { Button } from "@/components/ui/Button";
@@ -39,6 +40,19 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
   const searchParams = useSearchParams();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  // Lock the page scroll while the sheet is open so the background doesn't
+  // scroll behind it; restore the previous value on close.
+  useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
 
   // Draft state (edits apply only on "Apply"); re-initialised each time the drawer opens.
   const [category, setCategory] = useState("");
@@ -169,9 +183,11 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
         </button>
       </div>
 
-      {/* Slide-over drawer — opens below the header (does not cover it) */}
-      {isOpen && (
-        <div className="fixed inset-x-0 bottom-0 top-16 md:top-20 z-[70] flex justify-end">
+      {/* Slide-over sheet — portaled to <body> so it anchors to the viewport
+          (the trigger sits inside a transformed wrapper, which would otherwise
+          trap a `position: fixed` child). Mirrors the admin Categories sheet. */}
+      {isOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[70] flex justify-end">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-[#2C3829]/20 backdrop-blur-sm transition-opacity"
@@ -328,7 +344,8 @@ export default function FiltersPanel({ categories, facets }: FiltersPanelProps) 
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

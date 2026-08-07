@@ -29,7 +29,7 @@ export default async function AboutUsPage() {
     <>
       <Header />
 
-      <main className="pt-16 pb-0 md:pt-20 bg-[#F5F0E8]">
+      <main className="pt-16 pb-0 md:pt-24 bg-[#F5F0E8]">
 
         <div className="flex flex-col md:flex-row relative bg-[#F5F0E8]">
           {/* Left Side: Fixed Image Area */}

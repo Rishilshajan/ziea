@@ -64,6 +64,16 @@ export default function AdminNavigation({
   const [user, setUser] = useState<any>(initialUserId ? { id: initialUserId } : null);
   const [profile, setProfile] = useState<any>(initialProfile);
 
+  // Lock the page scroll while the mobile drawer is open (no scroll bleed).
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isMenuOpen]);
+
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!session?.user) {
@@ -129,7 +139,7 @@ export default function AdminNavigation({
           <p className="font-jost text-[#F5F0E8] font-medium tracking-wider">Admin Portal</p>
         </div>
 
-        <nav className="flex-1 space-y-2 px-2 lg:px-6">
+        <nav className="flex-1 space-y-1 px-2 lg:px-6">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== "/admin" && pathname.startsWith(link.href));
             return (
@@ -157,7 +167,7 @@ export default function AdminNavigation({
           <div className="mb-6 px-4 flex items-center gap-4">
             {user && profile ? (
               <>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-jost font-medium text-sm shadow-sm ${getAvatarColor()}`}>
+                <div className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center font-jost font-medium text-sm bg-[#7A9268] text-white ring-2 ring-white/15">
                   {getInitials()}
                 </div>
                 <div className="flex flex-col overflow-hidden">
@@ -254,9 +264,9 @@ export default function AdminNavigation({
                   >
                     {link.icon}
                     <span>{link.label}</span>
-                    {link.href === "/admin/enquiries" && enquiryCount > 0 && (
+                    {badgeFor(link.href) > 0 && (
                       <span className="ml-auto min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#7A9268] text-white text-[11px] font-semibold flex items-center justify-center leading-none">
-                        {enquiryCount > 99 ? "99+" : enquiryCount}
+                        {badgeFor(link.href) > 99 ? "99+" : badgeFor(link.href)}
                       </span>
                     )}
                   </Link>
@@ -268,7 +278,7 @@ export default function AdminNavigation({
               <div className="mb-4 px-4 flex items-center gap-4">
                 {user && profile ? (
                   <>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-jost font-medium text-sm shadow-sm ${getAvatarColor()}`}>
+                    <div className="w-10 h-10 shrink-0 rounded-full flex items-center justify-center font-jost font-medium text-sm bg-[#7A9268] text-white ring-2 ring-white/15">
                       {getInitials()}
                     </div>
                     <div className="flex flex-col overflow-hidden">

@@ -5,7 +5,7 @@ import { MdOutlineBrandingWatermark, MdEdit } from 'react-icons/md';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { brandingPreviewUrls } from '@/utils/branding';
 
 export default function BrandingClient({ initialSections }: { initialSections: any[] }) {
   const router = useRouter();
@@ -37,8 +37,8 @@ export default function BrandingClient({ initialSections }: { initialSections: a
             <Card className="!rounded-xl !p-0 border border-[#d6c3b3]/30 overflow-hidden">
               <div className="divide-y divide-[#d6c3b3]/30">
                 {sections.map((section) => {
-                  const images = section.images || [];
-                  const coverImage = images.length > 0 ? images[0].url : null;
+                  const urls = brandingPreviewUrls(section.section_name, section.images);
+                  const coverImage = urls[0] ?? null;
                   return (
                     <div key={section.id} className="p-6 flex items-center justify-between gap-4">
                       <div className="flex gap-4 items-center">
@@ -80,25 +80,37 @@ export default function BrandingClient({ initialSections }: { initialSections: a
           {/* Desktop View: Grid */}
           <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {sections.map((section) => {
-              const images = section.images || [];
-              const coverImage = images.length > 0 ? images[0].url : null;
-              
+              const urls = brandingPreviewUrls(section.section_name, section.images);
+              const shown = urls.slice(0, 4);
+
               return (
                 <Card key={section.id} className="bg-white border border-[#d6c3b3]/30 shadow-sm !rounded-[16px] overflow-hidden hover:shadow-lg transition-shadow group flex flex-col h-[320px]">
-                  {/* Image Section (Top Half) */}
+                  {/* Image preview — first image, or a grid when the section has several */}
                   <div className="relative w-full h-[240px] bg-surface-variant overflow-hidden shrink-0">
-                    {coverImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        alt={section.section_name}
-                        src={coverImage}
-                      />
-                    ) : (
+                    {shown.length === 0 ? (
                       <div className="w-full h-full flex flex-col items-center justify-center text-[#2C3829]/40 bg-[#FAF7F2]">
                         <MdOutlineBrandingWatermark className="text-4xl mb-2 opacity-50" />
                         <span className="font-label-sm uppercase tracking-wider text-xs">No images</span>
                       </div>
+                    ) : shown.length === 1 ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        alt={section.section_name}
+                        src={shown[0]}
+                      />
+                    ) : (
+                      <div className={`w-full h-full grid gap-0.5 ${shown.length === 2 ? "grid-cols-2" : "grid-cols-2 grid-rows-2"}`}>
+                        {shown.map((u, i) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={i} src={u} alt="" className="w-full h-full object-cover" />
+                        ))}
+                      </div>
+                    )}
+                    {urls.length > 4 && (
+                      <span className="absolute bottom-2 right-2 rounded-full bg-black/55 text-white text-[11px] font-jost px-2 py-0.5">
+                        +{urls.length - 4}
+                      </span>
                     )}
                   </div>
 

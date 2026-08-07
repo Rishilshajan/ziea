@@ -129,3 +129,34 @@ export function parseBranding(bySection: Map<string, Record<string, unknown>>): 
 }
 
 export { toBrandImageList };
+
+/**
+ * Collect the image URLs stored for a branding section (shape-aware), for the
+ * admin Branding card previews. Home → hero-slide images; About/Auth → each
+ * slot's image(s). Returns them in display order.
+ */
+export function brandingPreviewUrls(sectionName: string, images: unknown): string[] {
+  const schema = BRANDING_SCHEMA[sectionName];
+  const imgs = (images ?? {}) as Record<string, unknown>;
+  const urls: string[] = [];
+  if (!schema) return urls;
+
+  if (schema.kind === "home") {
+    const slides = Array.isArray(imgs.heroSlides) ? imgs.heroSlides.map(toHeroSlide) : [];
+    for (const s of slides) {
+      const u = s.desktop?.url || s.mobile?.url;
+      if (u) urls.push(u);
+    }
+    return urls;
+  }
+
+  for (const slot of schema.slots) {
+    if (slot.kind === "single") {
+      const bi = toBrandImage(imgs[slot.key]);
+      if (bi?.url) urls.push(bi.url);
+    } else {
+      for (const bi of toBrandImageList(imgs[slot.key])) urls.push(bi.url);
+    }
+  }
+  return urls;
+}

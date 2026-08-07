@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import UnauthenticatedState from './UnauthenticatedState';
 import EmptyState from './EmptyState';
 import PopulatedList from './PopulatedList';
+import CartCheckoutButton from './CartCheckoutButton';
 import { createClient } from '@/utils/supabase/client';
 import { formatINR } from '@/utils/price';
 
@@ -113,9 +114,7 @@ export default function ListManager({ title, type, icon, emptyDescription, items
               <span>Total</span>
               <span className="text-[#6d8a57]">{subtotalLabel}</span>
             </div>
-            <button className="w-full bg-primary text-white py-3 rounded-full font-label-md hover:opacity-90 active:scale-[0.97] transition-all shadow-sm">
-              Proceed to Checkout
-            </button>
+            <CartCheckoutButton items={items} />
           </div>
         </div>
       ) : (

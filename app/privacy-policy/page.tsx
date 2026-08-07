@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
         <>
             <Header />
 
-            <main className="mt-16 md:mt-20 bg-background min-h-screen">
+            <main className="mt-16 md:mt-24 bg-background min-h-screen">
 
                 <div className="max-w-4xl mx-auto px-margin-mobile md:px-8 pt-section-gap pb-16 md:pb-24">
 

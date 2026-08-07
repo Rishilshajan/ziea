@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
+import SearchBar from "./SearchBar";
 import { createClient } from "@/utils/supabase/client";
 import ConfirmationModal from "../../ui/ConfirmationModal";
 import {
@@ -218,39 +219,29 @@ export default function Header() {
   return (
     <>
       {/* Desktop Header */}
-      <header className="hidden md:flex w-full fixed top-0 left-0 z-50 bg-background shadow-sm h-20">
-        <div className="flex w-full h-full px-page items-center">
-          <div className="flex-1 flex items-center justify-start">
-            <nav className="flex items-center gap-3 lg:gap-5 text-[11px] lg:text-[13px] font-semibold tracking-wide text-text/80">
-              <Link href="/" className="hover:text-primary transition-colors whitespace-nowrap">HOME</Link>
-              <Link href="/collections" className="hover:text-primary transition-colors whitespace-nowrap">COLLECTIONS</Link>
-              <Link href="/about-us" className="hover:text-primary transition-colors whitespace-nowrap">ABOUT US</Link>
-              <Link href="/contact-us" className="hover:text-primary transition-colors whitespace-nowrap">CONTACT US</Link>
-              <Link href="/contact-us?type=collaboration" className="hover:text-primary transition-colors whitespace-nowrap">BULK ORDERS</Link>
-              <Link href="/contact-us?type=personal" className="hover:text-primary transition-colors whitespace-nowrap">CUSTOMIZATION STUDIO</Link>
-            </nav>
-          </div>
+      <header className="hidden md:flex w-full fixed top-0 left-0 z-50 bg-background shadow-sm h-24">
+        <div className="flex w-full h-full px-page items-center gap-4 lg:gap-6">
+          {/* Logo — left end. Prominent natural height (no scale transform, which
+              would overflow into and block clicks on the adjacent search bar). */}
+          <Link href="/" aria-label="ZIEA home" className="shrink-0 flex items-center -ml-7 lg:-ml-9">
+            <Image src="/Ziea_Logo.png" alt="ZIEA" width={400} height={250} sizes="280px" className="h-24 lg:h-28 w-auto object-contain scale-[1.35] origin-left" priority />
+          </Link>
 
-          <div className="flex-[0.5] flex justify-center items-center shrink-0">
-            <Link href="/" aria-label="ZIEA home">
-              <Image src="/Ziea_Logo.png" alt="ZIEA" width={400} height={250} sizes="200px" className="h-20 lg:h-28 w-auto object-contain scale-[1.5]" />
-            </Link>
-          </div>
+          {/* Search with live suggestions — next to the logo; grows to fill the row */}
+          <SearchBar className="hidden lg:block flex-[1.6] min-w-0 ml-6 lg:ml-10" />
 
+          {/* Primary nav */}
+          <nav className="flex items-center gap-3 lg:gap-5 text-[11px] lg:text-[13px] font-semibold tracking-wide text-text/80">
+            <Link href="/" className="hover:text-primary transition-colors whitespace-nowrap">HOME</Link>
+            <Link href="/collections" className="hover:text-primary transition-colors whitespace-nowrap">COLLECTIONS</Link>
+            <Link href="/about-us" className="hover:text-primary transition-colors whitespace-nowrap">ABOUT US</Link>
+            <Link href="/contact-us" className="hover:text-primary transition-colors whitespace-nowrap">CONTACT US</Link>
+            <Link href="/contact-us?type=collaboration" className="hover:text-primary transition-colors whitespace-nowrap">BULK ORDERS</Link>
+            <Link href="/contact-us?type=personal" className="hover:text-primary transition-colors whitespace-nowrap">CUSTOMIZATION STUDIO</Link>
+          </nav>
+
+          {/* Right: icons + account */}
           <div className="flex-1 flex items-center justify-end gap-4 lg:gap-6">
-            <div className="hidden xl:block w-64 lg:w-80">
-              <form onSubmit={handleSearch}>
-                <Input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search designs..."
-                  leftElement={<MdSearch className="text-[#2C3829]/50 text-xl" />}
-                  aria-label="Search designs"
-                />
-              </form>
-            </div>
-
             <div className="flex gap-4">
               <Link href="/wishlist" aria-label="Wishlist" className="relative text-text hover:text-primary transition-colors flex items-center">
                 <MdOutlineFavoriteBorder className="text-2xl" />
@@ -291,14 +282,6 @@ export default function Header() {
                   {/* Dropdown Menu */}
                   {isDropdownOpen && (
                     <div className="absolute right-0 mt-3 w-48 bg-white rounded-2xl shadow-xl py-2 border border-black/5 animate-in fade-in slide-in-from-top-2">
-                      <Link
-                        href="/profile"
-                        onClick={() => setIsDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-text hover:bg-muted/10 transition-colors"
-                      >
-                        <MdOutlinePerson className="text-xl" />
-                        Profile
-                      </Link>
                       <button
                         onClick={() => { setIsDropdownOpen(false); setIsLogoutModalOpen(true); }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors text-left"
@@ -347,11 +330,11 @@ export default function Header() {
               <div className="w-8 h-8 rounded-full bg-muted/20 animate-pulse"></div>
             </div>
           ) : user && profile ? (
-            <Link href="/profile" className="ml-1 flex items-center">
+            <div className="ml-1 flex items-center">
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-jost font-medium text-xs shadow-sm ${getAvatarColor()}`}>
                 {getInitials()}
               </div>
-            </Link>
+            </div>
           ) : null}
         </div>
       </header>
@@ -438,11 +421,7 @@ export default function Header() {
                     <span className="font-label-lg">Logout</span>
                   </button>
 
-                  <Link
-                    href="/profile"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 bg-white/60 p-3 rounded-2xl hover:bg-white transition-colors"
-                  >
+                  <div className="flex items-center gap-3 bg-white/60 p-3 rounded-2xl">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center font-jost font-medium shrink-0 ${getAvatarColor()}`}>
                       {getInitials()}
                     </div>
@@ -454,7 +433,7 @@ export default function Header() {
                         {profile?.email || user.email}
                       </span>
                     </div>
-                  </Link>
+                  </div>
                 </div>
               )}
             </div>

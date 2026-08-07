@@ -93,7 +93,7 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
     <>
       <Header />
 
-      <main className="bg-background mt-16 md:mt-20 min-h-screen">
+      <main className="bg-background mt-16 md:mt-24 min-h-screen">
         <div className="w-full px-page pt-4 md:pt-6 pb-10 md:pb-14">
 
         {/* Breadcrumbs */}
@@ -112,7 +112,7 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
             desktop, and stacked full-width below the tabs on mobile. */}
         <div className="relative mb-6 md:mb-8">
           <CategoryTabs />
-          <div className="mt-3 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2">
+          <div className="mt-3 md:mt-0 md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2 md:z-20">
             <FiltersPanel categories={categories} facets={facets} />
           </div>
         </div>

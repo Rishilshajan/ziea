@@ -110,11 +110,14 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
           role = prof?.role ?? null;
           const roleLabel = role === 'Admin' ? 'Admin' : 'Customer';
           const name = `${prof?.first_name ?? ''} ${prof?.last_name ?? ''}`.trim();
-          await supabase.from('activity_logs').insert({
+          // Fire-and-forget: the login log + last-seen write must never delay the
+          // redirect. The requests start now and finish in the background (SPA
+          // navigation doesn't abort them).
+          supabase.from('activity_logs').insert({
             user_id: data.user.id,
             type: `${roleLabel} Login`,
             description: `${roleLabel} ${name}`.trim() + ' logged in',
-          });
+          }).then(() => {});
           supabase
             .from('users')
             .update({ last_login_at: new Date().toISOString() })
@@ -126,6 +129,8 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
 
         // Admins land in the portal; everyone else on the storefront. If the role
         // read failed for any reason, fall back to the server post-login gate.
+        // Keep the button in its loading state through navigation (don't flip it
+        // back to "Sign In" while the destination page is still loading).
         if (role === 'Admin') {
           router.push('/admin');
         } else if (role) {
@@ -133,11 +138,12 @@ export default function AuthForm({ initialMode }: AuthFormProps) {
         } else {
           router.push('/auth/post-login');
         }
+        return;
       }
+      setIsLoading(false);
     } catch (error: any) {
       // If user is not found or wrong password, it hits here
       showToast("You are not registered or invalid credentials. Please sign up first.", true);
-    } finally {
       setIsLoading(false);
     }
   };

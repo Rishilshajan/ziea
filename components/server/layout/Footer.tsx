@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FaInstagram, FaWhatsapp, FaGlobe } from "react-icons/fa6";
+import { FaInstagram, FaWhatsapp, FaFacebook } from "react-icons/fa6";
 import NewsletterForm from "@/components/client/home/NewsletterForm";
 import { getCategories } from "@/utils/categories";
 import { WHATSAPP_ORDER_NUMBER } from "@/utils/whatsapp";
@@ -15,9 +15,9 @@ const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_ORDER_NUMBER}?text=${encodeURICo
 
 // Social / contact links. Swap these hrefs for the real accounts.
 const SOCIAL_LINKS = [
-  { label: "Instagram", href: "https://instagram.com/ziea", Icon: FaInstagram },
+  { label: "Instagram", href: "https://www.instagram.com/ziea.in/", Icon: FaInstagram },
   { label: "WhatsApp", href: WHATSAPP_HREF, Icon: FaWhatsapp },
-  { label: "Website", href: "https://ziea.in", Icon: FaGlobe },
+  { label: "Facebook", href: "https://www.facebook.com/61580364240386/about/", Icon: FaFacebook },
 ];
 
 export default async function Footer() {
@@ -139,14 +139,8 @@ export default async function Footer() {
               <ul className="space-y-3 text-[15px] text-white/80">
 
                 <li>
-                  <Link href="/shipping&returns" className="hover:text-white transition-colors">
+                  <Link href="/exchange-policy" className="hover:text-white transition-colors">
                     Shipping & Returns
-                  </Link>
-                </li>
-
-                <li>
-                  <Link href="/size-guide" className="hover:text-white transition-colors">
-                    Size Guide
                   </Link>
                 </li>
 

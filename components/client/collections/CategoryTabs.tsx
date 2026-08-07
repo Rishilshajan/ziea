@@ -42,7 +42,7 @@ export default function CategoryTabs() {
     }`;
 
   return (
-    <div className="flex overflow-x-auto hide-scrollbar gap-3 pt-2 pb-3 bg-background/95 backdrop-blur-sm z-40 md:justify-center">
+    <div className="flex overflow-x-auto hide-scrollbar gap-3 pt-2 pb-3 md:justify-center md:pr-28">
       <button
         onClick={() => router.push("/collections")}
         className={tabClass(!activeCategory)}

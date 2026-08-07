@@ -81,8 +81,9 @@ export default async function AdminPage() {
           <div className="hidden lg:flex justify-end shrink-0">
             <NotificationBell variant="light" />
           </div>
-          <Button variant="auth-social" className="w-full sm:!w-auto px-6">Generate Report</Button>
-          <Button variant="auth-primary" className="w-full sm:!w-auto !py-3.5 !text-sm px-6">Add New Product</Button>
+          <Link href="/admin/products/add" className="w-full sm:w-auto">
+            <Button variant="auth-primary" className="w-full sm:!w-auto !py-3.5 !text-sm px-6">Add New Product</Button>
+          </Link>
         </div>
       </div>
 

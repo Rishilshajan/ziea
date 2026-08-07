@@ -1,6 +1,7 @@
 import React from 'react';
 import { AnalyticsPagination } from '@/components/ui/AnalyticsPagination';
-import OrdersClient, { type Order, ORDER_STATUSES, type OrderStatus } from '@/components/client/admin/OrdersClient';
+import OrdersClient from '@/components/client/admin/OrdersClient';
+import { type Order, ORDER_STATUSES, type OrderStatus } from '@/utils/orders';
 import { createClient } from '@/utils/supabase/server';
 
 export const dynamic = 'force-dynamic';

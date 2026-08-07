@@ -26,7 +26,7 @@ export function orderSubtotal(items: OrderItem[]): number {
 export function buildOrderMessage(items: OrderItem[]): string {
   const lines = items.map(
     (i) =>
-      `• ${i.name} (Code: ${i.code}) — Size ${i.size}, Qty ${i.quantity} — ${rupees(
+      `• ${i.name} (Code: ${i.code}) - Size ${i.size}, Qty ${i.quantity} - ${rupees(
         i.unitPrice * i.quantity,
       )}`,
   );
@@ -41,9 +41,23 @@ export function buildOrderMessage(items: OrderItem[]): string {
   return parts.join("\n");
 }
 
-/** wa.me link with the order message pre-filled. */
+/** wa.me link with the order message pre-filled (to the business number). */
 export function orderHref(items: OrderItem[]): string {
   return `https://wa.me/${WHATSAPP_ORDER_NUMBER}?text=${encodeURIComponent(
     buildOrderMessage(items),
   )}`;
+}
+
+/** Normalize an Indian phone into wa.me digits (adds the 91 country code). */
+export function normalizeWaNumber(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) return `91${digits}`;
+  if (digits.length === 11 && digits.startsWith("0")) return `91${digits.slice(1)}`;
+  return digits; // already has a country code (e.g. 12 digits starting 91)
+}
+
+/** wa.me link to chat with a CUSTOMER on their own number (used by admin). */
+export function customerChatHref(phone: string, text?: string): string {
+  const num = normalizeWaNumber(phone);
+  return text ? `https://wa.me/${num}?text=${encodeURIComponent(text)}` : `https://wa.me/${num}`;
 }

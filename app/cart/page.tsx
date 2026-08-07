@@ -72,7 +72,7 @@ export default async function CartPage() {
     <>
       <Header />
       
-      <main className="bg-background mt-16 md:mt-20">
+      <main className="bg-background mt-16 md:mt-24">
 
         <div className="w-full px-page pt-4 md:pt-6 pb-10 md:pb-14">
 

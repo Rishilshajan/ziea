@@ -13,27 +13,9 @@ import { FaWhatsapp } from "react-icons/fa6";
 import { createClient } from "@/utils/supabase/client";
 import Toast from "@/components/ui/Toast";
 import { useOrders } from "@/components/client/admin/OrdersProvider";
-import { orderHref } from "@/utils/whatsapp";
+import { customerChatHref } from "@/utils/whatsapp";
 import { shortDate, rupees } from "@/utils/format";
-
-export const ORDER_STATUSES = ["Initiated", "Confirmed", "Fulfilled", "Cancelled"] as const;
-export type OrderStatus = (typeof ORDER_STATUSES)[number];
-
-export interface Order {
-  id: string;
-  customer_name: string | null;
-  customer_phone: string | null;
-  product_id: string | null;
-  product_code: string | null;
-  product_name: string | null;
-  size: string | null;
-  quantity: number;
-  unit_price: number;
-  subtotal: number;
-  status: OrderStatus;
-  source: string | null;
-  created_at: string;
-}
+import { ORDER_STATUSES, type OrderStatus, type Order } from "@/utils/orders";
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   Initiated: "bg-amber-50 text-amber-700",
@@ -101,15 +83,15 @@ export default function OrdersClient({
     <>
       <Toast show={toast.show} message={toast.message} error={toast.error} />
 
-      {/* Status tabs */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      {/* Status tabs — single row, horizontally scrollable on mobile */}
+      <div className="flex gap-2 mb-6 overflow-x-auto hide-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
         {ORDER_STATUSES.map((s) => {
           const active = s === status;
           return (
             <Link
               key={s}
               href={`/admin/orders?status=${s}`}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-jost font-medium transition-colors border ${
+              className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-jost font-medium transition-colors border ${
                 active
                   ? "bg-[#2C3829] text-white border-[#2C3829]"
                   : "bg-white text-[#2C3829]/70 border-[#d6c3b3]/50 hover:bg-[#d6c3b3]/20"
@@ -154,13 +136,6 @@ export default function OrdersClient({
         <div className="space-y-3">
           {items.map((o) => {
             const isOpen = expanded === o.id;
-            const waItem = {
-              name: o.product_name ?? "Product",
-              code: o.product_code ?? "—",
-              size: o.size ?? "—",
-              quantity: o.quantity,
-              unitPrice: Number(o.unit_price),
-            };
             return (
               <div
                 key={o.id}
@@ -176,6 +151,11 @@ export default function OrdersClient({
                   <div className="flex-1 min-w-0">
                     <span className="block font-jost font-semibold text-[#211a15] truncate">
                       {o.product_name ?? "Product"}
+                      {o.product_code && (
+                        <span className="ml-2 font-normal text-[12px] text-[#2C3829]/50">
+                          {o.product_code}
+                        </span>
+                      )}
                     </span>
                     <span className="block text-[13px] text-[#2C3829]/70 truncate">
                       {o.customer_name || "Guest"} · Size {o.size ?? "—"} · Qty {o.quantity}
@@ -211,26 +191,35 @@ export default function OrdersClient({
                       <Meta label="Unit" value={rupees(Number(o.unit_price))} />
                     </div>
 
-                    {/* Contact chips */}
+                    {/* Contact chips — reach out to the customer directly */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {o.customer_phone && (
-                        <a
-                          href={`tel:${o.customer_phone}`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#d6c3b3]/50 px-3 py-1.5 text-xs font-jost font-medium text-[#211a15] hover:bg-[#f0ebe3] transition-colors"
-                        >
-                          <MdOutlinePhone className="text-sm shrink-0" />
-                          {o.customer_phone}
-                        </a>
+                      {o.customer_phone ? (
+                        <>
+                          <a
+                            href={`tel:${o.customer_phone}`}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#d6c3b3]/50 px-3 py-1.5 text-xs font-jost font-medium text-[#211a15] hover:bg-[#f0ebe3] transition-colors"
+                          >
+                            <MdOutlinePhone className="text-sm shrink-0" />
+                            {o.customer_phone}
+                          </a>
+                          <a
+                            href={customerChatHref(
+                              o.customer_phone,
+                              `Hi ${o.customer_name || "there"}, thank you for your order with ZIEA — ${o.product_name ?? "your item"} (Code ${o.product_code ?? "—"}, Size ${o.size ?? "—"}, Qty ${o.quantity}). We'd love to confirm the details and arrange payment & delivery.`,
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366]/10 border border-[#25D366]/30 px-3 py-1.5 text-xs font-jost font-medium text-[#1a7a44] hover:bg-[#25D366]/15 transition-colors"
+                          >
+                            <FaWhatsapp className="text-sm shrink-0" />
+                            Message customer on WhatsApp
+                          </a>
+                        </>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-[#2C3829]/5 px-3 py-1.5 text-xs font-jost text-[#2C3829]/50">
+                          No contact number provided (guest order)
+                        </span>
                       )}
-                      <a
-                        href={orderHref([waItem])}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366]/10 border border-[#25D366]/30 px-3 py-1.5 text-xs font-jost font-medium text-[#1a7a44] hover:bg-[#25D366]/15 transition-colors"
-                      >
-                        <FaWhatsapp className="text-sm shrink-0" />
-                        Message on WhatsApp
-                      </a>
                     </div>
 
                     {/* Subtotal + received */}
@@ -246,7 +235,7 @@ export default function OrdersClient({
                       <span className="block text-xs font-jost font-medium text-[#2C3829]/60 mb-2">
                         Update status
                       </span>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex gap-2 overflow-x-auto hide-scrollbar">
                         {ORDER_STATUSES.map((s) => {
                           const active = s === o.status;
                           return (
@@ -255,7 +244,7 @@ export default function OrdersClient({
                               type="button"
                               disabled={active || busy.has(o.id)}
                               onClick={() => changeStatus(o, s)}
-                              className={`px-3 py-1.5 rounded-full text-xs font-jost font-medium border transition-colors ${
+                              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-jost font-medium border transition-colors ${
                                 active
                                   ? `${STATUS_STYLES[s]} border-transparent cursor-default`
                                   : "bg-white text-[#2C3829]/70 border-[#d6c3b3]/50 hover:bg-[#d6c3b3]/20 disabled:opacity-50"

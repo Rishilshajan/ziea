@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { getUserId } from "@/utils/supabase/user";
 import { logProductInteraction } from "@/app/actions/activity";
@@ -8,18 +9,19 @@ import { logProductInteraction } from "@/app/actions/activity";
 /**
  * Toggle a product in the current user's wishlist.
  * Returns { wishlisted } reflecting the new state, or { error: 'unauthenticated' }.
+ *
+ * Identity resolved locally from the JWT (`getUserId`, no Auth-server hop); RLS
+ * enforces per-user ownership. Logging is deferred with `after()`.
  */
 export async function toggleWishlist(productId: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "unauthenticated" as const };
+  const userId = await getUserId();
+  if (!userId) return { error: "unauthenticated" as const };
 
+  const supabase = await createClient();
   const { data: existing } = await supabase
     .from("wishlist_items")
     .select("id")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .eq("product_id", productId)
     .maybeSingle();
 
@@ -31,24 +33,22 @@ export async function toggleWishlist(productId: string) {
 
   await supabase
     .from("wishlist_items")
-    .insert({ user_id: user.id, product_id: productId });
-  await logProductInteraction(productId, "Wishlist");
+    .insert({ user_id: userId, product_id: productId });
+  after(() => logProductInteraction(productId, "Wishlist"));
   revalidatePath("/wishlist");
   return { wishlisted: true };
 }
 
 /** Remove a product from the current user's wishlist. */
 export async function removeWishlistItem(productId: string) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "unauthenticated" as const };
+  const userId = await getUserId();
+  if (!userId) return { error: "unauthenticated" as const };
 
+  const supabase = await createClient();
   await supabase
     .from("wishlist_items")
     .delete()
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .eq("product_id", productId);
   revalidatePath("/wishlist");
   return { success: true };
