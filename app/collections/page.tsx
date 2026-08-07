@@ -8,7 +8,6 @@ import Footer from '../../components/server/layout/Footer';
 import Link from 'next/link';
 import { getFilteredProducts, getProductFacets, type ProductSort } from '@/utils/products';
 import { getCategories } from '@/utils/categories';
-import { getWishlistProductIds } from '@/app/actions/wishlist';
 
 export const metadata: Metadata = {
   title: 'ZIEA - Collections',
@@ -68,9 +67,9 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
 
   const normalizedPage = Number.isNaN(pageNumber) ? undefined : pageNumber;
 
-  // Fetch everything the page needs concurrently instead of waterfalling
-  // facets/categories → products → wishlist across nested components.
-  const [facets, categories, productData, wishlistedIds] = await Promise.all([
+  // Fetch everything the page needs concurrently. Wishlist heart state is
+  // hydrated client-side via WishlistProvider, so no cookie read here.
+  const [facets, categories, productData] = await Promise.all([
     getProductFacets(),
     getCategories(),
     getFilteredProducts({
@@ -87,7 +86,6 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
       materials,
       sort,
     }),
-    getWishlistProductIds(),
   ]);
 
   return (
@@ -121,7 +119,6 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
         <ProductGrid
           items={productData.items}
           total={productData.total}
-          wishlistedIds={wishlistedIds}
           category={category}
           page={normalizedPage}
           q={q}

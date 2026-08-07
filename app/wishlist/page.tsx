@@ -8,8 +8,9 @@ import { formatINR } from '@/utils/price';
 import { MdOutlineFavoriteBorder } from 'react-icons/md';
 
 export const metadata: Metadata = {
-  title: 'ZIEA | My Wishlist',
+  title: 'My Wishlist',
   description: 'A curated collection of your favorite everyday luxuries.',
+  robots: { index: false, follow: false },
 };
 
 // Supabase's generated types can widen a to-one join to an array, so accept both shapes.

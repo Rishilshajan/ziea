@@ -2,24 +2,36 @@
 
 import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { MdOutlineLocalShipping, MdOutlineEco, MdOutlineVerifiedUser } from 'react-icons/md';
+import { MdOutlineLocalShipping, MdOutlineEco, MdOutlineVerifiedUser, MdBolt } from 'react-icons/md';
 import type { ProductSize } from '@/types/product';
 import { QuantityStepper } from '@/components/ui/QuantityStepper';
-import { Button } from '@/components/ui/Button';
 import { addToCart } from '@/app/actions/cart';
 import { notifyCountsChanged } from '@/utils/counts';
+import BuyNowModal from '@/components/client/product/BuyNowModal';
 
 interface ProductActionsProps {
   productId: string;
   sizes: ProductSize[];
+  productName: string;
+  productCode: string;
+  unitPrice: number;
+  imageUrl: string;
 }
 
-export default function ProductActions({ productId, sizes }: ProductActionsProps) {
+export default function ProductActions({
+  productId,
+  sizes,
+  productName,
+  productCode,
+  unitPrice,
+  imageUrl,
+}: ProductActionsProps) {
   const router = useRouter();
   const availableSizes = sizes ?? [];
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
+  const [buyNowOpen, setBuyNowOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const selected = availableSizes.find((s) => s.size === selectedSize) ?? null;
@@ -97,16 +109,36 @@ export default function ProductActions({ productId, sizes }: ProductActionsProps
       </div>
 
       {/* Buttons */}
-      <div className="pt-2 space-y-4">
-        <Button
+      <div className="pt-2 space-y-3">
+        {/* Buy Now — primary express action (opens WhatsApp confirmation) */}
+        <button
           type="button"
-          variant="auth-primary"
+          onClick={() => canAddToCart && setBuyNowOpen(true)}
+          disabled={!canAddToCart}
+          className={`w-full rounded-full py-4 font-jost font-medium text-lg flex items-center justify-center gap-2 transition-all shadow-sm ${
+            canAddToCart
+              ? "bg-[#2C3829] text-white hover:opacity-90 active:scale-[0.98]"
+              : "bg-[#2C3829]/40 text-white/80 cursor-not-allowed"
+          }`}
+        >
+          Buy Now
+        </button>
+
+        {/* Add to Cart — secondary */}
+        <button
+          type="button"
           onClick={handleAddToCart}
           disabled={!canAddToCart || isPending}
-          className={`${!canAddToCart ? "opacity-50 cursor-not-allowed" : ""} ${isAdded ? "!bg-primary" : ""}`}
+          className={`w-full rounded-full py-4 font-jost font-medium text-lg border flex items-center justify-center transition-all ${
+            isAdded
+              ? "bg-primary text-white border-primary"
+              : canAddToCart
+                ? "border-[#2C3829] text-[#2C3829] hover:bg-[#2C3829]/5 active:scale-[0.98]"
+                : "border-[#2C3829]/30 text-[#2C3829]/40 cursor-not-allowed"
+          }`}
         >
           {isAdded ? "Added!" : "Add to Cart"}
-        </Button>
+        </button>
       </div>
 
       {/* Badges */}
@@ -124,6 +156,20 @@ export default function ProductActions({ productId, sizes }: ProductActionsProps
           <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Secure Pay</span>
         </div>
       </div>
+
+      {/* Buy Now confirmation → WhatsApp */}
+      <BuyNowModal
+        open={buyNowOpen}
+        onClose={() => setBuyNowOpen(false)}
+        productId={productId}
+        productName={productName}
+        productCode={productCode}
+        unitPrice={unitPrice}
+        imageUrl={imageUrl}
+        sizes={availableSizes}
+        initialSize={selectedSize ?? ""}
+        initialQuantity={quantity}
+      />
     </div>
   );
 }

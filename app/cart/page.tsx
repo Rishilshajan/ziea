@@ -8,8 +8,9 @@ import { formatINR } from '@/utils/price';
 import { MdOutlineShoppingBag } from 'react-icons/md';
 
 export const metadata: Metadata = {
-  title: 'ZIEA | Shopping Cart',
+  title: 'Shopping Cart',
   description: 'Review your selected items before checkout.',
+  robots: { index: false, follow: false },
 };
 
 // Supabase's generated types can widen a to-one join to an array, so accept both shapes.

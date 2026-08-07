@@ -3,14 +3,15 @@ import Image from "next/image";
 import { FaInstagram, FaWhatsapp, FaGlobe } from "react-icons/fa6";
 import NewsletterForm from "@/components/client/home/NewsletterForm";
 import { getCategories } from "@/utils/categories";
+import { WHATSAPP_ORDER_NUMBER } from "@/utils/whatsapp";
 
 // WhatsApp "click to chat" (wa.me/<countrycode+number>) — no Business API needed.
 // The ?text= param pre-fills the customer's message box so their chat opens
-// ready to send, written from a dress-shopping perspective.
-const WHATSAPP_NUMBER = "918139045083";
+// ready to send, written from a dress-shopping perspective. The number is the
+// single shared constant from utils/whatsapp.ts.
 const WHATSAPP_MESSAGE =
   "Hi ZIEA, I came across your collection and I'd love some help. Could you tell me about availability, sizes, fabric and pricing for your dresses?";
-const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
+const WHATSAPP_HREF = `https://wa.me/${WHATSAPP_ORDER_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
 // Social / contact links. Swap these hrefs for the real accounts.
 const SOCIAL_LINKS = [

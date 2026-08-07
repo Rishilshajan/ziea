@@ -2,14 +2,11 @@ import Link from "next/link";
 import ProductCard from "../../client/product/ProductCard";
 import type { Product } from "@/types/product";
 import { getLatestProducts } from "@/utils/products";
-import { getWishlistProductIds } from "@/app/actions/wishlist";
 
 export default async function CollectionsGrid() {
-  // Cached catalog read + per-user wishlist state, fetched concurrently.
-  const [products, wishlistedIds] = await Promise.all([
-    getLatestProducts(8),
-    getWishlistProductIds(),
-  ]);
+  // Cached catalog read only — wishlist heart state is hydrated client-side via
+  // WishlistProvider, so this stays static (no cookie read → no forced SSR).
+  const products = await getLatestProducts(8);
 
   return (
     <section className="px-page space-y-8 bg-background">
@@ -60,7 +57,6 @@ export default async function CollectionsGrid() {
               cropX={product.images?.[0]?.crop_x ?? 50}
               cropY={product.images?.[0]?.crop_y ?? 50}
               zoom={product.images?.[0]?.zoom ?? 100}
-              initialWishlisted={wishlistedIds.includes(product.id)}
               deliveryDays={product.delivery_days}
             />
           ))}

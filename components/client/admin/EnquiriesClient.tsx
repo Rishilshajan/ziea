@@ -13,6 +13,7 @@ import {
 import { createClient } from "@/utils/supabase/client";
 import Toast from "@/components/ui/Toast";
 import { useEnquiries } from "@/components/client/admin/EnquiriesProvider";
+import { shortDate, fullDate } from "@/utils/format";
 
 export interface Enquiry {
   id: string;
@@ -41,27 +42,6 @@ function typeStyle(type: string | null) {
       className: "bg-[#7A7068]/12 text-[#5c554e]",
     }
   );
-}
-
-const MONTHS_SHORT = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-
-/** Deterministic date ("23 Jul 2026") — same on server and client (UTC parts,
- *  no locale/Date.now), so it never causes a hydration mismatch. */
-function shortDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return `${d.getUTCDate()} ${MONTHS_SHORT[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
-}
-
-/** Deterministic date + time ("23 Jul 2026, 14:39"). Only rendered inside the
- *  expanded panel (client-only), but kept SSR-safe for good measure. */
-function fullDate(dateStr: string) {
-  const d = new Date(dateStr);
-  const hh = String(d.getUTCHours()).padStart(2, "0");
-  const mm = String(d.getUTCMinutes()).padStart(2, "0");
-  return `${shortDate(dateStr)}, ${hh}:${mm}`;
 }
 
 export default function EnquiriesClient({

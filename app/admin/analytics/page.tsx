@@ -159,6 +159,43 @@ export default async function AnalyticsPage() {
         )}
       </Card>
 
+      {/* Orders pipeline */}
+      <Card className="p-6 lg:p-8 mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="font-jost font-semibold text-[#2C3829]">Orders</h2>
+            <p className="text-[#2C3829]/60 text-sm">WhatsApp order pipeline</p>
+          </div>
+          <Link
+            href="/admin/orders"
+            className="text-[#4c623d] text-sm hover:underline shrink-0"
+          >
+            View All &rarr;
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {[
+            { label: "Total", value: data.orders.total, cls: "text-[#2C3829]" },
+            { label: "New", value: data.orders.initiated, cls: "text-amber-600" },
+            { label: "Confirmed", value: data.orders.confirmed, cls: "text-[#4c623d]" },
+            { label: "Fulfilled", value: data.orders.fulfilled, cls: "text-[#2C3829]" },
+            { label: "Cancelled", value: data.orders.cancelled, cls: "text-red-500" },
+          ].map((s) => (
+            <div
+              key={s.label}
+              className="rounded-xl border border-[#d6c3b3]/30 bg-white/60 p-4 text-center"
+            >
+              <p className={`font-jost text-2xl font-bold ${s.cls}`}>
+                {s.value.toLocaleString()}
+              </p>
+              <p className="text-[11px] uppercase tracking-wider text-[#2C3829]/50 mt-1">
+                {s.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
       {/* Activity Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Wishlist Activity */}

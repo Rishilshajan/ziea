@@ -9,9 +9,9 @@ import { getBadgeColor } from "@/utils/badge";
 import { deliveryByLabel } from "@/utils/price";
 import { Button } from "../../ui/Button";
 import SmartImage from "../../ui/SmartImage";
-import { toggleWishlist } from "@/app/actions/wishlist";
 import { addToCart } from "@/app/actions/cart";
 import { notifyCountsChanged } from "@/utils/counts";
+import { useWishlist } from "@/components/client/product/WishlistProvider";
 
 // Standard vivid red for the "liked" wishlist state (common e-commerce heart red).
 const WISHLIST_RED = "#E63946";
@@ -28,29 +28,21 @@ export default function ProductCard({
   cropX = 50,
   cropY = 50,
   zoom = 100,
-  initialWishlisted = false,
   deliveryDays,
 }: ProductCardProps) {
   const deliveryLabel = deliveryByLabel(deliveryDays);
   const router = useRouter();
-  const [isFavorite, setIsFavorite] = useState(initialWishlisted);
+  // Heart state comes from the client WishlistProvider (no server cookie read),
+  // so the grids stay statically renderable.
+  const { isWishlisted, toggle } = useWishlist();
+  const isFavorite = isWishlisted(id);
   const [isAdded, setIsAdded] = useState(false);
   const [, startTransition] = useTransition();
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const next = !isFavorite;
-    setIsFavorite(next); // optimistic
-    startTransition(async () => {
-      const res = await toggleWishlist(id);
-      if (res && "error" in res && res.error === "unauthenticated") {
-        setIsFavorite(!next); // revert
-        router.push("/login");
-        return;
-      }
-      notifyCountsChanged();
-    });
+    toggle(id);
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {

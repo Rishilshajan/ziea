@@ -314,6 +314,28 @@ export const getProductByCode = unstable_cache(
 );
 
 /**
+ * All published product slugs (+ last-modified) for the sitemap and
+ * generateStaticParams. Cached (public client, tagged `products`).
+ */
+export const getAllPublishedSlugs = unstable_cache(
+  async (): Promise<{ code: string; updatedAt: string }[]> => {
+    const supabase = createPublicClient();
+    const { data, error } = await supabase
+      .from("products")
+      .select("product_code, created_at")
+      .eq("is_published", true)
+      .eq("status", "published");
+    if (error) console.error("getAllPublishedSlugs:", error.message);
+    return (data ?? []).map((r: { product_code: string; created_at: string }) => ({
+      code: r.product_code,
+      updatedAt: r.created_at,
+    }));
+  },
+  ["storefront-slugs"],
+  { tags: ["products"], revalidate: 3600 },
+);
+
+/**
  * Related products in the same category (excluding the current one). Cached
  * (public client, tagged `products`, 5-minute fallback) like the rest of the
  * storefront reads — invalidated on admin product changes.

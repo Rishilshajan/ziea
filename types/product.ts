@@ -63,8 +63,6 @@ export interface ProductCardProps {
     cropX?: number;
     cropY?: number;
     zoom?: number;
-    /** Whether this product is already in the signed-in user's wishlist (initial heart state). */
-    initialWishlisted?: boolean;
     /** Delivery lead time in days; the card computes "Deliverable by" as today + this. */
     deliveryDays?: number | null;
 }

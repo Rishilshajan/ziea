@@ -15,9 +15,11 @@ interface SelectProps {
   placeholder?: string;
   allowAdd?: boolean;
   onAdd?: (newOption: string) => void;
+  /** Show the "None" (clear) option at the top of the list. Default true. */
+  allowNone?: boolean;
 }
 
-export function Select({ label, value, onChange, options, placeholder = "Select an option", allowAdd, onAdd }: SelectProps) {
+export function Select({ label, value, onChange, options, placeholder = "Select an option", allowAdd, onAdd, allowNone = true }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [newInput, setNewInput] = useState('');
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -93,15 +95,17 @@ export function Select({ label, value, onChange, options, placeholder = "Select 
               <div className="px-4 py-3 text-sm text-[#2C3829]/50 italic">No options available</div>
             ) : (
               <>
-                <div
-                  className={`px-4 py-2.5 rounded-lg cursor-pointer transition-colors ${!value ? 'bg-[#e5d8ce] font-medium' : 'hover:bg-[#FAF7F2]'}`}
-                  onClick={() => {
-                    onChange('');
-                    setIsOpen(false);
-                  }}
-                >
-                  None
-                </div>
+                {allowNone && (
+                  <div
+                    className={`px-4 py-2.5 rounded-lg cursor-pointer transition-colors ${!value ? 'bg-[#e5d8ce] font-medium' : 'hover:bg-[#FAF7F2]'}`}
+                    onClick={() => {
+                      onChange('');
+                      setIsOpen(false);
+                    }}
+                  >
+                    None
+                  </div>
+                )}
                 {options.map(opt => (
                   <div
                     key={opt.value}

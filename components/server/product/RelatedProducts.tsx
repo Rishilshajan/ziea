@@ -1,7 +1,6 @@
 import React from 'react';
 import ProductCard from '@/components/client/product/ProductCard';
 import { getRelatedProducts } from '@/utils/products';
-import { getWishlistProductIds } from '@/app/actions/wishlist';
 
 interface RelatedProductsProps {
   categoryId: string | null;
@@ -12,8 +11,6 @@ export default async function RelatedProducts({ categoryId, excludeId }: Related
   const products = await getRelatedProducts(categoryId, excludeId);
 
   if (products.length === 0) return null;
-
-  const wishlistedIds = await getWishlistProductIds();
 
   return (
     <div className="w-full space-y-6 mt-24 pt-16 border-t border-[#eee0d6]">
@@ -32,7 +29,6 @@ export default async function RelatedProducts({ categoryId, excludeId }: Related
             cropX={product.images?.[0]?.crop_x ?? 50}
             cropY={product.images?.[0]?.crop_y ?? 50}
             zoom={product.images?.[0]?.zoom ?? 100}
-            initialWishlisted={wishlistedIds.includes(product.id)}
             deliveryDays={product.delivery_days}
           />
         ))}

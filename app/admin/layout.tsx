@@ -5,6 +5,7 @@ import AdminNavigation from '@/components/client/admin/AdminNavigation';
 import AdminNavServer from '@/components/server/admin/AdminNavServer';
 import ActivityNotificationsProvider from '@/components/client/admin/ActivityNotificationsProvider';
 import EnquiriesProvider from '@/components/client/admin/EnquiriesProvider';
+import OrdersProvider from '@/components/client/admin/OrdersProvider';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // Local JWT verification + role claim (no Auth-server round-trip; and no DB
@@ -23,6 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <ActivityNotificationsProvider>
       <EnquiriesProvider>
+      <OrdersProvider>
       <div className="bg-[#F5F0E8] font-body-md text-body-md pb-0 lg:pl-72 min-h-screen">
         {/* Nav profile streams in so it never blocks the page content. The
             fallback renders the full sidebar (just without the avatar). */}
@@ -33,6 +35,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         {/* Main Content Canvas */}
         {children}
       </div>
+      </OrdersProvider>
       </EnquiriesProvider>
     </ActivityNotificationsProvider>
   );

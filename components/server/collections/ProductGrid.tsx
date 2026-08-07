@@ -11,7 +11,6 @@ export const PAGE_SIZE = 32;
 interface ProductGridProps {
   items: Product[];
   total: number;
-  wishlistedIds: string[];
   category?: string;
   page?: number;
   q?: string;
@@ -33,7 +32,6 @@ interface ProductGridProps {
 export default function ProductGrid({
   items,
   total,
-  wishlistedIds,
   category,
   page,
   q,
@@ -102,7 +100,6 @@ export default function ProductGrid({
             cropX={p.images?.[0]?.crop_x ?? 50}
             cropY={p.images?.[0]?.crop_y ?? 50}
             zoom={p.images?.[0]?.zoom ?? 100}
-            initialWishlisted={wishlistedIds.includes(p.id)}
             deliveryDays={p.delivery_days}
           />
         ))}

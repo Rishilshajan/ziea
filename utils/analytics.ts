@@ -52,6 +52,14 @@ export interface AnalyticsData {
   productViews: ProductViewRow[];
   wishlistActivity: ActivityItem[];
   cartAdditions: ActivityItem[];
+  /** WhatsApp order pipeline counts by status. */
+  orders: {
+    total: number;
+    initiated: number;
+    confirmed: number;
+    fulfilled: number;
+    cancelled: number;
+  };
 }
 
 // ── Palette ───────────────────────────────────────────────────────────────────
@@ -279,6 +287,7 @@ export async function getAnalytics(): Promise<AnalyticsData> {
     popularRes,
     wishlistActivityRes,
     cartActivityRes,
+    ordersRes,
     trend,
   ] = await Promise.all([
     supabase.from("products").select("*", { count: "exact", head: true }),
@@ -289,11 +298,14 @@ export async function getAnalytics(): Promise<AnalyticsData> {
     supabase
       .from("wishlist_items")
       .select("product_id, created_at, products(name, images)")
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(200),
     supabase
       .from("cart_items")
       .select("product_id, created_at, products(name, images)")
-      .order("created_at", { ascending: false }),
+      .order("created_at", { ascending: false })
+      .limit(200),
+    supabase.from("orders").select("status"),
     buildInteractionSeries(supabase, "daily", 0),
   ]);
 
@@ -348,8 +360,19 @@ export async function getAnalytics(): Promise<AnalyticsData> {
     "/admin/analytics/cart",
   );
 
+  // Order pipeline counts by status.
+  const orderRows = (ordersRes.data ?? []) as { status: string | null }[];
+  const orders = {
+    total: orderRows.length,
+    initiated: orderRows.filter((o) => o.status === "Initiated").length,
+    confirmed: orderRows.filter((o) => o.status === "Confirmed").length,
+    fulfilled: orderRows.filter((o) => o.status === "Fulfilled").length,
+    cancelled: orderRows.filter((o) => o.status === "Cancelled").length,
+  };
+
   return {
     stats: { totalProducts, totalViews, wishlisted, cartCount },
+    orders,
     trend: {
       range: "daily",
       offset: 0,

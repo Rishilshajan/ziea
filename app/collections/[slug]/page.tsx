@@ -9,13 +9,21 @@ import ProductDetails from '../../../components/server/product/ProductDetails';
 import RelatedProducts from '../../../components/server/product/RelatedProducts';
 import ProductViewTracker from '../../../components/client/product/ProductViewTracker';
 import Footer from '../../../components/server/layout/Footer';
-import { getProductByCode } from '@/utils/products';
+import { getProductByCode, getAllPublishedSlugs } from '@/utils/products';
 import { getCategories } from '@/utils/categories';
 import { resolvePrice } from '@/utils/price';
+import { SITE_NAME, absoluteUrl } from '@/utils/site';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
+
+// Prerender every published product; unknown slugs still render on-demand.
+export async function generateStaticParams() {
+  const slugs = await getAllPublishedSlugs();
+  return slugs.map((s) => ({ slug: s.code }));
+}
+export const dynamicParams = true;
 
 /** Strips HTML tags and collapses whitespace, then truncates to ~160 chars. */
 function toMetaDescription(html: string | null): string {
@@ -29,12 +37,30 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const product = await getProductByCode(params.slug);
 
   if (!product) {
-    return { title: 'ZIEA - Product Not Found' };
+    return { title: 'Product Not Found' };
   }
 
+  const description = toMetaDescription(product.description);
+  const canonical = `/collections/${product.product_code}`;
+  const image = product.images?.[0]?.url;
+
   return {
-    title: `ZIEA - ${product.name}`,
-    description: toMetaDescription(product.description),
+    title: product.name,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: 'website',
+      title: `${product.name} | ${SITE_NAME}`,
+      description,
+      url: absoluteUrl(canonical),
+      images: image ? [{ url: image, alt: product.name }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} | ${SITE_NAME}`,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 
@@ -55,8 +81,34 @@ export default async function ProductDetailPage(props: PageProps) {
 
   const { price, original } = resolvePrice(product.original_price, product.discounted_price);
 
+  // Product structured data (rich results: price, availability, SKU).
+  const priceValue = Number(product.discounted_price ?? product.original_price ?? 0);
+  const inStock = (product.sizes ?? []).some((s) => s.quantity > 0);
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    sku: product.product_code,
+    description: toMetaDescription(product.description),
+    image: (product.images ?? []).map((img) => img.url).filter(Boolean),
+    brand: { '@type': 'Brand', name: SITE_NAME },
+    offers: {
+      '@type': 'Offer',
+      url: absoluteUrl(`/collections/${product.product_code}`),
+      priceCurrency: 'INR',
+      price: priceValue,
+      availability: inStock
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <Header />
       <ProductViewTracker productId={product.id} />
 
@@ -92,7 +144,14 @@ export default async function ProductDetailPage(props: PageProps) {
               description={product.description ?? ''}
               deliveryDays={product.delivery_days}
             />
-            <ProductActions productId={product.id} sizes={product.sizes} />
+            <ProductActions
+              productId={product.id}
+              sizes={product.sizes}
+              productName={product.name}
+              productCode={product.product_code}
+              unitPrice={Number(product.discounted_price ?? product.original_price ?? 0)}
+              imageUrl={product.images?.[0]?.url ?? ''}
+            />
             <ProductDetails
               material={product.material ?? undefined}
               careInstructions={product.care_instructions ?? undefined}

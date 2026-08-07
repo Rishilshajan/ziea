@@ -9,6 +9,7 @@ import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { Button } from '@/components/ui/Button';
 import NotificationBell from '@/components/client/admin/NotificationBell';
 import { useEnquiries } from '@/components/client/admin/EnquiriesProvider';
+import { useOrders } from '@/components/client/admin/OrdersProvider';
 import {
   MdDashboard,
   MdInventory2,
@@ -20,7 +21,8 @@ import {
   MdClose,
   MdOutlineBrandingWatermark,
   MdOutlineInsights,
-  MdOutlineForum
+  MdOutlineForum,
+  MdOutlineShoppingBag
 } from 'react-icons/md';
 
 const AVATAR_COLORS = [
@@ -53,6 +55,7 @@ export default function AdminNavigation({
   const pathname = usePathname();
   const supabase = createClient();
   const { unreadCount: enquiryCount } = useEnquiries();
+  const { newCount: orderCount } = useOrders();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -102,7 +105,11 @@ export default function AdminNavigation({
     { href: "/admin/branding", icon: <MdOutlineBrandingWatermark className="text-xl" />, label: "Branding" },
     { href: "/admin/activity", icon: <MdHistory className="text-xl" />, label: "Activity" },
     { href: "/admin/enquiries", icon: <MdOutlineForum className="text-xl" />, label: "Enquiries" },
+    { href: "/admin/orders", icon: <MdOutlineShoppingBag className="text-xl" />, label: "Orders" },
   ];
+
+  const badgeFor = (href: string) =>
+    href === "/admin/enquiries" ? enquiryCount : href === "/admin/orders" ? orderCount : 0;
 
   return (
     <>
@@ -136,9 +143,9 @@ export default function AdminNavigation({
               >
                 {link.icon}
                 <span>{link.label}</span>
-                {link.href === "/admin/enquiries" && enquiryCount > 0 && (
+                {badgeFor(link.href) > 0 && (
                   <span className="ml-auto min-w-[22px] h-[22px] px-1.5 rounded-full bg-[#7A9268] text-white text-[11px] font-semibold flex items-center justify-center leading-none">
-                    {enquiryCount > 99 ? "99+" : enquiryCount}
+                    {badgeFor(link.href) > 99 ? "99+" : badgeFor(link.href)}
                   </span>
                 )}
               </Link>
