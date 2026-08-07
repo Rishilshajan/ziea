@@ -8,9 +8,9 @@ export default async function CategoryPills() {
   return (
     <section className="px-page">
       {/* Heading */}
-      <h3 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4 md:mb-6">
+      <h2 className="cormorant text-2xl md:text-3xl text-primary-dark mb-4 md:mb-6">
         Our Categories
-      </h3>
+      </h2>
 
       {categories.length > 0 ? (
         <>
@@ -60,9 +60,9 @@ export default async function CategoryPills() {
                   </div>
                   {/* Legibility gradient for the overlaid label */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-                  <h4 className="cormorant absolute inset-x-0 bottom-0 p-5 text-white text-2xl drop-shadow">
+                  <h3 className="cormorant absolute inset-x-0 bottom-0 p-5 text-white text-2xl drop-shadow">
                     {category.name}
-                  </h4>
+                  </h3>
                 </div>
               </Link>
             ))}

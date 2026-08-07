@@ -65,4 +65,6 @@ export interface ProductCardProps {
     zoom?: number;
     /** Delivery lead time in days; the card computes "Deliverable by" as today + this. */
     deliveryDays?: number | null;
+    /** LCP hint: eagerly preload this card's image (use for the first visible row). */
+    priority?: boolean;
 }

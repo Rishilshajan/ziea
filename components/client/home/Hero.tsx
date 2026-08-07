@@ -54,7 +54,7 @@ export default function Hero({ slides: brandingSlides }: { slides?: HeroSlide[] 
               cropY={desktopImg.cropY}
               zoom={desktopImg.zoom}
               sizes="100vw"
-              quality={90}
+              quality={75}
               priority
             />
           </div>
@@ -68,7 +68,7 @@ export default function Hero({ slides: brandingSlides }: { slides?: HeroSlide[] 
               cropY={mobileImg.cropY}
               zoom={mobileImg.zoom}
               sizes="100vw"
-              quality={90}
+              quality={75}
               priority
             />
           </div>
@@ -79,18 +79,22 @@ export default function Hero({ slides: brandingSlides }: { slides?: HeroSlide[] 
 
       {/* Slide navigation dots */}
       {activeSlides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1">
           {activeSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentImageIndex(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                index === currentImageIndex
-                  ? "bg-white w-6"
-                  : "bg-white/50 w-2 hover:bg-white/70"
-              }`}
               aria-label={`Go to slide ${index + 1}`}
-            />
+              className="group flex items-center justify-center p-2"
+            >
+              <span
+                className={`block h-2 rounded-full transition-all duration-300 ${
+                  index === currentImageIndex
+                    ? "bg-white w-6"
+                    : "bg-white/50 w-2 group-hover:bg-white/70"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}

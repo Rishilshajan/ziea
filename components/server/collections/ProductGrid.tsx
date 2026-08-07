@@ -86,7 +86,7 @@ export default function ProductGrid({
   return (
     <div>
       <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10">
-        {items.map((p) => (
+        {items.map((p, idx) => (
           <ProductCard
             key={p.id}
             id={p.id}
@@ -101,6 +101,9 @@ export default function ProductGrid({
             cropY={p.images?.[0]?.crop_y ?? 50}
             zoom={p.images?.[0]?.zoom ?? 100}
             deliveryDays={p.delivery_days}
+            // Preload the first visible row (2-up on mobile) on page 1 so the
+            // LCP product image is the fetchPriority=high image.
+            priority={currentPage <= 1 && idx < 2}
           />
         ))}
       </section>

@@ -59,7 +59,7 @@ export default function NewsletterForm() {
                 <button
                     type="submit"
                     disabled={pending}
-                    className="w-full rounded-full bg-[#99AD75] py-4 text-base font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#869965] disabled:opacity-60"
+                    className="w-full rounded-full bg-[#4c623d] py-4 text-base font-semibold uppercase tracking-wider text-white transition-colors hover:bg-[#3d5031] disabled:opacity-60"
                 >
                     {pending ? "Joining..." : "Join"}
                 </button>

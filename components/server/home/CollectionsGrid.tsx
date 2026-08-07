@@ -12,15 +12,15 @@ export default async function CollectionsGrid() {
     <section className="px-page space-y-8 bg-background">
       {/* Heading */}
       <div className="flex justify-between items-end">
-        <h3 className="cormorant text-2xl md:text-3xl text-primary-dark">
+        <h2 className="cormorant text-2xl md:text-3xl text-primary-dark">
           Latest Collections
-        </h3>
+        </h2>
 
         <Link
           href="/collections"
-          className="font-label-sm text-primary border-b border-primary pb-1"
+          className="font-label-sm text-[#4c623d] border-b border-[#4c623d] pb-1"
         >
-          View All
+          View all collections
         </Link>
       </div>
 

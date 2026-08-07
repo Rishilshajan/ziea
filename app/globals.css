@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-jost: "Jost", sans-serif;
-  --font-cormorant: "Playfair Display", serif;
+  --font-jost: var(--font-jost-google), "Jost", sans-serif;
+  --font-cormorant: var(--font-playfair), "Playfair Display", serif;
 
   --color-primary: #7A9268;
   --color-primary-dark: #2C3829;
@@ -51,35 +51,35 @@
 }
 
 @utility font-display-lg {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-playfair), "Playfair Display", serif;
   font-weight: 400;
   font-size: 3.5rem;
   line-height: 4rem;
 }
 
 @utility font-headline-lg-mobile {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-playfair), "Playfair Display", serif;
   font-weight: 600;
   font-size: 2rem;
   line-height: 2.5rem;
 }
 
 @utility font-body-lg {
-  font-family: "Jost", sans-serif;
+  font-family: var(--font-jost-google), "Jost", sans-serif;
   font-weight: 400;
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
 
 @utility font-body-md {
-  font-family: "Jost", sans-serif;
+  font-family: var(--font-jost-google), "Jost", sans-serif;
   font-weight: 300;
   font-size: 1rem;
   line-height: 1.5rem;
 }
 
 @utility font-label-md {
-  font-family: "Jost", sans-serif;
+  font-family: var(--font-jost-google), "Jost", sans-serif;
   font-weight: 500;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -87,7 +87,7 @@
 }
 
 @utility font-label-lg {
-  font-family: "Jost", sans-serif;
+  font-family: var(--font-jost-google), "Jost", sans-serif;
   font-weight: 500;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -95,7 +95,7 @@
 }
 
 @utility font-label-sm {
-  font-family: "Jost", sans-serif;
+  font-family: var(--font-jost-google), "Jost", sans-serif;
   font-weight: 400;
   font-size: 0.75rem;
   line-height: 1rem;
@@ -103,11 +103,11 @@
 }
 
 @utility cormorant {
-  font-family: "Playfair Display", serif;
+  font-family: var(--font-playfair), "Playfair Display", serif;
 }
 
 @utility jost {
-  font-family: "Jost", sans-serif;
+  font-family: var(--font-jost-google), "Jost", sans-serif;
 }
 
 .hide-scrollbar {

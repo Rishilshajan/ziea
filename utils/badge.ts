@@ -11,22 +11,23 @@
  */
 
 // Brand-palette colours safe for white text (used for custom badges).
+// Each is AA-legible (>=4.5:1) with white text even at the small badge sizes.
 const BADGE_PALETTE = [
-  "#7A9268", // Sage Grove
+  "#546b45", // Sage Grove (AA-darkened)
   "#2C3829", // Deep Forest
-  "#C4856A", // Terracotta
-  "#7A7068", // Warm Mist
+  "#9e5c40", // Terracotta (AA-darkened)
+  "#655d55", // Warm Mist (AA-darkened)
   "#865139", // Warm Brown
-  "#817264", // Taupe
+  "#6b5f52", // Taupe (AA-darkened)
 ] as const;
 
 // Semantic colours for the universal/known badges.
 const KNOWN_BADGE_COLORS: Record<string, string> = {
   "bestseller": "#865139",       // Warm Brown
-  "new": "#7A9268",              // Sage Grove
-  "new arrival": "#7A9268",      // Sage Grove
-  "50% off": "#C4856A",          // Terracotta (sale colour)
-  "sale": "#C4856A",             // Terracotta
+  "new": "#546b45",              // Sage Grove (AA-darkened)
+  "new arrival": "#546b45",      // Sage Grove (AA-darkened)
+  "50% off": "#9e5c40",          // Terracotta (AA-darkened sale colour)
+  "sale": "#9e5c40",             // Terracotta (AA-darkened)
   "limited edition": "#2C3829",  // Deep Forest
 };
 

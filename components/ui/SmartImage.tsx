@@ -48,7 +48,10 @@ export default function SmartImage({
       alt={alt}
       fill
       sizes={sizes}
-      priority={priority}
+      // Next 16: `priority` is deprecated. Preload the LCP image via a <head>
+      // link AND hint fetchPriority=high so Lighthouse's LCP discovery passes.
+      preload={priority || undefined}
+      fetchPriority={priority ? "high" : undefined}
       quality={quality}
       unoptimized={unoptimized}
       className={`object-cover select-none pointer-events-none ${className}`}

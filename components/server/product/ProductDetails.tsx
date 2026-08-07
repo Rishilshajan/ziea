@@ -47,5 +47,7 @@ export default function ProductDetails({
 
   if (items.length === 0) return null;
 
-  return <Accordion items={items} />;
+  // h2 keeps the product-page heading order sequential: page h1 (product name)
+  // → h2 (these detail sections) → h2 (You May Also Like) → h3 (product cards).
+  return <Accordion items={items} headingLevel="h2" />;
 }

@@ -20,7 +20,7 @@ export default function DiscountPercent({
   if (percent <= 0) return null;
 
   return (
-    <span className="font-jost text-sm md:text-base font-semibold text-secondary">
+    <span className="font-jost text-sm md:text-base font-semibold text-[#9e5638]">
       ({percent}% OFF)
     </span>
   );

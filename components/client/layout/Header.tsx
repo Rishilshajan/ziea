@@ -233,7 +233,7 @@ export default function Header() {
 
           <div className="flex-[0.5] flex justify-center items-center shrink-0">
             <Link href="/" aria-label="ZIEA home">
-              <Image src="/Ziea_Logo.png" alt="ZIEA" width={400} height={250} className="h-20 lg:h-28 w-auto object-contain scale-[1.5]" priority />
+              <Image src="/Ziea_Logo.png" alt="ZIEA" width={400} height={250} sizes="200px" className="h-20 lg:h-28 w-auto object-contain scale-[1.5]" />
             </Link>
           </div>
 
@@ -252,7 +252,7 @@ export default function Header() {
             </div>
 
             <div className="flex gap-4">
-              <Link href="/wishlist" className="relative text-text hover:text-primary transition-colors flex items-center">
+              <Link href="/wishlist" aria-label="Wishlist" className="relative text-text hover:text-primary transition-colors flex items-center">
                 <MdOutlineFavoriteBorder className="text-2xl" />
                 {user && wishlistCount > 0 && (
                   <span className="absolute -top-2 -right-2 min-w-[21px] h-[21px] px-1 rounded-full bg-[#7A9268] text-white text-[12px] font-semibold flex items-center justify-center leading-none">
@@ -260,7 +260,7 @@ export default function Header() {
                   </span>
                 )}
               </Link>
-              <Link href="/cart" className="relative text-text hover:text-primary transition-colors flex items-center">
+              <Link href="/cart" aria-label="Cart" className="relative text-text hover:text-primary transition-colors flex items-center">
                 <MdOutlineShoppingBag className="text-2xl" />
                 {user && cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 min-w-[21px] h-[21px] px-1 rounded-full bg-[#7A9268] text-white text-[12px] font-semibold flex items-center justify-center leading-none">
@@ -317,31 +317,27 @@ export default function Header() {
 
       {/* Mobile Header */}
       <header className="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-page h-16 bg-background shadow-sm">
-        <Button variant="icon" onClick={() => setIsMenuOpen(true)} className="z-10">
+        <Button variant="icon" aria-label="Open menu" onClick={() => setIsMenuOpen(true)} className="z-10">
           <MdOutlineMenu className="text-2xl" />
         </Button>
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
           <Link href="/" aria-label="ZIEA home" className="pointer-events-auto">
-            <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} className="h-24 w-auto object-contain scale-[1.8]" priority />
+            <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} sizes="200px" className="h-24 w-auto object-contain scale-[1.8]" />
           </Link>
         </div>
-        <div className="flex gap-1 items-center z-10">
-          <Link href="/wishlist" className="relative">
-            <Button variant="icon" className="p-1">
-              <MdOutlineFavoriteBorder className="text-[22px]" />
-            </Button>
+        <div className="flex gap-2 items-center z-10">
+          <Link href="/wishlist" aria-label="Wishlist" className="relative flex items-center justify-center p-2 text-[#2C3829] active:scale-95 transition-transform">
+            <MdOutlineFavoriteBorder className="text-[22px]" />
             {user && wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7A9268] text-white text-[10px] font-semibold flex items-center justify-center leading-none">
+              <span className="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7A9268] text-white text-[10px] font-semibold flex items-center justify-center leading-none">
                 {wishlistCount > 99 ? '99+' : wishlistCount}
               </span>
             )}
           </Link>
-          <Link href="/cart" className="relative">
-            <Button variant="icon" className="p-1">
-              <MdOutlineShoppingBag className="text-[22px]" />
-            </Button>
+          <Link href="/cart" aria-label="Cart" className="relative flex items-center justify-center p-2 text-[#2C3829] active:scale-95 transition-transform">
+            <MdOutlineShoppingBag className="text-[22px]" />
             {user && cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7A9268] text-white text-[10px] font-semibold flex items-center justify-center leading-none">
+              <span className="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7A9268] text-white text-[10px] font-semibold flex items-center justify-center leading-none">
                 {cartCount > 99 ? '99+' : cartCount}
               </span>
             )}
@@ -369,7 +365,7 @@ export default function Header() {
           /> 
           <div className="relative w-72 bg-[#E8EDE5] h-full shadow-2xl flex flex-col px-4 pt-2 transform transition-transform animate-in slide-in-from-left duration-300">
             <div className="flex items-center justify-center mb-4 border-b border-border/60">
-              <Image src="/ZIEA_Splash2.png" alt="ZIEA" width={500} height={500} className="h-24 w-auto object-contain" priority />
+              <Image src="/ZIEA_Splash2.png" alt="ZIEA" width={500} height={500} className="h-24 w-auto object-contain" />
             </div>
 
             <nav className="flex flex-col gap-1">

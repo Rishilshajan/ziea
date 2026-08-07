@@ -12,10 +12,17 @@ interface AccordionProps {
   items: AccordionItem[];
   /** Index of the item that should be open on first render. */
   defaultOpen?: number;
+  /**
+   * Semantic heading level wrapping each accordion trigger. Defaults to h3.
+   * Set to "h2" when the accordion sits directly under the page h1 so the
+   * document heading order stays sequential (no skipped levels).
+   */
+  headingLevel?: "h2" | "h3" | "h4";
 }
 
 /** Collapsible sections with brand styling. Lives inside the product info column. */
-export function Accordion({ items, defaultOpen }: AccordionProps) {
+export function Accordion({ items, defaultOpen, headingLevel = "h3" }: AccordionProps) {
+  const Heading = headingLevel;
   const [openIndex, setOpenIndex] = useState<number | null>(
     defaultOpen ?? null,
   );
@@ -28,7 +35,7 @@ export function Accordion({ items, defaultOpen }: AccordionProps) {
         const buttonId = `accordion-button-${idx}`;
         return (
           <div key={idx} className="border-b border-border">
-            <h3>
+            <Heading>
               <button
                 type="button"
                 id={buttonId}
@@ -47,7 +54,7 @@ export function Accordion({ items, defaultOpen }: AccordionProps) {
                   }`}
                 />
               </button>
-            </h3>
+            </Heading>
             {isOpen && (
               <div
                 id={panelId}

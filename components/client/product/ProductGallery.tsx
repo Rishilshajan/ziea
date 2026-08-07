@@ -14,11 +14,13 @@ function CroppedImage({
   alt,
   priority,
   sizes,
+  quality,
 }: {
   image: ProductImage;
   alt: string;
   priority?: boolean;
   sizes: string;
+  quality?: number;
 }) {
   return (
     <SmartImage
@@ -29,6 +31,7 @@ function CroppedImage({
       zoom={image.zoom ?? 100}
       sizes={sizes}
       priority={priority}
+      quality={quality}
     />
   );
 }
@@ -59,7 +62,7 @@ export default function ProductGallery({ images }: ProductGalleryProps) {
           the matching 4:5 width. */}
       <div className="relative w-full aspect-[4/5] md:w-auto md:h-[600px] xl:h-[680px] rounded-xl overflow-hidden bg-[#eee0d6]/30 shadow-sm">
         {active && (
-          <CroppedImage image={active} alt="Product Main Image" priority sizes="(min-width: 768px) 480px, 100vw" />
+          <CroppedImage image={active} alt="Product Main Image" priority quality={68} sizes="(min-width: 768px) 480px, 100vw" />
         )}
       </div>
 

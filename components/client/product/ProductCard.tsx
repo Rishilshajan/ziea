@@ -29,6 +29,7 @@ export default function ProductCard({
   cropY = 50,
   zoom = 100,
   deliveryDays,
+  priority = false,
 }: ProductCardProps) {
   const deliveryLabel = deliveryByLabel(deliveryDays);
   const router = useRouter();
@@ -74,6 +75,7 @@ export default function ProductCard({
             cropX={cropX}
             cropY={cropY}
             zoom={zoom}
+            priority={priority}
             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           />
         </div>
@@ -121,9 +123,9 @@ export default function ProductCard({
 
       {/* Product Details */}
       <div className="space-y-1">
-        <h4 className="font-label-md text-text line-clamp-2">
+        <h3 className="font-label-md text-text line-clamp-2">
           {title}
-        </h4>
+        </h3>
 
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-lg font-semibold text-text">
@@ -131,7 +133,7 @@ export default function ProductCard({
           </span>
 
           {originalPrice > discountedPrice && (
-            <span className="text-sm text-gray-400 line-through">
+            <span className="text-sm text-gray-600 line-through">
               ₹ {originalPrice.toLocaleString("en-IN")}
             </span>
           )}

@@ -116,6 +116,7 @@ export default async function CollectionsPage({ searchParams }: CollectionsPageP
           </div>
         </div>
 
+        <h2 className="sr-only">Products</h2>
         <ProductGrid
           items={productData.items}
           total={productData.total}

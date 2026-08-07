@@ -145,15 +145,15 @@ export default function ProductActions({
       <div className="flex justify-between items-center py-4 border-b border-[#eee0d6]">
         <div className="flex flex-col items-center gap-1">
           <MdOutlineLocalShipping className="text-[#4c623d]" />
-          <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Free Delivery</span>
+          <span className="text-[10px] text-[#5c5349] uppercase tracking-wider">Free Delivery</span>
         </div>
         <div className="flex flex-col items-center gap-1">
           <MdOutlineEco className="text-[#4c623d]" />
-          <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Eco-Friendly</span>
+          <span className="text-[10px] text-[#5c5349] uppercase tracking-wider">Eco-Friendly</span>
         </div>
         <div className="flex flex-col items-center gap-1">
           <MdOutlineVerifiedUser className="text-[#4c623d]" />
-          <span className="text-[10px] text-[#74796e] uppercase tracking-wider">Secure Pay</span>
+          <span className="text-[10px] text-[#5c5349] uppercase tracking-wider">Secure Pay</span>
         </div>
       </div>
 

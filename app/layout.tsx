@@ -1,6 +1,25 @@
 import type { Metadata, Viewport } from "next";
+import { Playfair_Display, Jost } from "next/font/google";
 import "./globals.css";
 import WishlistProvider from "@/components/client/product/WishlistProvider";
+
+// Self-hosted, preloaded, non-render-blocking fonts (replaces the Google Fonts
+// <link>). Exposed as CSS variables that globals.css maps onto the "Playfair
+// Display"/"Jost" family names the components already use.
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-playfair",
+});
+
+const jost = Jost({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500"],
+  variable: "--font-jost-google",
+});
 import {
   SITE_URL,
   SITE_NAME,
@@ -69,11 +88,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light antialiased">
+    <html
+      lang="en"
+      className={`light antialiased ${playfair.variable} ${jost.variable}`}
+    >
       <head>
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link crossOrigin="anonymous" href="https://fonts.gstatic.com" rel="preconnect" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+        {/* Warm up the connection to the image-storage origin so the optimizer's
+            upstream fetch of the LCP product image starts sooner. */}
+        <link rel="preconnect" href="https://igzgiyulxkvkrjymisqy.supabase.co" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://igzgiyulxkvkrjymisqy.supabase.co" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

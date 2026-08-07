@@ -2,6 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Serve modern, smaller formats first (AVIF then WebP) to cut LCP image bytes.
+    formats: ["image/avif", "image/webp"],
+    // Next 16 requires an explicit qualities allowlist (default is [75]).
+    // 68 is used for large hero/LCP imagery to trim bytes with no visible loss.
+    qualities: [68, 75],
     remotePatterns: [
       {
         protocol: "https",
