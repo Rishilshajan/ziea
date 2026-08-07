@@ -3,7 +3,8 @@ import Header from "@/components/client/layout/Header";
 import Footer from "@/components/server/layout/Footer";
 
 export const metadata = {
-    title: "Exchange Policy | Ziea Clothing",
+    title: "Exchange Policy",
+    alternates: { canonical: "/exchange-policy" },
 };
 
 export default function PrivacyPolicyPage() {

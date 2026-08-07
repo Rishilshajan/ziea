@@ -9,9 +9,10 @@ import ContactForm from "../../components/client/contact/ContactForm";
 import ContactInfo from "../../components/server/contact/ContactInfo";
 
 export const metadata: Metadata = {
-  title: "Connect With Us | ZIEA",
+  title: "Connect With Us",
   description:
     "Reach out for inquiries, collaborations, or simply to share your thoughts on natural luxury.",
+  alternates: { canonical: "/contact-us" },
 };
 
 export default function ContactPage() {

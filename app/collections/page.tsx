@@ -10,8 +10,9 @@ import { getFilteredProducts, getProductFacets, type ProductSort } from '@/utils
 import { getCategories } from '@/utils/categories';
 
 export const metadata: Metadata = {
-  title: 'ZIEA - Collections',
+  title: 'Collections',
   description: 'Experience the gentle embrace of Kerala\'s heritage. Our collections are crafted from the finest natural fibers, designed for moments of tranquility.',
+  alternates: { canonical: '/collections' },
 };
 
 interface CollectionsPageProps {

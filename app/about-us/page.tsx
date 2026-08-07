@@ -12,8 +12,9 @@ import SmartImage from '../../components/ui/SmartImage';
 import { getBranding } from '@/utils/branding.server';
 
 export const metadata: Metadata = {
-  title: 'ZIEA | Our Heritage',
+  title: 'Our Heritage',
   description: 'A tribute to slow living, inspired by the gentle rhythm of Kerala\'s heart.',
+  alternates: { canonical: '/about-us' },
 };
 
 const FALLBACK_HERO = {

@@ -3,7 +3,8 @@ import Header from "@/components/client/layout/Header";
 import Footer from "@/components/server/layout/Footer";
 
 export const metadata = {
-    title: "Privacy Policy | Ziea Clothing",
+    title: "Privacy Policy",
+    alternates: { canonical: "/privacy-policy" },
 };
 
 export default function PrivacyPolicyPage() {

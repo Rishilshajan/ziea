@@ -45,7 +45,9 @@ export const metadata: Metadata = {
     "handcrafted clothing",
     "premium women's fashion",
   ],
-  alternates: { canonical: "/" },
+  // NOTE: no global `alternates.canonical` here — a root canonical is inherited
+  // by every child page, making them all canonicalize to "/". Each page sets its
+  // own self-referential canonical instead.
   openGraph: {
     type: "website",
     siteName: SITE_NAME,

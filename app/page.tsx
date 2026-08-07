@@ -6,6 +6,11 @@ import StoryBanner from "../components/server/home/StoryBanner";
 //import JournalSection from "../components/server/home/JournalSection";
 import Footer from "../components/server/layout/Footer";
 import { getBranding } from "@/utils/branding.server";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const { home } = await getBranding();
