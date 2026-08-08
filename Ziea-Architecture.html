@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZIEA — System Architecture</title>
+<style>
+  :root{
+    --sage:#7A9268; --sage-600:#647b53; --sage-light:#A8BC9A; --sage-pale:#D4DFD0;
+    --deep:#2C3829; --ink:#2C3829; --muted:#7A7068;
+    --bg:#F5F0E8; --card:#FDFAF6; --border:#e2dccf; --soft:#EDE6D8;
+    --brand-ink:#F5F0E8; --terra:#C4856A; --blush:#E8D5C4;
+    --green:#3f6b3f; --green-bg:#e7f0e2;
+    --red:#b2503a; --red-bg:#f7e7e0;
+    --amber:#a6690a; --amber-bg:#f6ecd8;
+    --blue:#4a6b8a; --blue-bg:#e6edf3;
+    --purple:#6d5f8a; --purple-bg:#ece7f2;
+    --db:#7A7068; --db-bg:#eae4da;
+    --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    --sans:"Jost","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --serif:"Playfair Display","Cormorant Garamond",Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.62;font-size:15.5px}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* Header */
+  header.hero{background:linear-gradient(135deg,#2C3829 0%,#3a4a35 100%);color:#fff;padding:58px 0 48px;border-bottom:5px solid var(--sage)}
+  .hero .badge{display:inline-block;background:var(--sage);color:#fff;font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:6px 14px;border-radius:20px}
+  .hero h1{margin:18px 0 10px;font-family:var(--serif);font-size:46px;line-height:1.1;font-weight:500;letter-spacing:.04em}
+  .hero h1 span{color:var(--sage-light)}
+  .hero p{margin:0;color:#d8ddd2;max-width:760px;font-size:16.5px;font-weight:300}
+  .hero .meta{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px}
+  .hero .meta span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 12px;font-size:12.5px;color:#e9ede5}
+
+  /* Layout */
+  .layout{display:grid;grid-template-columns:240px 1fr;gap:40px;margin-top:38px}
+  nav.toc{position:sticky;top:20px;align-self:start;font-size:13px;max-height:calc(100vh - 40px);overflow-y:auto}
+  nav.toc h4{margin:0 0 10px;text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted)}
+  nav.toc a{display:block;color:var(--muted);text-decoration:none;padding:5px 10px;border-radius:6px;border-left:2px solid transparent}
+  nav.toc a:hover{background:var(--soft);color:var(--ink);border-left-color:var(--sage)}
+  main{min-width:0}
+
+  section{margin-bottom:48px;scroll-margin-top:20px}
+  h2{font-family:var(--serif);font-size:27px;font-weight:500;letter-spacing:.02em;margin:0 0 8px;padding-bottom:12px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:12px}
+  h2 .num{background:var(--sage);color:#fff;font-family:var(--sans);font-size:14px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;font-weight:600;flex:none}
+  h3{font-family:var(--serif);font-size:20px;margin:28px 0 8px;font-weight:500;color:var(--deep)}
+  p{margin:10px 0}
+  .lead{font-size:17px;color:#3a4038;font-weight:300}
+
+  /* Cards & callouts */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 14px rgba(44,56,41,.05)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .mini{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .mini .k{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+  .mini .v{font-size:15px;margin-top:5px}
+
+  .metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center}
+  .metric .score{font-family:var(--serif);font-size:40px;font-weight:600;line-height:1}
+  .metric .score.good{color:var(--green)} .metric .score.mid{color:var(--amber)}
+  .metric .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:8px;font-weight:600}
+  .metric .sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+  .callout{border-radius:12px;padding:14px 18px;margin:16px 0;border:1px solid;display:flex;gap:12px}
+  .callout .ic{font-size:20px;line-height:1.4;flex:none}
+  .callout.info{background:var(--blue-bg);border-color:#cdd9e3}
+  .callout.warn{background:var(--amber-bg);border-color:#ecdcba}
+  .callout.ok{background:var(--green-bg);border-color:#c6ddba}
+  .callout.tip{background:var(--purple-bg);border-color:#d9d0e6}
+  .callout b{color:var(--ink)}
+
+  /* Tables */
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.6px;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  th{background:var(--deep);color:#fff;text-align:left;padding:11px 14px;font-weight:500;font-size:12.5px;letter-spacing:.02em}
+  td{padding:10px 14px;border-top:1px solid var(--border);vertical-align:top}
+  tr:nth-child(even) td{background:#fbf8f2}
+  td code,th code{white-space:nowrap}
+  code{font-family:var(--mono);background:#efe9dd;padding:2px 6px;border-radius:5px;font-size:12.6px;color:#8a5a3c}
+  .tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.03em}
+  .tag.core{background:var(--purple-bg);color:var(--purple)}
+  .tag.integ{background:var(--blue-bg);color:var(--blue)}
+  .tag.fe{background:var(--green-bg);color:var(--green)}
+  .tag.act{background:var(--amber-bg);color:var(--amber)}
+  .tag.db{background:var(--db-bg);color:var(--db)}
+  .tag.stat{background:var(--sage-pale);color:var(--sage-600)}
+
+  /* Code blocks */
+  pre{background:#26302380;background:#232b21;color:#e9ede5;padding:18px 20px;border-radius:12px;overflow-x:auto;font-family:var(--mono);font-size:12.8px;line-height:1.65;margin:16px 0}
+  pre .c{color:#8a9584}
+  pre .k{color:#b6cba3}
+  pre .s{color:#d9b48f}
+  pre .n{color:#cbb0d8}
+
+  /* Diagrams */
+  figure{margin:22px 0;text-align:center}
+  figure svg{max-width:100%;height:auto;border:1px solid var(--border);border-radius:14px;background:var(--card);padding:14px}
+  figcaption{font-size:12.5px;color:var(--muted);margin-top:9px;font-style:italic}
+
+  .steps{counter-reset:step;list-style:none;padding:0;margin:16px 0}
+  .steps li{position:relative;padding:12px 14px 12px 54px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:14px;top:50%;transform:translateY(-50%);background:var(--sage);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 13px;font-size:13px;margin:3px 4px 3px 0}
+  .swatch-row{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+  .sw{border-radius:11px;overflow:hidden;border:1px solid var(--border);width:150px;background:var(--card)}
+  .sw .chip{height:64px}
+  .sw .meta{padding:9px 11px}
+  .sw .nm{font-family:var(--serif);font-size:15px;color:var(--deep)}
+  .sw .hx{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+  .sw .ro{font-size:10.5px;color:var(--muted);margin-top:2px}
+
+  hr{border:none;border-top:1px solid var(--border);margin:38px 0}
+  footer{background:#232b21;color:#aab3a2;padding:30px 0;font-size:13px;margin-top:44px;border-top:4px solid var(--sage)}
+  footer a{color:var(--sage-light);text-decoration:none}
+  footer b{color:#fff}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}nav.toc{position:static;max-height:none}.grid2,.grid3,.grid4{grid-template-columns:1fr}.grid4{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">System Architecture</span>
+    <h1>ZIEA <span>— How It's Built</span></h1>
+    <p>An end-to-end architecture reference for the ZIEA storefront &amp; admin console — data flow, the Supabase data model, caching, authentication, image storage, activity tracking, SEO, and the design system. Every table name, endpoint, and token flow below was read from source.</p>
+    <div class="meta">
+      <span>🧵 ZIEA — Premium Kerala Women's Wear</span>
+      <span>⚙️ Next.js 16 · React 19 · Supabase · Tailwind v4</span>
+      <span>🌐 <code style="color:#fff;background:none;padding:0">ziea.vercel.app</code></span>
+      <span>📅 Aug 2026 · branch <code style="color:#fff;background:none;padding:0">master</code></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<div class="layout">
+
+  <nav class="toc">
+    <h4>Contents</h4>
+    <a href="#s1">1 · System Overview</a>
+    <a href="#s2">2 · Live Quality Metrics</a>
+    <a href="#s3">3 · Customer Rendering &amp; Data Flow</a>
+    <a href="#s4">4 · Supabase Data Model</a>
+    <a href="#s5">5 · Data APIs &amp; Server Actions</a>
+    <a href="#s6">6 · Caching Architecture</a>
+    <a href="#s7">7 · Authentication &amp; Tokens</a>
+    <a href="#s8">8 · Storefront Sections</a>
+    <a href="#s9">9 · WhatsApp Order Flow</a>
+    <a href="#s10">10 · Admin Console</a>
+    <a href="#s11">11 · Image &amp; Content Storage</a>
+    <a href="#s12">12 · Activity Tracking</a>
+    <a href="#s13">13 · SEO Architecture</a>
+    <a href="#s14">14 · Design System</a>
+    <a href="#s15">15 · Summary</a>
+  </nav>
+
+  <main>
+
+    <!-- ===================== 1 · OVERVIEW ===================== -->
+    <section id="s1">
+      <h2><span class="num">1</span> System Overview</h2>
+      <p class="lead">ZIEA is a premium women's-wear storefront for the Kerala market, built as a single Next.js 16 App-Router application with a Supabase backend. One codebase serves two audiences: a <b>public storefront</b> (mostly statically rendered for speed) and a private <b>admin console</b> (fully dynamic, role-gated).</p>
+
+      <div class="grid3">
+        <div class="mini"><div class="k">Framework</div><div class="v">Next.js 16 (App Router, Turbopack), React 19 Server Components</div></div>
+        <div class="mini"><div class="k">Backend</div><div class="v">Supabase — Postgres, Auth (JWT), Realtime, Row-Level Security</div></div>
+        <div class="mini"><div class="k">Styling</div><div class="v">Tailwind v4 <code>@theme</code> tokens · <code>next/font</code> (Playfair + Jost)</div></div>
+        <div class="mini"><div class="k">Media / CDN</div><div class="v">Hostinger filesystem CDN (<code>public_html/cdn</code>) served via a Node route</div></div>
+        <div class="mini"><div class="k">Ordering</div><div class="v">WhatsApp click-to-chat (<code>wa.me</code>) — order logged in DB, no payment gateway</div></div>
+        <div class="mini"><div class="k">Hosting</div><div class="v"><code>ziea.vercel.app</code> today; migrating to Hostinger for storage</div></div>
+      </div>
+
+      <div class="callout warn"><div class="ic">⚠️</div><div><b>Not the Next.js you know.</b> This app runs Next.js 16, whose middleware file is renamed <code>proxy.ts</code>, whose <code>params</code>/<code>searchParams</code> are async Promises, and where <code>next/image</code>'s <code>priority</code> prop is deprecated in favour of <code>preload</code>+<code>fetchPriority</code>. All patterns below reflect the v16 conventions.</div></div>
+
+      <figure>
+        <svg viewBox="0 0 840 320" xmlns="http://www.w3.org/2000/svg" font-family="Jost,sans-serif">
+          <defs><marker id="arr1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7A7068"/></marker></defs>
+          <!-- clients -->
+          <rect x="30" y="30" width="170" height="86" rx="13" fill="#e7f0e2" stroke="#3f6b3f" stroke-width="1.6"/>
+          <text x="115" y="66" text-anchor="middle" font-size="14" font-weight="700">👗 Shopper</text>
+          <text x="115" y="88" text-anchor="middle" font-size="11.5" fill="#5b6470">Storefront (mostly static)</text>
+          <rect x="30" y="200" width="170" height="86" rx="13" fill="#ece7f2" stroke="#6d5f8a" stroke-width="1.6"/>
+          <text x="115" y="236" text-anchor="middle" font-size="14" font-weight="700">🛠️ Admin</text>
+          <text x="115" y="258" text-anchor="middle" font-size="11.5" fill="#5b6470">Console (dynamic, gated)</text>
+          <!-- next app -->
+          <rect x="300" y="70" width="230" height="176" rx="15" fill="#F5F0E8" stroke="#7A9268" stroke-width="2"/>
+          <text x="415" y="98" text-anchor="middle" font-size="14" font-weight="800" fill="#2C3829">Next.js 16 App</text>
+          <rect x="320" y="112" width="190" height="34" rx="8" fill="#fff" stroke="#d4dfd0"/>
+          <text x="415" y="134" text-anchor="middle" font-size="11.5">Server Components + Actions</text>
+          <rect x="320" y="152" width="190" height="34" rx="8" fill="#fff" stroke="#d4dfd0"/>
+          <text x="415" y="174" text-anchor="middle" font-size="11.5"><tspan font-family="SF Mono,monospace">unstable_cache</tspan> layer</text>
+          <rect x="320" y="192" width="190" height="34" rx="8" fill="#fff" stroke="#d4dfd0"/>
+          <text x="415" y="214" text-anchor="middle" font-size="11.5"><tspan font-family="SF Mono,monospace">proxy.ts</tspan> (session refresh)</text>
+          <!-- supabase -->
+          <rect x="630" y="40" width="180" height="108" rx="13" fill="#232b21"/>
+          <text x="720" y="72" text-anchor="middle" font-size="13.5" font-weight="800" fill="#A8BC9A">🗄️ Supabase</text>
+          <text x="720" y="94" text-anchor="middle" font-size="11" fill="#d8ddd2">Postgres · Auth · Realtime</text>
+          <text x="720" y="112" text-anchor="middle" font-size="11" fill="#d8ddd2">Row-Level Security</text>
+          <text x="720" y="130" text-anchor="middle" font-size="11" fill="#d8ddd2">10 core tables</text>
+          <!-- cdn -->
+          <rect x="630" y="176" width="180" height="86" rx="13" fill="#f6ecd8" stroke="#a6690a" stroke-width="1.6"/>
+          <text x="720" y="210" text-anchor="middle" font-size="13.5" font-weight="700">🖼️ Hostinger CDN</text>
+          <text x="720" y="232" text-anchor="middle" font-size="11" fill="#5b6470"><tspan font-family="SF Mono,monospace">public_html/cdn</tspan></text>
+          <!-- arrows -->
+          <line x1="200" y1="73" x2="298" y2="120" stroke="#7A7068" stroke-width="1.8" marker-end="url(#arr1)"/>
+          <line x1="200" y1="243" x2="298" y2="196" stroke="#7A7068" stroke-width="1.8" marker-end="url(#arr1)"/>
+          <line x1="530" y1="130" x2="628" y2="100" stroke="#7A7068" stroke-width="1.8" marker-end="url(#arr1)"/>
+          <line x1="530" y1="200" x2="628" y2="210" stroke="#7A7068" stroke-width="1.8" marker-end="url(#arr1)"/>
+        </svg>
+        <figcaption>Fig 1 — Two audiences, one Next.js app, one Supabase project. Storefront reads flow through a cached, cookie-less path; the admin console writes directly and invalidates caches by tag.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ===================== 2 · METRICS ===================== -->
+    <section id="s2">
+      <h2><span class="num">2</span> Live Quality Metrics</h2>
+      <p class="lead">Lighthouse run against the live <code>ziea.vercel.app</code> home page (headless Chrome, Aug 2026). Accessibility, Best-Practices and SEO are perfect on both form factors; performance is strong and CLS is a flat zero.</p>
+
+      <h3>Mobile</h3>
+      <div class="grid4">
+        <div class="metric"><div class="score mid">85</div><div class="lbl">Performance</div></div>
+        <div class="metric"><div class="score good">100</div><div class="lbl">Accessibility</div></div>
+        <div class="metric"><div class="score good">100</div><div class="lbl">Best Practices</div></div>
+        <div class="metric"><div class="score good">100</div><div class="lbl">SEO</div></div>
+      </div>
+      <h3>Desktop</h3>
+      <div class="grid4">
+        <div class="metric"><div class="score mid">88</div><div class="lbl">Performance</div></div>
+        <div class="metric"><div class="score good">100</div><div class="lbl">Accessibility</div></div>
+        <div class="metric"><div class="score good">100</div><div class="lbl">Best Practices</div></div>
+        <div class="metric"><div class="score good">100</div><div class="lbl">SEO</div></div>
+      </div>
+
+      <table>
+        <tr><th>Core Web Vital</th><th>Mobile</th><th>Desktop</th><th>Meaning</th></tr>
+        <tr><td>First Contentful Paint</td><td><code>1.3 s</code></td><td><code>0.7 s</code></td><td>First text/image painted</td></tr>
+        <tr><td>Largest Contentful Paint</td><td><code>3.3 s</code></td><td><code>1.3 s</code></td><td>Hero image painted (LCP element)</td></tr>
+        <tr><td>Total Blocking Time</td><td><code>10 ms</code></td><td><code>0 ms</code></td><td>Main thread almost never blocked</td></tr>
+        <tr><td>Cumulative Layout Shift</td><td><code>0</code></td><td><code>0</code></td><td>No visual jank — fixed aspect ratios everywhere</td></tr>
+        <tr><td>Speed Index</td><td><code>7.5 s</code></td><td><code>3.2 s</code></td><td>Visual completeness rate (hero carousel keeps painting)</td></tr>
+      </table>
+      <div class="callout ok"><div class="ic">✅</div><div><b>Zero CLS &amp; near-zero TBT</b> come directly from architecture choices: every image sits in a fixed-aspect frame (<code>SmartImage</code>), and the storefront ships almost no client JS on the critical path because grids render on the server.</div></div>
+    </section>
+
+    <!-- ===================== 3 · RENDERING ===================== -->
+    <section id="s3">
+      <h2><span class="num">3</span> Customer Rendering &amp; Data Flow</h2>
+      <p class="lead">The golden rule: <b>reading a cookie forces dynamic rendering</b>. Pages that only need catalog data go through a cookie-less cached client and stay static/ISR; pages that need "who is this user" (cart, wishlist) read cookies and render dynamically.</p>
+
+      <table>
+        <tr><th>Page</th><th>File</th><th>Data source (table)</th><th>Render</th></tr>
+        <tr><td>Home</td><td><code>app/page.tsx</code></td><td><code>branding_assets</code>, <code>categories</code>, <code>products</code></td><td><span class="tag stat">Static / ISR</span></td></tr>
+        <tr><td>Collections list</td><td><code>app/collections/page.tsx</code></td><td><code>products</code>, <code>categories</code> (facets)</td><td><span class="tag stat">Static / ISR</span></td></tr>
+        <tr><td>Product detail</td><td><code>app/collections/[slug]/page.tsx</code></td><td><code>products</code> + related</td><td><span class="tag stat">Prerendered</span> via <code>generateStaticParams</code></td></tr>
+        <tr><td>About</td><td><code>app/about-us/page.tsx</code></td><td><code>branding_assets</code> (About)</td><td><span class="tag stat">Static / ISR</span></td></tr>
+        <tr><td>Contact</td><td><code>app/contact-us/page.tsx</code></td><td>none (client form)</td><td><span class="tag stat">Static</span></td></tr>
+        <tr><td>Login / Signup</td><td><code>app/login</code>, <code>app/signup</code></td><td><code>branding_assets</code> (Auth)</td><td><span class="tag stat">Static / ISR</span></td></tr>
+        <tr><td>Cart</td><td><code>app/cart/page.tsx</code></td><td><code>cart_items</code> ⋈ <code>products</code></td><td><span class="tag act">Dynamic (ƒ)</span> · <code>noindex</code></td></tr>
+        <tr><td>Wishlist</td><td><code>app/wishlist/page.tsx</code></td><td><code>wishlist_items</code> ⋈ <code>products</code></td><td><span class="tag act">Dynamic (ƒ)</span> · <code>noindex</code></td></tr>
+      </table>
+
+      <div class="callout tip"><div class="ic">🔑</div><div><b>The static trick for wishlist hearts.</b> A product grid needs to know which items <em>you</em> have hearted — which would normally force a cookie read and make the page dynamic. Instead, ZIEA keeps the wishlist as a client-side <code>WishlistProvider</code> context that fetches your IDs <em>after</em> hydration. The server-rendered grid stays 100% static; the hearts light up a moment later on the client.</div></div>
+
+      <figure>
+        <svg viewBox="0 0 840 250" xmlns="http://www.w3.org/2000/svg" font-family="Jost,sans-serif">
+          <defs><marker id="arr3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7A7068"/></marker></defs>
+          <rect x="40" y="90" width="150" height="70" rx="12" fill="#e7f0e2" stroke="#3f6b3f" stroke-width="1.6"/>
+          <text x="115" y="120" text-anchor="middle" font-size="13" font-weight="700">Server Component</text>
+          <text x="115" y="140" text-anchor="middle" font-size="11" fill="#5b6470">page.tsx</text>
+          <rect x="255" y="40" width="170" height="60" rx="12" fill="#F5F0E8" stroke="#7A9268" stroke-width="1.8"/>
+          <text x="340" y="66" text-anchor="middle" font-size="12" font-weight="700">Cached readers</text>
+          <text x="340" y="84" text-anchor="middle" font-size="10.5" fill="#5b6470"><tspan font-family="SF Mono,monospace">getProductByCode…</tspan></text>
+          <rect x="255" y="150" width="170" height="60" rx="12" fill="#ece7f2" stroke="#6d5f8a" stroke-width="1.8"/>
+          <text x="340" y="176" text-anchor="middle" font-size="12" font-weight="700">SSR client</text>
+          <text x="340" y="194" text-anchor="middle" font-size="10.5" fill="#5b6470">reads cookies → dynamic</text>
+          <rect x="500" y="40" width="150" height="60" rx="12" fill="#fff" stroke="#d4dfd0"/>
+          <text x="575" y="66" text-anchor="middle" font-size="11.5"><tspan font-family="SF Mono,monospace">createPublicClient()</tspan></text>
+          <text x="575" y="84" text-anchor="middle" font-size="10.5" fill="#5b6470">cookie-less</text>
+          <rect x="500" y="150" width="150" height="60" rx="12" fill="#fff" stroke="#d4dfd0"/>
+          <text x="575" y="176" text-anchor="middle" font-size="11.5"><tspan font-family="SF Mono,monospace">createClient()</tspan></text>
+          <text x="575" y="194" text-anchor="middle" font-size="10.5" fill="#5b6470">SSR cookies</text>
+          <rect x="710" y="90" width="100" height="70" rx="12" fill="#232b21"/>
+          <text x="760" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="#A8BC9A">Postgres</text>
+          <line x1="190" y1="112" x2="253" y2="72" stroke="#7A7068" stroke-width="1.6" marker-end="url(#arr3)"/>
+          <line x1="190" y1="138" x2="253" y2="178" stroke="#7A7068" stroke-width="1.6" marker-end="url(#arr3)"/>
+          <line x1="425" y1="70" x2="498" y2="70" stroke="#7A7068" stroke-width="1.6" marker-end="url(#arr3)"/>
+          <line x1="425" y1="180" x2="498" y2="180" stroke="#7A7068" stroke-width="1.6" marker-end="url(#arr3)"/>
+          <line x1="650" y1="70" x2="740" y2="108" stroke="#7A7068" stroke-width="1.6" marker-end="url(#arr3)"/>
+          <line x1="650" y1="180" x2="740" y2="145" stroke="#7A7068" stroke-width="1.6" marker-end="url(#arr3)"/>
+        </svg>
+        <figcaption>Fig 2 — Two read paths. Catalog pages use the cookie-less, cached client (stays static); cart/wishlist use the SSR cookie client (dynamic).</figcaption>
+      </figure>
+    </section>
+
+    <!-- ===================== 4 · DATA MODEL ===================== -->
+    <section id="s4">
+      <h2><span class="num">4</span> Supabase Data Model</h2>
+      <p class="lead">Ten core tables. Public reads are locked to published rows by Row-Level Security; every per-user table is filtered by <code>user_id</code> both in code and in policy.</p>
+
+      <table>
+        <tr><th>Table</th><th>Purpose</th><th>Key columns</th></tr>
+        <tr><td><span class="tag db">products</span></td><td>Catalog</td><td><code>product_code</code> (auto <code>Z-0001</code>), <code>name</code>, <code>description</code>, <code>category_id</code>, <code>original_price</code>, <code>discounted_price</code>, <code>sizes</code> (JSON <code>[{size,quantity}]</code>), <code>images</code> (JSON), <code>badges</code>, <code>delivery_days</code>, <code>status</code>, <code>is_published</code>, <code>view_count</code></td></tr>
+        <tr><td><span class="tag db">categories</span></td><td>Product groups</td><td><code>id</code>, <code>name</code>, <code>image_url</code>, <code>image_pos_x</code>, <code>image_pos_y</code>, <code>image_zoom</code></td></tr>
+        <tr><td><span class="tag db">cart_items</span></td><td>Per-user cart</td><td><code>user_id</code>, <code>product_id</code>, <code>size</code>, <code>quantity</code></td></tr>
+        <tr><td><span class="tag db">wishlist_items</span></td><td>Per-user wishlist</td><td><code>user_id</code>, <code>product_id</code></td></tr>
+        <tr><td><span class="tag db">orders</span></td><td>WhatsApp orders</td><td><code>user_id</code> (null=guest), <code>customer_name</code>, <code>customer_phone</code>, <code>product_code</code>, <code>product_name</code>, <code>size</code>, <code>quantity</code>, <code>unit_price</code>, <code>subtotal</code>, <code>status</code>, <code>source</code></td></tr>
+        <tr><td><span class="tag db">contact_messages</span></td><td>Enquiries inbox</td><td><code>name</code>, <code>email</code>, <code>phone</code>, <code>inquiry_type</code>, <code>message</code>, <code>is_read</code>, <code>read_at</code></td></tr>
+        <tr><td><span class="tag db">activity_logs</span></td><td>Audit / behaviour feed</td><td><code>user_id</code>, <code>type</code>, <code>description</code>, <code>metadata</code> (JSONB), <code>created_at</code></td></tr>
+        <tr><td><span class="tag db">branding_assets</span></td><td>Editable site imagery</td><td><code>section_name</code> (unique), <code>images</code> (JSONB), <code>updated_at</code></td></tr>
+        <tr><td><span class="tag db">users</span></td><td>Profiles + role</td><td><code>id</code> (=<code>auth.users.id</code>), <code>first_name</code>, <code>last_name</code>, <code>email</code>, <code>phone</code>, <code>role</code> (<code>Customer</code>/<code>Admin</code>), <code>last_login_at</code></td></tr>
+        <tr><td><span class="tag db">newsletter</span></td><td>Email sign-ups</td><td><code>email</code> (unique)</td></tr>
+      </table>
+
+      <div class="callout info"><div class="ic">💡</div><div><b>Two image JSON shapes coexist.</b> Product/category images store <code>{ url, is_highlight, crop_x, crop_y, zoom }</code> (snake_case); branding images store <code>{ url, cropX, cropY, zoom }</code> (camelCase). Both encode a focal-point crop so the same asset can be reframed per surface without re-uploading.</div></div>
+
+      <div class="callout warn"><div class="ic">⚠️</div><div><b>Schema-vs-code drift to be aware of.</b> <code>cart_items</code>, <code>wishlist_items</code> and <code>newsletter</code> exist in the live DB but their DDL is not checked into <code>Supabase_Queries/</code>. Likewise <code>products.status</code>, <code>badges</code>, <code>delivery_days</code> and the category crop columns were added after the SQL files were written. Treat those specific schemas as live-DB-verified, not repo-verified.</div></div>
+    </section>
+
+    <!-- ===================== 5 · APIs ===================== -->
+    <section id="s5">
+      <h2><span class="num">5</span> Data APIs &amp; Server Actions</h2>
+      <p class="lead">Mutations split into two styles. <b>Server Actions</b> (<code>app/actions/*.ts</code>) handle cart &amp; wishlist — they run on the server, use the fast local-JWT identity, and defer logging with <code>after()</code>. <b>Direct browser inserts</b> handle public writes (contact, orders, newsletter) guarded by public-INSERT RLS.</p>
+
+      <table>
+        <tr><th>Action</th><th>File</th><th>Writes</th><th>Payload</th><th>Identity</th></tr>
+        <tr><td><code>addToCart</code></td><td><code>actions/cart.ts</code></td><td><span class="tag db">cart_items</span></td><td><code>(productId, size?, qty=1)</code></td><td><code>getUserId()</code></td></tr>
+        <tr><td><code>updateCartQty</code></td><td><code>actions/cart.ts</code></td><td><span class="tag db">cart_items</span></td><td><code>(cartItemId, qty)</code></td><td><code>getUserId()</code></td></tr>
+        <tr><td><code>removeCartItem</code></td><td><code>actions/cart.ts</code></td><td><span class="tag db">cart_items</span></td><td><code>(cartItemId)</code></td><td><code>getUserId()</code></td></tr>
+        <tr><td><code>toggleWishlist</code></td><td><code>actions/wishlist.ts</code></td><td><span class="tag db">wishlist_items</span></td><td><code>(productId)</code> → <code>{wishlisted}</code></td><td><code>getUserId()</code></td></tr>
+        <tr><td><code>logProductInteraction</code></td><td><code>actions/activity.ts</code></td><td>RPC <code>log_activity</code></td><td><code>(productId, 'Cart'\|'Wishlist')</code></td><td><code>getUserId()</code> · skips admins</td></tr>
+        <tr><td><code>incrementProductView</code></td><td><code>actions/views.ts</code></td><td>RPC <code>increment_product_view_count</code></td><td><code>(productId)</code></td><td>anonymous OK</td></tr>
+        <tr><td><code>subscribeNewsletter</code></td><td><code>actions/newsletter.ts</code></td><td><span class="tag db">newsletter</span></td><td><code>formData.email</code></td><td>public</td></tr>
+        <tr><td><code>revalidateStorefront</code></td><td><code>actions/revalidate.ts</code></td><td>— (cache)</td><td><code>('products'\|'categories'\|'branding')</code></td><td>—</td></tr>
+      </table>
+
+      <h3>Example — the cart upsert (deferred logging)</h3>
+      <pre><span class="c">// app/actions/cart.ts — identity via local JWT, logging deferred past the response</span>
+<span class="k">export async function</span> addToCart(productId, size = <span class="k">null</span>, qty = <span class="n">1</span>) {
+  <span class="k">const</span> userId = <span class="k">await</span> getUserId();        <span class="c">// getClaims() — no network hop</span>
+  <span class="k">if</span> (!userId) <span class="k">return</span> { error: <span class="s">"unauthenticated"</span> };
+  <span class="c">// upsert: bump quantity if (product_id,size) already in cart, else insert…</span>
+  after(() =&gt; logProductInteraction(productId, <span class="s">"Cart"</span>)); <span class="c">// runs after response is sent</span>
+  revalidatePath(<span class="s">"/cart"</span>);
+}</pre>
+      <div class="callout tip"><div class="ic">🔑</div><div><b>Why <code>getUserId()</code> and not <code>getUser()</code>?</b> <code>getUser()</code> makes a network round-trip to Supabase's Auth server (200–800 ms). <code>getUserId()</code> verifies the session JWT <em>locally</em> via <code>getClaims()</code> — instant. RLS still enforces ownership on every row, so the fast path is safe for cart/wishlist mutations.</div></div>
+    </section>
+
+    <!-- ===================== 6 · CACHING ===================== -->
+    <section id="s6">
+      <h2><span class="num">6</span> Caching Architecture</h2>
+      <p class="lead">The storefront is fast because catalog reads are memoised with <code>unstable_cache</code>, keyed and <b>tagged</b>, then served from cache until an admin edit fires <code>revalidateTag</code>. All cached readers use a cookie-less <code>createPublicClient()</code> — the one client legal to call inside a cache boundary.</p>
+
+      <table>
+        <tr><th>Cached function</th><th>File</th><th>Tag</th><th>TTL</th></tr>
+        <tr><td><code>getCatalogRows</code></td><td><code>utils/products.ts</code></td><td><span class="tag stat">products</span></td><td>300 s</td></tr>
+        <tr><td><code>getProductFacets</code></td><td><code>utils/products.ts</code></td><td><span class="tag stat">products</span></td><td>300 s</td></tr>
+        <tr><td><code>getLatestProducts</code></td><td><code>utils/products.ts</code></td><td><span class="tag stat">products</span></td><td>300 s</td></tr>
+        <tr><td><code>getProductByCode</code></td><td><code>utils/products.ts</code></td><td><span class="tag stat">products</span></td><td>300 s</td></tr>
+        <tr><td><code>getRelatedProducts</code></td><td><code>utils/products.ts</code></td><td><span class="tag stat">products</span></td><td>300 s</td></tr>
+        <tr><td><code>getAllPublishedSlugs</code></td><td><code>utils/products.ts</code></td><td><span class="tag stat">products</span></td><td>3600 s</td></tr>
+        <tr><td><code>getCategories</code></td><td><code>utils/categories.ts</code></td><td><span class="tag stat">categories</span></td><td>3600 s</td></tr>
+        <tr><td><code>getBranding</code></td><td><code>utils/branding.server.ts</code></td><td><span class="tag stat">branding</span></td><td>3600 s</td></tr>
+      </table>
+
+      <div class="callout ok"><div class="ic">✅</div><div><b>One cache entry serves every filter.</b> <code>getCatalogRows(category, q)</code> is keyed only on category + search text; all other filters, sorting and pagination happen <em>in-memory</em> on the cached rows. So a shopper toggling price/size/colour filters never triggers a fresh DB query.</div></div>
+
+      <figure>
+        <svg viewBox="0 0 840 210" xmlns="http://www.w3.org/2000/svg" font-family="Jost,sans-serif">
+          <defs><marker id="arr6" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#333"/></marker></defs>
+          <text x="120" y="26" text-anchor="middle" font-size="12.5" font-weight="800" fill="#6d5f8a">Admin edits product</text>
+          <text x="410" y="26" text-anchor="middle" font-size="12.5" font-weight="800" fill="#7A9268">Next.js cache</text>
+          <text x="710" y="26" text-anchor="middle" font-size="12.5" font-weight="800" fill="#3f6b3f">Shopper</text>
+          <line x1="120" y1="36" x2="120" y2="190" stroke="#ddd" stroke-dasharray="4"/>
+          <line x1="410" y1="36" x2="410" y2="190" stroke="#ddd" stroke-dasharray="4"/>
+          <line x1="710" y1="36" x2="710" y2="190" stroke="#ddd" stroke-dasharray="4"/>
+          <line x1="120" y1="66" x2="408" y2="66" stroke="#333" stroke-width="1.5" marker-end="url(#arr6)"/>
+          <text x="264" y="59" text-anchor="middle" font-size="10.5"><tspan font-family="SF Mono,monospace">revalidateTag("products")</tspan></text>
+          <line x1="410" y1="104" x2="412" y2="104" stroke="#333"/>
+          <rect x="360" y="90" width="100" height="26" rx="6" fill="#f6ecd8" stroke="#a6690a"/>
+          <text x="410" y="107" text-anchor="middle" font-size="10.5">entry evicted</text>
+          <line x1="710" y1="146" x2="412" y2="146" stroke="#3f6b3f" stroke-width="1.5" marker-end="url(#arr6)"/>
+          <text x="560" y="139" text-anchor="middle" font-size="10.5" fill="#3f6b3f">next request → cache MISS</text>
+          <line x1="410" y1="176" x2="708" y2="176" stroke="#3f6b3f" stroke-width="1.5" marker-end="url(#arr6)"/>
+          <text x="560" y="169" text-anchor="middle" font-size="10.5" fill="#3f6b3f">fresh rows re-cached &amp; served</text>
+        </svg>
+        <figcaption>Fig 3 — Tag-based invalidation. Product/category/branding edits call <code>revalidateStorefront(tag)</code> → <code>revalidateTag</code>; the next visitor repopulates the cache.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ===================== 7 · AUTH ===================== -->
+    <section id="s7">
+      <h2><span class="num">7</span> Authentication &amp; Tokens</h2>
+      <p class="lead">Auth is Supabase's JWT session model over <code>@supabase/ssr</code> cookies. A short-lived <b>access token</b> (a signed JWT) is verified locally; a long-lived <b>refresh token</b> silently mints new access tokens. The <code>proxy.ts</code> middleware keeps both fresh on every request.</p>
+
+      <h3>Supported sign-in methods</h3>
+      <div class="grid3">
+        <div class="mini"><div class="k">Email + Password</div><div class="v"><code>signInWithPassword</code> / <code>signUp</code> with <code>{first_name,last_name,phone}</code> metadata</div></div>
+        <div class="mini"><div class="k">Google OAuth</div><div class="v"><code>signInWithOAuth({provider:'google'})</code> → <code>/auth/callback</code></div></div>
+        <div class="mini"><div class="k">Email confirm callback</div><div class="v"><code>exchangeCodeForSession</code> in <code>app/auth/callback/route.ts</code></div></div>
+      </div>
+
+      <table>
+        <tr><th>Token / check</th><th>How</th><th>Cost</th><th>Used for</th></tr>
+        <tr><td>Access token (JWT)</td><td><code>getClaims()</code> — verify signature locally</td><td>~0 ms</td><td>Reads, cart/wishlist writes (<code>getUserId()</code>)</td></tr>
+        <tr><td>Session presence</td><td><code>getSession()</code> — decode cookie</td><td>~0 ms</td><td><code>proxy.ts</code> refresh loop</td></tr>
+        <tr><td>Strong identity</td><td><code>getUser()</code> — Auth-server hop</td><td>200–800 ms</td><td>Cart/wishlist <em>pages</em>, Buy-Now, checkout</td></tr>
+        <tr><td>Refresh token</td><td>Rotated by <code>@supabase/ssr</code>, cookies re-written in <code>proxy.ts</code></td><td>network (rare)</td><td>Keeping sessions alive</td></tr>
+      </table>
+
+      <figure>
+        <svg viewBox="0 0 840 210" xmlns="http://www.w3.org/2000/svg" font-family="Jost,sans-serif">
+          <defs><marker id="arr7" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#333"/></marker></defs>
+          <text x="115" y="24" text-anchor="middle" font-size="12.5" font-weight="800" fill="#3f6b3f">Browser</text>
+          <text x="410" y="24" text-anchor="middle" font-size="12.5" font-weight="800" fill="#7A9268">proxy.ts</text>
+          <text x="710" y="24" text-anchor="middle" font-size="12.5" font-weight="800" fill="#6d5f8a">Supabase Auth</text>
+          <line x1="115" y1="34" x2="115" y2="196" stroke="#ddd" stroke-dasharray="4"/>
+          <line x1="410" y1="34" x2="410" y2="196" stroke="#ddd" stroke-dasharray="4"/>
+          <line x1="710" y1="34" x2="710" y2="196" stroke="#ddd" stroke-dasharray="4"/>
+          <line x1="115" y1="60" x2="408" y2="60" stroke="#333" stroke-width="1.5" marker-end="url(#arr7)"/>
+          <text x="262" y="53" text-anchor="middle" font-size="10.5">1 · request + session cookies</text>
+          <line x1="410" y1="94" x2="412" y2="94" stroke="#333"/>
+          <rect x="330" y="80" width="160" height="26" rx="6" fill="#F5F0E8" stroke="#7A9268"/>
+          <text x="410" y="97" text-anchor="middle" font-size="10">2 · <tspan font-family="SF Mono,monospace">getSession()</tspan> decode</text>
+          <line x1="410" y1="130" x2="708" y2="130" stroke="#333" stroke-width="1.5" marker-end="url(#arr7)" stroke-dasharray="3"/>
+          <text x="560" y="123" text-anchor="middle" font-size="10.5">3 · refresh (only if expired)</text>
+          <line x1="708" y1="164" x2="118" y2="164" stroke="#3f6b3f" stroke-width="1.5" marker-end="url(#arr7)"/>
+          <text x="410" y="157" text-anchor="middle" font-size="10.5" fill="#3f6b3f">4 · fresh cookies written to response</text>
+        </svg>
+        <figcaption>Fig 4 — Session refresh path. Most requests are pure local decodes; the network refresh fires only when the access token has expired.</figcaption>
+      </figure>
+
+      <div class="callout info"><div class="ic">💡</div><div><b>Row-Level Security is the real guard.</b> Because every <code>cart_items</code>/<code>wishlist_items</code>/<code>orders</code> query is filtered by <code>user_id</code> <em>and</em> RLS policies enforce ownership in Postgres, a forged client request can never read or mutate another user's rows — even though identity is resolved from a locally-verified JWT.</div></div>
+    </section>
+
+    <!-- ===================== 8 · STOREFRONT SECTIONS ===================== -->
+    <section id="s8">
+      <h2><span class="num">8</span> Storefront Sections</h2>
+      <p class="lead">Each customer surface, what it renders and where its data lives.</p>
+
+      <div class="grid2">
+        <div class="card" style="border-left:4px solid var(--sage)"><h3 style="margin-top:0">Collections</h3><p><code>CategoryTabs</code> + a portalled <code>FiltersPanel</code> side-sheet + server <code>ProductGrid</code>. Facets and rows come from cached <code>getProductFacets</code>/<code>getFilteredProducts</code>. 32 products per page; the first two cards on page 1 are preloaded as LCP. Route-level <code>loading.tsx</code> shows a rotating <code>LoadingQuote</code>.</p></div>
+        <div class="card" style="border-left:4px solid var(--sage)"><h3 style="margin-top:0">Product Detail</h3><p>Gallery, info, <code>Buy&nbsp;Now</code> + <code>Add&nbsp;to&nbsp;Cart</code> actions, related products, and a <code>ViewTracker</code> that fires <code>incrementProductView</code>. Prerendered per <code>product_code</code>; carries Product JSON-LD.</p></div>
+        <div class="card" style="border-left:4px solid var(--sage)"><h3 style="margin-top:0">About Us</h3><p>Sticky editorial layout — hero, narrative, craftsmanship carousel, philosophy — all imagery driven by the <code>branding_assets</code> "About Us" row so it's editable without a deploy.</p></div>
+        <div class="card" style="border-left:4px solid var(--sage)"><h3 style="margin-top:0">Contact Us</h3><p>A client form (type = business / personal / collaboration) that inserts directly into <code>contact_messages</code> and logs an <code>activity_logs</code> entry. Surfaces in the admin Enquiries inbox in real time.</p></div>
+        <div class="card" style="border-left:4px solid var(--terra)"><h3 style="margin-top:0">Wishlist</h3><p>Dynamic page joining <code>wishlist_items</code> ⋈ <code>products</code>. Optimistic remove / "move to cart"; badge count driven by the <code>ziea:counts-changed</code> window event.</p></div>
+        <div class="card" style="border-left:4px solid var(--terra)"><h3 style="margin-top:0">Shopping Cart</h3><p>Dynamic page joining <code>cart_items</code> ⋈ <code>products</code>. Optimistic quantity stepper; <code>CartCheckoutButton</code> assembles a WhatsApp message and records each line as an order.</p></div>
+      </div>
+
+      <div class="callout tip"><div class="ic">🔑</div><div><b>The <code>ziea:counts-changed</code> event bus.</b> Any add/remove dispatches a lightweight window event; the header's cart &amp; wishlist badges and the <code>WishlistProvider</code> all listen and re-fetch. No global state library — just a DOM event keeping every corner of the UI in sync.</div></div>
+    </section>
+
+    <!-- ===================== 9 · WHATSAPP ===================== -->
+    <section id="s9">
+      <h2><span class="num">9</span> WhatsApp Order Flow</h2>
+      <p class="lead">ZIEA takes orders over WhatsApp click-to-chat — no payment gateway. The order is <b>recorded in the DB first</b>, then the customer is handed off to WhatsApp, so no lead is ever lost even if they abandon the chat.</p>
+
+      <ol class="steps">
+        <li><b>Buy Now / Checkout.</b> Shopper confirms in a modal (guests give name + phone, Zod-validated; members are auto-filled from their profile). <span class="tag fe">client</span></li>
+        <li><b>Record the order.</b> One <code>orders</code> row per line item is inserted with <code>status:"Initiated"</code> and <code>source:"buy_now"</code> or <code>"cart"</code>, plus an <code>activity_logs</code> entry. <span class="tag db">orders</span></li>
+        <li><b>Hand off.</b> <code>window.open(orderHref(items))</code> fires <em>synchronously</em> inside the click so the pop-up isn't blocked — opening <code>wa.me/918139045083</code> with a pre-filled message. <span class="tag act">wa.me</span></li>
+        <li><b>Admin fulfils.</b> The order appears in <code>/admin/orders</code> as "New"; the admin advances it Initiated → Confirmed → Fulfilled (or Cancelled). <span class="tag core">admin</span></li>
+      </ol>
+
+      <pre><span class="c">// utils/whatsapp.ts — the pre-filled message body</span>
+Hi ZIEA, I'd like to place an order:
+
+• Kerala Cotton Kurthi (Code: Z-0042) - Size M, Qty 1 - ₹1,499
+<span class="c">// Subtotal line appended only when more than one item</span>
+Please confirm availability &amp; payment. Thank you!</pre>
+      <div class="callout ok"><div class="ic">✅</div><div><b>Guest-friendly &amp; loss-proof.</b> Buy-Now works without an account, and because the write precedes the redirect, every intent to buy lands in the <code>orders</code> table for the admin to follow up — turning a casual WhatsApp tap into a tracked lead.</div></div>
+    </section>
+
+    <!-- ===================== 10 · ADMIN ===================== -->
+    <section id="s10">
+      <h2><span class="num">10</span> Admin Console</h2>
+      <p class="lead">A fully dynamic, role-gated console. <code>app/admin/layout.tsx</code> calls <code>getAdminClaims()</code>; anyone without a session is bounced to login, and anyone whose <code>users.role ≠ 'Admin'</code> is sent home. Three Realtime providers keep the sidebar badges live.</p>
+
+      <h3>Sidebar (in order)</h3>
+      <p>
+        <span class="pill">📊 Dashboard</span><span class="pill">📈 Analytics</span><span class="pill">📦 Products</span>
+        <span class="pill">🗂️ Categories</span><span class="pill">👥 Customers</span><span class="pill">🎨 Branding</span>
+        <span class="pill">🕘 Activity</span><span class="pill">✉️ Enquiries <span class="tag act">badge</span></span><span class="pill">🛍️ Orders <span class="tag act">badge</span></span>
+      </p>
+
+      <table>
+        <tr><th>Section</th><th>Does</th><th>Tables / source</th></tr>
+        <tr><td><b>Dashboard</b></td><td>Greeting + 4 metric cards (products in stock, total views, customers, categories) + last 10 activity rows</td><td><code>products</code>, <code>users</code>, <code>categories</code>, <code>activity_logs</code></td></tr>
+        <tr><td><b>Analytics</b></td><td>9 aggregates in one <code>Promise.all</code>: totals, top products (donut), views table, order pipeline, wishlist &amp; cart activity, daily interaction trend bars</td><td><code>products</code>, <code>wishlist_items</code>, <code>cart_items</code>, <code>orders</code>, <code>activity_logs</code></td></tr>
+        <tr><td><b>Products</b></td><td>Create/edit form (edit page parallelises product + categories via <code>Promise.all</code>); table with search, status filter, date sort, 10/page</td><td><code>products</code></td></tr>
+        <tr><td><b>Categories</b></td><td>CRUD with a live crop editor (zoom 50–300, pan X/Y); uploads to <code>/api/upload?folder=categories</code></td><td><code>categories</code></td></tr>
+        <tr><td><b>Customers</b></td><td>Registered user list</td><td><code>users</code></td></tr>
+        <tr><td><b>Branding</b></td><td>Schema-driven editor for Home / About / Auth imagery; previews show first image or a grid</td><td><code>branding_assets</code></td></tr>
+        <tr><td><b>Activity</b></td><td>Filterable behaviour feed (search, time window, type chips), 20/page</td><td><code>activity_logs</code></td></tr>
+        <tr><td><b>Enquiries</b></td><td>Read/Unread tabs, unread badge, checkbox mark-read (<code>is_read</code>+<code>read_at</code>), type badges, 20/page</td><td><code>contact_messages</code></td></tr>
+        <tr><td><b>Orders</b></td><td>Status tabs (Initiated/Confirmed/Fulfilled/Cancelled), per-status counts, status dropdown, 20/page</td><td><code>orders</code></td></tr>
+      </table>
+
+      <div class="callout info"><div class="ic">💡</div><div><b>Live badges via Supabase Realtime.</b> <code>OrdersProvider</code>, <code>EnquiriesProvider</code> and <code>ActivityNotificationsProvider</code> subscribe to channels <code>admin-orders</code>, <code>admin-enquiries</code>, <code>admin-activity</code>. A new order or message updates the sidebar count and the notification bell without a refresh.</div></div>
+    </section>
+
+    <!-- ===================== 11 · STORAGE ===================== -->
+    <section id="s11">
+      <h2><span class="num">11</span> Image &amp; Content Storage</h2>
+      <p class="lead">Images are uploaded through an <b>admin-gated Node route</b> that writes to the Hostinger filesystem CDN and returns a public URL. Textual content (product copy, policies, branding headlines) lives in Postgres.</p>
+
+      <table>
+        <tr><th>Concern</th><th>Detail</th></tr>
+        <tr><td>Upload endpoint</td><td><code>app/api/upload/route.ts</code> — <code>getAdminClaims()</code> gate (non-admin → <code>401</code>). Accepts jpeg/png/webp/gif/avif/svg, max 15 MB. Filename = <code>{ts}-{rand}-{slug}.{ext}</code></td></tr>
+        <tr><td>Write target</td><td><code>ASSET_UPLOAD_DIR</code> → prod <code>/home/…/ziea.in/public_html/cdn</code>; returns <code>${NEXT_PUBLIC_ASSET_BASE_URL}/{folder}/{file}</code></td></tr>
+        <tr><td>Serving</td><td><code>app/cdn/[...path]/route.ts</code> streams files with <code>Cache-Control: public, max-age=31536000, immutable</code> (traversal-guarded)</td></tr>
+        <tr><td>Fallback</td><td>A Supabase-Storage code path is kept commented for serverless/read-only-FS hosts (e.g. Vercel)</td></tr>
+      </table>
+
+      <table>
+        <tr><th>Asset</th><th>CDN folder</th></tr>
+        <tr><td>Product images</td><td><code>products/{category-slug}</code></td></tr>
+        <tr><td>Category images</td><td><code>categories</code></td></tr>
+        <tr><td>Branding — Home (desktop 16:9, mobile 4:5)</td><td><code>branding/home</code></td></tr>
+        <tr><td>Branding — About (hero, mobile slides, craftsmanship, philosophy)</td><td><code>branding/about</code></td></tr>
+        <tr><td>Branding — Auth (top-left, bottom-right)</td><td><code>branding/auth</code></td></tr>
+      </table>
+
+      <div class="callout warn"><div class="ic">⚠️</div><div><b>Filesystem writes need a persistent disk.</b> The <code>writeFile</code> path only works where the FS is writable (Hostinger). On Vercel the FS is read-only, so the commented Supabase-Storage branch must be restored before deploying there. Set <code>ASSET_UPLOAD_DIR</code> and <code>NEXT_PUBLIC_ASSET_BASE_URL</code> in the Hostinger environment.</div></div>
+    </section>
+
+    <!-- ===================== 12 · ACTIVITY ===================== -->
+    <section id="s12">
+      <h2><span class="num">12</span> Activity Tracking</h2>
+      <p class="lead">The admin sees a running feed of customer behaviour via <code>activity_logs</code>. Interaction logging is <b>best-effort and deferred</b> — it never slows a customer action, and it's skipped entirely for admin accounts so the admin's own clicks don't pollute the feed.</p>
+
+      <table>
+        <tr><th>Activity type</th><th>Fired by</th><th>Path</th></tr>
+        <tr><td><code>Customer Login</code> / <code>Admin Login</code></td><td>Auth callback</td><td><code>app/auth/callback/route.ts</code></td></tr>
+        <tr><td><code>Customer Registration</code></td><td>DB trigger on new user</td><td><code>log_user_registration_activity</code></td></tr>
+        <tr><td><code>Cart</code> / <code>Wishlist</code></td><td><code>logProductInteraction</code> via <code>after()</code></td><td><code>actions/cart.ts</code>, <code>wishlist.ts</code></td></tr>
+        <tr><td><code>Newsletter Subscription</code></td><td><code>subscribeNewsletter</code></td><td><code>actions/newsletter.ts</code></td></tr>
+        <tr><td><code>Category / Product Added·Updated·Deleted</code></td><td>Admin CRUD</td><td>admin clients</td></tr>
+        <tr><td>Enquiry &amp; Order events</td><td>Contact form / order flow</td><td>client inserts</td></tr>
+      </table>
+
+      <div class="callout info"><div class="ic">💡</div><div><b>Views are counted, not logged.</b> Product views bump a <code>products.view_count</code> counter through an RPC — they are <em>not</em> written to <code>activity_logs</code>. So the analytics "views" number comes from the counter, while the activity feed shows discrete events (logins, cart/wishlist adds, sign-ups, enquiries, orders).</div></div>
+
+      <div class="callout tip"><div class="ic">🔑</div><div><b>What the admin can observe about a customer:</b> when they logged in, when they registered, every add-to-cart and add-to-wishlist (with product name + code), newsletter sign-ups, submitted enquiries, and placed orders — surfaced both in the Activity feed and live via the notification bell. Casual page views are aggregated as counts only, never tied to an individual in the feed.</div></div>
+    </section>
+
+    <!-- ===================== 13 · SEO ===================== -->
+    <section id="s13">
+      <h2><span class="num">13</span> SEO Architecture</h2>
+      <p class="lead">SEO is code-generated from a single source of truth (<code>utils/site.ts</code>): robots, sitemap, PWA manifest, per-page canonicals, Open Graph/Twitter cards, and JSON-LD structured data — which is why SEO scores 100 on both form factors.</p>
+
+      <table>
+        <tr><th>File</th><th>Emits</th></tr>
+        <tr><td><code>app/robots.ts</code></td><td>Allow <code>/</code>; disallow <code>/admin/ /cart /wishlist /login /signup /auth/ /api/</code>; points to sitemap</td></tr>
+        <tr><td><code>app/sitemap.ts</code></td><td>Static routes + every published product (<code>/collections/{code}</code>) + category URLs, via cached <code>getAllPublishedSlugs</code></td></tr>
+        <tr><td><code>app/manifest.ts</code></td><td>PWA manifest — name, icons, <code>theme_color #2C3829</code>, <code>background_color #F5F0E8</code></td></tr>
+        <tr><td><code>app/layout.tsx</code></td><td><code>metadataBase</code>, title template <code>%s | ZIEA</code>, default OG/Twitter, <code>Organization</code> JSON-LD</td></tr>
+        <tr><td><code>app/collections/[slug]</code></td><td>Per-product OG, self-canonical, and <code>Product</code> JSON-LD (price, currency INR, in/out-of-stock)</td></tr>
+      </table>
+
+      <div class="callout warn"><div class="ic">⚠️</div><div><b>One canonical rule that bit us.</b> A global <code>alternates.canonical</code> in the root layout would make <em>every</em> page canonicalise to <code>/</code> (collections once wrongly pointed home). The fix — and current design — is <b>no global canonical</b>; each public page declares its own self-referential canonical.</div></div>
+
+      <div class="callout tip"><div class="ic">🔑</div><div><b>Origin is env-driven.</b> <code>SITE_URL</code> defaults to <code>https://ziea.vercel.app</code> and is overridden by <code>NEXT_PUBLIC_SITE_URL</code>. Set it to <code>https://ziea.in</code> the moment the production domain is connected, or canonicals/OG/sitemap will keep pointing at the Vercel origin.</div></div>
+    </section>
+
+    <!-- ===================== 14 · DESIGN SYSTEM ===================== -->
+    <section id="s14">
+      <h2><span class="num">14</span> Design System</h2>
+      <p class="lead">A calm, feminine, "everyday luxury" palette anchored on sage green and deep forest over warm cream — all expressed as Tailwind v4 <code>@theme</code> tokens in <code>app/globals.css</code>.</p>
+
+      <h3>Primary palette</h3>
+      <div class="swatch-row">
+        <div class="sw"><div class="chip" style="background:#7A9268"></div><div class="meta"><div class="nm">Sage Grove</div><div class="ro">brand primary</div><div class="hx">#7A9268 · <code>primary</code></div></div></div>
+        <div class="sw"><div class="chip" style="background:#2C3829"></div><div class="meta"><div class="nm">Deep Forest</div><div class="ro">headings / dark</div><div class="hx">#2C3829 · <code>primary-dark</code></div></div></div>
+        <div class="sw"><div class="chip" style="background:#F5F0E8;border-bottom:1px solid #e2dccf"></div><div class="meta"><div class="nm">Warm Cream</div><div class="ro">page background</div><div class="hx">#F5F0E8 · <code>background</code></div></div></div>
+        <div class="sw"><div class="chip" style="background:#EDE6D8"></div><div class="meta"><div class="nm">Linen Mist</div><div class="ro">cards / fills</div><div class="hx">#EDE6D8 · <code>surface</code></div></div></div>
+      </div>
+      <h3>Accent &amp; support</h3>
+      <div class="swatch-row">
+        <div class="sw"><div class="chip" style="background:#A8BC9A"></div><div class="meta"><div class="nm">Sage Light</div><div class="hx">#A8BC9A · <code>primary-light</code></div></div></div>
+        <div class="sw"><div class="chip" style="background:#D4DFD0"></div><div class="meta"><div class="nm">Sage Pale</div><div class="hx">#D4DFD0 · <code>border</code></div></div></div>
+        <div class="sw"><div class="chip" style="background:#E8D5C4"></div><div class="meta"><div class="nm">Petal Blush</div><div class="hx">#E8D5C4 · <code>accent</code></div></div></div>
+        <div class="sw"><div class="chip" style="background:#C4856A"></div><div class="meta"><div class="nm">Terracotta</div><div class="hx">#C4856A · <code>secondary</code></div></div></div>
+        <div class="sw"><div class="chip" style="background:#7A7068"></div><div class="meta"><div class="nm">Warm Mist</div><div class="hx">#7A7068 · <code>muted</code></div></div></div>
+      </div>
+
+      <div class="callout info"><div class="ic">💡</div><div><b>The accessible-green nuance.</b> Sage <code>#7A9268</code> is the brand colour, but for small link/hover text it fails AA contrast — so those specific spots use a darker <code>#4c623d</code>. It's an arbitrary utility class, not a theme token, applied only where legibility demands it.</div></div>
+
+      <h3>Typography</h3>
+      <table>
+        <tr><th>Role</th><th>Font (via <code>next/font</code>)</th><th>Utility</th></tr>
+        <tr><td>Display / headings</td><td>Playfair Display (aliased as <code>cormorant</code>)</td><td><code>cormorant</code>, <code>font-display-lg</code></td></tr>
+        <tr><td>Body / UI / labels</td><td>Jost</td><td><code>jost</code>, <code>font-body-md</code>, <code>font-label-md</code></td></tr>
+      </table>
+      <div class="callout warn"><div class="ic">⚠️</div><div><b>Naming footnote:</b> the class is called <code>cormorant</code> for historical reasons but the loaded serif is actually <b>Playfair Display</b> — no Cormorant Garamond is bundled.</div></div>
+
+      <h3>Core UI components</h3>
+      <table>
+        <tr><th>Component</th><th>Role</th></tr>
+        <tr><td><code>Button</code></td><td>Variants: <code>primary</code> (terracotta pill), <code>pill</code>, <code>icon</code>, <code>ghost</code>, <code>auth-primary</code> (dark full-width), <code>auth-social</code></td></tr>
+        <tr><td><code>SmartImage</code></td><td><code>next/image</code> wrapper adding focal-point crop (<code>cropX/cropY/zoom</code>) + LCP <code>preload</code>/<code>fetchPriority</code> — the reason CLS is 0</td></tr>
+        <tr><td><code>ProductCard</code></td><td>Server-friendly card; wishlist heart via client context; optimistic add-to-cart</td></tr>
+        <tr><td><code>FiltersPanel</code></td><td>Filter side-sheet portalled to <code>&lt;body&gt;</code> to escape transformed ancestors; locks background scroll</td></tr>
+        <tr><td><code>SearchBar</code></td><td>Debounced live product suggestions (Supabase <code>ilike</code>, limit 6)</td></tr>
+        <tr><td><code>LoadingQuote</code></td><td>Rotating on-brand quotes on the collections loading screen</td></tr>
+      </table>
+
+      <h3>Performance techniques baked in</h3>
+      <p>
+        <span class="pill">🖼️ AVIF/WebP + <code>qualities:[68,75]</code></span>
+        <span class="pill">⚡ LCP <code>preload</code> on first 2 cards</span>
+        <span class="pill">🔌 <code>preconnect</code> to Supabase</span>
+        <span class="pill">🧊 Fixed aspect ratios → CLS 0</span>
+        <span class="pill">🌊 Suspense-streamed admin nav</span>
+        <span class="pill">📐 <code>generateStaticParams</code> prerender</span>
+      </p>
+    </section>
+
+    <!-- ===================== 15 · SUMMARY ===================== -->
+    <section id="s15">
+      <h2><span class="num">15</span> Summary</h2>
+      <div class="callout ok"><div class="ic">✅</div><div><b>In one line:</b> ZIEA is a Next.js 16 + Supabase storefront that stays fast and perfectly SEO-scored by rendering the catalog statically through a tag-invalidated cache, resolving identity from locally-verified JWTs (with RLS as the real guard), taking orders over WhatsApp with a DB-first record, storing media on a Hostinger CDN, and giving admins a live, Realtime-badged console over the same data.</div></div>
+      <div class="grid3">
+        <div class="mini"><div class="k">Fast by design</div><div class="v">Static catalog + <code>unstable_cache</code> + zero-CLS <code>SmartImage</code> → 100 SEO, 100 A11y, 85–88 perf</div></div>
+        <div class="mini"><div class="k">Secure by RLS</div><div class="v">Local-JWT identity for speed, Postgres RLS ownership for safety</div></div>
+        <div class="mini"><div class="k">Editable without deploys</div><div class="v">Branding imagery + catalog live in Postgres/CDN, invalidated by tag on save</div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <b>ZIEA — System Architecture</b> · Next.js 16 · Supabase · Tailwind v4 · branch <code style="background:#2f3a2b;color:#fff">master</code><br/>
+    Metrics: Lighthouse (headless Chrome) against <a href="https://ziea.vercel.app">ziea.vercel.app</a>, Aug 2026 · Facts read from source under <code style="background:#2f3a2b;color:#fff">app/</code>, <code style="background:#2f3a2b;color:#fff">utils/</code>, <code style="background:#2f3a2b;color:#fff">components/</code>, <code style="background:#2f3a2b;color:#fff">Supabase_Queries/</code>.
+  </div>
+</footer>
+
+</body>
+</html>
