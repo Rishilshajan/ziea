@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "../../ui/Button";
 import { Input } from "../../ui/Input";
 import SearchBar from "./SearchBar";
+import MobileSearchOverlay from "./MobileSearchOverlay";
 import { createClient } from "@/utils/supabase/client";
 import ConfirmationModal from "../../ui/ConfirmationModal";
 import {
@@ -47,6 +48,7 @@ export default function Header() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -300,9 +302,18 @@ export default function Header() {
 
       {/* Mobile Header */}
       <header className="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-page h-16 bg-background shadow-sm">
-        <Button variant="icon" aria-label="Open menu" onClick={() => setIsMenuOpen(true)} className="z-10">
-          <MdOutlineMenu className="text-2xl" />
-        </Button>
+        <div className="flex items-center gap-1 z-10">
+          <Button variant="icon" aria-label="Open menu" onClick={() => setIsMenuOpen(true)}>
+            <MdOutlineMenu className="text-2xl" />
+          </Button>
+          <button
+            aria-label="Search"
+            onClick={() => setIsSearchOpen(true)}
+            className="flex items-center justify-center p-2 text-[#2C3829] active:scale-95 transition-transform"
+          >
+            <MdSearch className="text-[22px]" />
+          </button>
+        </div>
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none">
           <Link href="/" aria-label="ZIEA home" className="pointer-events-auto">
             <Image src="/Ziea_Logo.png" alt="ZIEA" width={300} height={150} sizes="200px" className="h-24 w-auto object-contain scale-[1.8]" />
@@ -440,6 +451,9 @@ export default function Header() {
           </div>
         </div>
       )}
+
+      {/* Mobile full-screen search */}
+      <MobileSearchOverlay open={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       {/* Logout Confirmation Modal */}
       <ConfirmationModal

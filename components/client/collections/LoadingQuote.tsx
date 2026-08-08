@@ -17,7 +17,7 @@ const QUOTES = [
   "Slow fashion, timeless you.",
   "Handpicked for the woman who knows her worth.",
   "Bringing Kerala’s quiet luxury to you…",
-  "Good things take a moment — yours is almost here.",
+  "Good things take a moment - yours is almost here.",
   "Threads of heritage, styled for today.",
   "Style that whispers, never shouts.",
   "Loading looks you’ll love…",
